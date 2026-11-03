@@ -21,6 +21,10 @@ GENERATED_IMAGES_SOURCE = {
     "zone_cone_corner.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\zone_cone_corner_1793671997938.jpg",
     "zone_stove_grease.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\zone_stove_grease_1793672023537.jpg",
     "cod_door_delivery.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\cod_door_delivery_1793672050011.jpg",
+    "blender_bunny_hero.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\blender_bunny_hero_png_1793734118504.jpg",
+    "blender_heavy_pain.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\blender_heavy_pain_png_1793734134845.jpg",
+    "blender_on_the_go.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\blender_on_the_go_png_1793734152347.jpg",
+    "blender_unboxing_features.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\blender_unboxing_features_png_1793734170977.jpg",
 }
 
 OBSOLETE_IMAGES = [
@@ -34,6 +38,8 @@ MODULE_ORDER = [
     SRC_DIR / "components" / "SvgIcons.js",
     SRC_DIR / "components" / "QtyStepper.js",
     SRC_DIR / "data" / "productConfig.js",
+    SRC_DIR / "data" / "blenderBunnyConfig.js",
+    SRC_DIR / "data" / "productCatalog.js",
     SRC_DIR / "components" / "TopUrgencyTicker.js",
     SRC_DIR / "components" / "EmotionalHeroMobile.js",
     SRC_DIR / "components" / "ThumbCleanInteractive.js",

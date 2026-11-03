@@ -1,0 +1,16 @@
+{
+  "sections": {
+    "main": {
+      "type": "vue-landing-cepillo",
+      "settings": {
+        "fallback_price": 22.50,
+        "fallback_compare_price": 38.00,
+        "stock_left": 100
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
+

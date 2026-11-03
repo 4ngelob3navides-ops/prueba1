@@ -164,7 +164,7 @@ button {
   letter-spacing: 0.07em;
   padding: 6px 12px;
   border-radius: var(--radius-pill);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .hero-content {
@@ -485,7 +485,7 @@ button {
   left: 14px;
   background: var(--bg-linen);
   color: var(--accent-forest);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .ba-tag--dirty {
@@ -518,7 +518,7 @@ button {
   background: var(--bg-linen);
   color: var(--text-espresso);
   border: 1px solid var(--border-warm);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -546,7 +546,7 @@ button {
   border: 1px solid var(--border-warm);
   border-radius: var(--radius-card);
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
 .pain-editorial-card__img {
@@ -610,7 +610,9 @@ button {
   scrollbar-width: none;
 }
 
-.zone-pills::-webkit-scrollbar { display: none; }
+.zone-pills::-webkit-scrollbar {
+  display: none;
+}
 
 .zone-pill-btn {
   white-space: nowrap;
@@ -721,7 +723,9 @@ button {
   scrollbar-width: none;
 }
 
-.editorial-quotes::-webkit-scrollbar { display: none; }
+.editorial-quotes::-webkit-scrollbar {
+  display: none;
+}
 
 .quote-card {
   flex: 0 0 85%;
@@ -733,7 +737,7 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
 .quote-stars {
@@ -979,7 +983,7 @@ button {
   position: relative;
   transform: translateY(20px);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
 }
 
 .modal-overlay.open .modal-sheet {
@@ -1046,7 +1050,7 @@ button {
   font-size: 13px;
   font-weight: 600;
   z-index: 100;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   display: flex;
   align-items: center;
   gap: 8px;

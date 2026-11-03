@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue';
-import { getProductConfig } from './data/productConfig.js';
+import { resolveProductConfig } from './data/productCatalog.js';
 import { TopUrgencyTicker } from './components/TopUrgencyTicker.js';
 import { EmotionalHeroMobile } from './components/EmotionalHeroMobile.js';
 import { ThumbCleanInteractive } from './components/ThumbCleanInteractive.js';
@@ -22,7 +22,7 @@ export const App = {
     StickyThumbBar,
   },
   setup() {
-    const config = ref(getProductConfig());
+    const config = ref(resolveProductConfig());
     const selectedQty = ref(1);
     const isModalOpen = ref(false);
     const orderToast = ref(false);
