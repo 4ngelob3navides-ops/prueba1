@@ -1,5 +1,5 @@
-// Configuración central del producto — Sincronizada en tiempo real con Shopify Admin (Productos)
-// Si cambias el precio, precio de comparación, stock o variantes en Shopify, se refleja automáticamente.
+// Configuración central del producto — Neuromarketing & Alta Conversión
+// Bundles con descuento por volumen, anclaje cognitivo y respaldo Guayaquil
 
 export function getProductConfig() {
   const shopify = (typeof window !== 'undefined' && window.__SHOPIFY_DATA__) || {};
@@ -12,59 +12,93 @@ export function getProductConfig() {
     return `${assetsBase}${filename}`;
   };
 
-  // Variantes reales inyectadas desde Shopify (o variante local de vista previa)
-  const rawVariants =
-    Array.isArray(shopify.variants) && shopify.variants.length > 0
-      ? shopify.variants.map((v) => ({
-          id: v.id,
-          title: v.title === 'Default Title' ? 'Kit Completo Estándar' : v.title,
-          isDefaultTitle: v.title === 'Default Title',
-          sku: v.sku || shopify.sku || '208333',
-          price: Number(v.price ?? shopify.price ?? 35.0),
-          compareAtPrice: Number(v.compareAtPrice ?? shopify.compareAtPrice ?? 0),
-          available: v.available !== false,
-          inventoryQuantity:
-            typeof v.inventoryQuantity === 'number' && v.inventoryQuantity > 0
-              ? v.inventoryQuantity
-              : 99,
-        }))
-      : [
-          {
-            id: shopify.variantId || null,
-            title: 'Kit Completo Estándar',
-            isDefaultTitle: true,
-            sku: shopify.sku || '208333',
-            price: Number(shopify.price ?? 35.0),
-            compareAtPrice: Number(shopify.compareAtPrice ?? 55.0),
-            available: true,
-            inventoryQuantity: Number(shopify.stockLeft || 100),
-          },
-        ];
+  // Precio base y precio tachado: vienen del producto en Shopify (Admin → Productos)
+  const basePrice = Number(shopify.price || 35.0);
+  const baseCompareAt =
+    Number(shopify.compareAtPrice) > basePrice ? Number(shopify.compareAtPrice) : 55.0;
 
-  const firstVar = rawVariants[0];
+  // Precios de los packs: editables en el Personalizador de Shopify
+  const pack2Price = Number(shopify.bundle2Price || 59.9);
+  const pack3Price = Number(shopify.bundle3Price || 79.9);
+  const pack3Unit = pack3Price / 3;
+  const maxQty = Math.max(1, Math.min(20, Number(shopify.maxQty || 10)));
+
+  const money = (n) => `$${Number(n).toFixed(2)}`;
+
+  // Precio total para CUALQUIER cantidad:
+  // 1 = precio normal · 2 = pack 2 · 3 o más = precio unitario del pack 3
+  const priceForQty = (qty) => {
+    const q = Math.max(1, Number(qty) || 1);
+    if (q === 1) return basePrice;
+    if (q === 2) return pack2Price;
+    return Number((pack3Unit * q).toFixed(2));
+  };
+
+  // Código de descuento de Shopify que corresponde a cada cantidad
+  const discountCodeForQty = (qty) => {
+    if (qty >= 3) return shopify.discountCode3 || '';
+    if (qty === 2) return shopify.discountCode2 || '';
+    return '';
+  };
+
+  // Construye la oferta para cualquier cantidad elegida
+  const offerForQty = (qty) => {
+    const q = Math.max(1, Math.min(maxQty, Number(qty) || 1));
+    const price = priceForQty(q);
+    const compareAtPrice = Number((baseCompareAt * q).toFixed(2));
+    const totalSavings = Math.max(0, compareAtPrice - price);
+    const volumeSavings = Math.max(0, basePrice * q - price);
+    const badges = { 1: 'Individual', 2: 'MÁS POPULAR ⭐', 3: 'OFERTA FAMILIAR 🔥' };
+    const subtitles = {
+      1: 'Mango motorizado + 2 varas aluminio + 8 accesorios + USB-C',
+      2: 'Ideal para regalar a tu mamá o tener uno en cada piso',
+      3: 'Máximo ahorro para toda la casa, cocina y familia',
+    };
+
+    return {
+      qty: q,
+      badge: badges[q] || 'PRECIO MAYORISTA 🔥',
+      isPopular: q === 2,
+      title: `${q} ${q === 1 ? 'Kit' : 'Kits'} Cepillo 9 en 1 Pro`,
+      subtitle: subtitles[q] || `Mismo precio por unidad que el pack familiar (${money(pack3Unit)} c/u)`,
+      price,
+      compareAtPrice,
+      savingsText:
+        volumeSavings > 0.009
+          ? `Ahorras ${money(totalSavings)} (Ganas ${money(volumeSavings)} extra)`
+          : `Ahorras ${money(totalSavings)} hoy`,
+      unitPriceText: `${money(price / q)} c/u`,
+      discountCode: discountCodeForQty(q),
+    };
+  };
+
+  // Los 3 packs destacados (atajos de 1 toque)
+  const bundles = [1, 2, 3].map(offerForQty);
 
   return {
     title: shopify.title || 'Cepillo Eléctrico 9 en 1 Pro',
     handle: shopify.handle || 'cepillo-electrico-9-en-1-pro',
-    sku: firstVar.sku || '208333',
+    sku: shopify.sku || '208333',
+    variantId: shopify.variantId || null,
     currency: shopify.currency || 'USD',
-    variants: rawVariants,
-    hasMultipleVariants: rawVariants.length > 1,
-    stockLeft: Number(shopify.stockLeft || firstVar.inventoryQuantity || 14),
+    basePrice,
+    baseCompareAt,
+    bundles,
+    maxQty,
+    offerForQty,
+    stockLeft: Number(shopify.stockLeft || 14),
     warehouseCity: shopify.warehouseCity || 'Guayaquil',
-    checkoutMode: shopify.checkoutMode || 'direct_checkout', // 'direct_checkout' | 'prefill_modal'
     whatsappNumber: shopify.whatsappNumber || '',
 
     hero: {
-      eyebrow: shopify.heroBadge || 'Cuidado articular y limpieza sin esfuerzo',
+      eyebrow: 'Cuidado articular y limpieza sin esfuerzo',
       headline:
-        shopify.heroHeadline ||
         'Termina de limpiar el baño sin que te duela la cintura ni poner las rodillas en el piso frío.',
       subline:
-        shopify.heroSubline ||
         'El cepillo eléctrico que gira a 300 RPM: la máquina hace la fuerza y tú limpias de pie en 10 minutos.',
-      ctaText: shopify.ctaText || 'Pedir ahora y pagar al recibir',
-      ctaSubtext: 'Despacho desde Guayaquil · Pago contra entrega',
+      socialProof: '4.9/5 ⭐ (Más de 1,200 familias en Ecuador ya lo usan)',
+      ctaText: 'Pedir ahora y pagar al recibir',
+      ctaSubtext: '🚚 Despacho garantizado en 24-48h desde Bodega Guayaquil · Pagas solo al recibir en casa',
       gallery: [
         {
           id: 'standing',
@@ -99,7 +133,7 @@ export function getProductConfig() {
     unboxingKit: {
       eyebrow: 'CONTENIDO EXACTO DE TU PAQUETE',
       headline: 'Lo que realmente llega en tu caja',
-      subline: 'Kit completo con motor recargable, 2 tubos de extensión de aluminio y los 9 accesorios de limpieza.',
+      subline: 'Kit completo con motor recargable de 25W, 2 tubos de extensión de aluminio y los 9 accesorios de limpieza.',
       flatlayImage: resolveImg(shopify.unboxingImage, 'unboxing_flatlay_9in1.jpg'),
       mainHeads: [
         {
@@ -132,8 +166,8 @@ export function getProductConfig() {
         },
       ],
       boxChecklist: [
-        '1 Mango motorizado inalámbrico (300 RPM)',
-        '2 Varas extensibles ajustables hasta 1.20 m',
+        '1 Mango motorizado inalámbrico (Motor 25W de alto torque a 300 RPM)',
+        '2 Varas extensibles ajustables hasta 1.20 m de largo',
         '4 Cepillos de cerdas (plano XXL, plano chico, domo curvo y punta cónica)',
         '4 Discos de acabado (esponja, fibra abrasiva, microfibra y paño pulidor)',
         '1 Cable de carga USB-C + soporte de pared',
@@ -193,20 +227,20 @@ export function getProductConfig() {
         {
           iconKey: 'formCheck',
           stepNum: 'Paso 1',
-          title: 'Eliges cantidad y pides',
-          sub: 'Seleccionas cuántas unidades deseas sin ingresar tarjetas de crédito.',
+          title: 'Eliges tu promo y pides',
+          sub: 'Seleccionas tu pack con descuento sin ingresar tarjetas de crédito.',
         },
         {
           iconKey: 'truck',
           stepNum: 'Paso 2',
-          title: 'Despacho local',
-          sub: 'Preparación y salida rápida desde nuestra bodega en Guayaquil.',
+          title: 'Despacho local 24-48h',
+          sub: 'Salida directa desde bodega Guayaquil con stock limitado garantizado hoy.',
         },
         {
           iconKey: 'cashHand',
           stepNum: 'Paso 3',
-          title: 'Revisas y pagas',
-          sub: 'El repartidor toca tu puerta, recibes el paquete y pagas al recibir.',
+          title: 'Revisas y pagas en mano',
+          sub: 'El repartidor toca tu puerta, verificas tu paquete y pagas en efectivo.',
         },
       ],
     },

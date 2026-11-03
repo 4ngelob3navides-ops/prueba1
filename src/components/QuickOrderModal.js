@@ -1,17 +1,17 @@
 import { reactive, ref } from 'vue';
 import { SvgIcons } from './SvgIcons.js';
+import { QtyStepper } from './QtyStepper.js';
 
 export const QuickOrderModal = {
   name: 'QuickOrderModal',
+  components: { QtyStepper },
   props: {
     isOpen: { type: Boolean, required: true },
     config: { type: Object, required: true },
-    activeVariant: { type: Object, required: true },
-    quantity: { type: Number, required: true },
-    totalPrice: { type: Number, required: true },
+    selectedBundle: { type: Object, required: true },
     isSubmitting: { type: Boolean, default: false },
   },
-  emits: ['close', 'change-qty', 'proceed-shopify'],
+  emits: ['close', 'select-bundle-qty', 'proceed-shopify'],
   setup(props, { emit }) {
     const form = reactive({
       fullName: '',
@@ -27,7 +27,7 @@ export const QuickOrderModal = {
         return;
       }
       errorMsg.value = '';
-      emit('proceed-shopify', { ...form, qty: props.quantity });
+      emit('proceed-shopify', { ...form, qty: props.selectedBundle.qty });
     };
 
     return { form, errorMsg, handleConfirm, SvgIcons };
@@ -39,9 +39,9 @@ export const QuickOrderModal = {
           <button type="button" class="modal-close" @click="$emit('close')" aria-label="Cerrar">✕</button>
 
           <div class="modal-head">
-            <span class="modal-badge">
+            <span class="trust-badge-blue">
               <span class="modal-badge__icon" v-html="SvgIcons.shieldCheck"></span>
-              <span>Pago al recibir</span>
+              <span>Pagas solo cuando el repartidor te lo entregue</span>
             </span>
             <h3>Datos de entrega a domicilio</h3>
           </div>
@@ -49,32 +49,22 @@ export const QuickOrderModal = {
           <div class="modal-order-box">
             <img :src="config.unboxingKit.flatlayImage" alt="Kit Cepillo 9 en 1 Pro" class="modal-thumb" />
             <div class="modal-order-box__text">
-              <strong>{{ config.title }}</strong>
-              <span v-if="!activeVariant.isDefaultTitle">{{ activeVariant.title }}</span>
-              <span v-else>Bodega {{ config.warehouseCity }}</span>
+              <strong>{{ selectedBundle.title }}</strong>
+              <small>{{ selectedBundle.savingsText }}</small>
             </div>
-            <div class="modal-order-box__price">\${{ totalPrice.toFixed(2) }}</div>
+            <div class="modal-order-box__price">\${{ selectedBundle.price.toFixed(2) }}</div>
           </div>
 
-          <!-- También permite cambiar cantidad aquí dentro -->
-          <div class="qty-selector-row qty-selector-row--modal">
-            <span class="qty-control-label">Cantidad de unidades:</span>
-            <div class="qty-stepper">
-              <button
-                type="button"
-                class="qty-stepper__btn"
-                :disabled="quantity <= 1"
-                @click="$emit('change-qty', quantity - 1)"
-                v-html="SvgIcons.minus"
-              ></button>
-              <span class="qty-stepper__val">{{ quantity }}</span>
-              <button
-                type="button"
-                class="qty-stepper__btn"
-                @click="$emit('change-qty', quantity + 1)"
-                v-html="SvgIcons.plus"
-              ></button>
+          <div class="qty-row qty-row--boxed">
+            <div class="qty-row__text">
+              <strong>Cantidad</strong>
+              <small>{{ selectedBundle.unitPriceText }}</small>
             </div>
+            <QtyStepper
+              :model-value="selectedBundle.qty"
+              :max="config.maxQty"
+              @update:model-value="$emit('select-bundle-qty', $event)"
+            />
           </div>
 
           <form class="modal-form" @submit.prevent="handleConfirm">
@@ -95,19 +85,23 @@ export const QuickOrderModal = {
 
             <label class="clean-field">
               <span>Dirección exacta y referencia</span>
-              <input v-model="form.address" type="text" placeholder="Calle principal, intersección y referencia" autocomplete="street-address" required />
+              <input v-model="form.address" type="text" placeholder="Calle principal, intersección y color de casa" autocomplete="street-address" required />
             </label>
 
             <p v-if="errorMsg" class="modal-error">{{ errorMsg }}</p>
 
-            <button type="submit" class="btn-eucalyptus" :disabled="isSubmitting">
-              <span class="btn-eucalyptus__main">
-                {{ isSubmitting ? 'Abriendo resumen...' : 'Continuar con el pedido' }}
+            <button type="submit" class="btn-cta-vibrant pulse-gentle" :disabled="isSubmitting">
+              <span class="btn-cta-vibrant__main">
+                {{ isSubmitting ? 'Procesando entrega...' : 'Confirmar pedido contraentrega' }}
               </span>
-              <span class="btn-eucalyptus__sub">
-                {{ quantity }} {{ quantity === 1 ? 'unidad' : 'unidades' }} · Total \${{ totalPrice.toFixed(2) }} {{ config.currency }}
+              <span class="btn-cta-vibrant__sub">
+                Total a pagar al recibir: \${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}
               </span>
             </button>
+
+            <p class="cta-trust-note">
+              🚚 Despacho garantizado en 24-48h desde Bodega Guayaquil
+            </p>
           </form>
         </div>
       </div>

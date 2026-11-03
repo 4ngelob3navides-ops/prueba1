@@ -25,60 +25,33 @@ export const App = {
   },
   setup() {
     const config = ref(getProductConfig());
-    const selectedVariantId = ref(config.value.variants[0]?.id || null);
-    const quantity = ref(1);
+    // Por defecto bundle de 1 unidad
+    const selectedQty = ref(1);
     const isModalOpen = ref(false);
     const isSubmitting = ref(false);
     const orderSuccessToast = ref(false);
 
-    const activeVariant = computed(
-      () =>
-        config.value.variants.find((v) => v.id === selectedVariantId.value) ||
-        config.value.variants[0]
-    );
+    const selectedBundle = computed(() => config.value.offerForQty(selectedQty.value));
 
-    const totalPrice = computed(() => Number((activeVariant.value.price * quantity.value).toFixed(2)));
-    const totalCompareAt = computed(() =>
-      activeVariant.value.compareAtPrice > activeVariant.value.price
-        ? Number((activeVariant.value.compareAtPrice * quantity.value).toFixed(2))
-        : 0
-    );
-    const totalSavings = computed(() =>
-      totalCompareAt.value > totalPrice.value
-        ? Number((totalCompareAt.value - totalPrice.value).toFixed(2))
-        : 0
-    );
-
-    const syncNativeShopifyForm = () => {
-      const idInput = document.getElementById('shopify-native-variant-id');
+    const selectBundleQty = (qty) => {
+      selectedQty.value = Math.max(1, Math.min(config.value.maxQty, Number(qty) || 1));
       const qtyInput = document.getElementById('shopify-native-qty');
-      if (idInput && activeVariant.value.id) idInput.value = String(activeVariant.value.id);
-      if (qtyInput) qtyInput.value = String(quantity.value);
+      if (qtyInput) qtyInput.value = String(selectedQty.value);
     };
 
-    const selectVariant = (variantId) => {
-      selectedVariantId.value = variantId;
-      syncNativeShopifyForm();
-    };
-
-    const changeQty = (nextQty) => {
-      const maxAllowed = Math.min(20, activeVariant.value.inventoryQuantity || 20);
-      const clamped = Math.max(1, Math.min(maxAllowed, Number(nextQty) || 1));
-      quantity.value = clamped;
-      syncNativeShopifyForm();
-    };
-
-    // Construye el Permalink oficial de Shopify (/cart/VARIANT_ID:QTY?locale=es...)
-    // Reemplaza la cantidad exacta en 1 solo paso y abre el Checkout en español.
+    // Checkout permalink hacia Shopify con la cantidad elegida + código de descuento del pack
     const goToShopifyCheckout = (prefill = null) => {
-      const variantId = activeVariant.value.id;
-      const qty = quantity.value;
+      const variantId = config.value.variantId;
+      const qty = selectedBundle.value.qty;
 
       if (typeof window !== 'undefined' && variantId) {
         isSubmitting.value = true;
         const params = new URLSearchParams();
         params.set('locale', 'es');
         params.set('checkout[shipping_address][country]', 'EC');
+        if (selectedBundle.value.discountCode) {
+          params.set('discount', selectedBundle.value.discountCode);
+        }
 
         if (prefill) {
           const parts = (prefill.fullName || '').trim().split(/\s+/);
@@ -98,9 +71,7 @@ export const App = {
     };
 
     const triggerOrder = () => {
-      syncNativeShopifyForm();
-
-      // 1. Si tienes instalada una App de Formulario Contraentrega (Releasit / EasySell / Dropi COD)
+      // 1. Si hay una app de formulario COD (Releasit / EasySell / Dropi) instalada
       const externalCodBtn = document.querySelector(
         '.rsi-cod-form-button, [data-rsi-cod-btn], .es-popup-button, #rsi-cod-form-open'
       );
@@ -109,19 +80,16 @@ export const App = {
         return;
       }
 
-      // 2. Si tienes configurado WhatsApp directo o modal pre-llenado
-      if (
-        (config.value.whatsappNumber && config.value.whatsappNumber.trim() !== '') ||
-        config.value.checkoutMode === 'prefill_modal'
-      ) {
+      // 2. Si hay WhatsApp configurado
+      if (config.value.whatsappNumber && config.value.whatsappNumber.trim() !== '') {
         isModalOpen.value = true;
         return;
       }
 
-      // 3. Por defecto en Shopify: Ir directo al Checkout oficial en español con la cantidad exacta seleccionada
+      // 3. Ir directo al Checkout de Shopify en español
       const redirected = goToShopifyCheckout(null);
       if (!redirected) {
-        // En preview-mobile.html local (donde no existe servidor Shopify) abrimos el modal demostrativo
+        // En vista previa local abrimos modal demostrativo
         isModalOpen.value = true;
       }
     };
@@ -133,9 +101,8 @@ export const App = {
         const cleanPhone = config.value.whatsappNumber.replace(/\D/g, '');
         const msg = encodeURIComponent(
           `Hola, deseo pedir con Pago al Recibir:\n` +
-            `• Producto: ${config.value.title}${!activeVariant.value.isDefaultTitle ? ' (' + activeVariant.value.title + ')' : ''}\n` +
-            `• Cantidad: ${quantity.value} ${quantity.value === 1 ? 'unidad' : 'unidades'}\n` +
-            `• Total: $${totalPrice.value.toFixed(2)} ${config.value.currency}\n` +
+            `• Promoción: ${selectedBundle.value.title} (${selectedBundle.value.qty} ${selectedBundle.value.qty === 1 ? 'unidad' : 'unidades'})\n` +
+            `• Total a pagar: $${selectedBundle.value.price.toFixed(2)} ${config.value.currency}\n` +
             `• Nombre: ${fullName}\n` +
             `• Celular: ${phone}\n` +
             `• Ciudad: ${city}\n` +
@@ -157,16 +124,12 @@ export const App = {
 
     return {
       config,
-      activeVariant,
-      quantity,
-      totalPrice,
-      totalCompareAt,
-      totalSavings,
+      selectedQty,
+      selectedBundle,
       isModalOpen,
       isSubmitting,
       orderSuccessToast,
-      selectVariant,
-      changeQty,
+      selectBundleQty,
       triggerOrder,
       handleModalConfirm,
     };
@@ -176,74 +139,61 @@ export const App = {
       <TopUrgencyTicker :config="config" />
 
       <main class="mobile-main">
-        <!-- A. Hero con Enfoque en la Demostración + Precio y Cantidad reales -->
+        <!-- Hero: Eye-Tracking en F + Anchoring + Botón Naranja Vibrante -->
         <EmotionalHeroMobile
           :config="config"
-          :active-variant="activeVariant"
-          :quantity="quantity"
-          :total-price="totalPrice"
-          :total-compare-at="totalCompareAt"
-          :total-savings="totalSavings"
-          @change-qty="changeQty"
-          @select-variant="selectVariant"
+          :selected-bundle="selectedBundle"
+          @select-bundle-qty="selectBundleQty"
           @trigger-order="triggerOrder"
         />
 
-        <!-- B. Módulo Interactivo: El Antes y Después que Satisface -->
+        <!-- Slider Interactivo: Antes vs Después en Sarro Real -->
         <ThumbCleanInteractive :slider="config.slider" />
 
-        <!-- C. Demostración Visual del Kit: Lo que realmente llega en tu caja -->
+        <!-- Unboxing Transparente + 9 Cabezales -->
         <VisualZoneTapper :kit="config.unboxingKit" />
 
-        <!-- D. Desactivación del Miedo Físico (Las manos y la espalda) -->
+        <!-- Alivio Físico: Manos sin químicos a 1 m -->
         <PhysicalReliefSection :relief="config.physicalRelief" />
 
-        <!-- E. Prueba Social estilo WhatsApp + Bodega Local Guayaquil -->
+        <!-- Prueba Social WhatsApp Guayaquil / Ecuador -->
         <RealFeelingsUgc :reviews="config.whatsappReviews" />
 
-        <!-- Garantía Tangible + Selector de Cantidad y Variantes -->
+        <!-- Bundles con Descuento por Volumen + FAQ Torque 25W -->
         <ZeroFearCodSection
           :config="config"
-          :active-variant="activeVariant"
-          :quantity="quantity"
-          :total-price="totalPrice"
-          :total-compare-at="totalCompareAt"
-          :total-savings="totalSavings"
-          @change-qty="changeQty"
-          @select-variant="selectVariant"
+          :selected-bundle="selectedBundle"
+          @select-bundle-qty="selectBundleQty"
           @trigger-order="triggerOrder"
         />
       </main>
 
       <footer class="clean-footer">
         <p>Despacho local desde Bodega {{ config.warehouseCity }} · Pago contra entrega</p>
-        <small>{{ config.title }} · Ref. {{ activeVariant.sku }}</small>
+        <small>{{ config.title }} · Ref. {{ config.sku }}</small>
       </footer>
 
+      <!-- Sticky CTA Fijo con Naranja Vibrante Continuo -->
       <StickyThumbBar
         :config="config"
-        :quantity="quantity"
-        :total-price="totalPrice"
-        :total-compare-at="totalCompareAt"
-        @change-qty="changeQty"
+        :selected-bundle="selectedBundle"
+        @select-bundle-qty="selectBundleQty"
         @trigger-order="triggerOrder"
       />
 
       <QuickOrderModal
         :is-open="isModalOpen"
         :config="config"
-        :active-variant="activeVariant"
-        :quantity="quantity"
-        :total-price="totalPrice"
+        :selected-bundle="selectedBundle"
         :is-submitting="isSubmitting"
         @close="isModalOpen = false"
-        @change-qty="changeQty"
+        @select-bundle-qty="selectBundleQty"
         @proceed-shopify="handleModalConfirm"
       />
 
       <transition name="fade-modal">
         <div v-if="orderSuccessToast" class="clean-toast">
-          Vista previa local: {{ quantity }} {{ quantity === 1 ? 'unidad' : 'unidades' }} (\${{ totalPrice.toFixed(2) }}). En Shopify lleva directo al Checkout en español con esa cantidad exacta.
+          Pedido de prueba registrado: {{ selectedBundle.title }} por \${{ selectedBundle.price.toFixed(2) }}.
         </div>
       </transition>
     </div>

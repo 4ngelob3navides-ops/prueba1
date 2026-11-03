@@ -33,9 +33,49 @@
       plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>`,
     };
 
+    // --- QtyStepper.js ---
+    // Selector táctil de cantidad (− N +) reutilizable en Hero, sección de pedido, barra fija y modal
+    const QtyStepper = {
+      name: 'QtyStepper',
+      props: {
+        modelValue: { type: Number, required: true },
+        max: { type: Number, default: 10 },
+        compact: { type: Boolean, default: false },
+      },
+      emits: ['update:modelValue'],
+      setup(props, { emit }) {
+        const change = (delta) => {
+          const next = Math.max(1, Math.min(props.max, props.modelValue + delta));
+          if (next !== props.modelValue) emit('update:modelValue', next);
+        };
+        return { change, SvgIcons };
+      },
+      template: `
+        <div class="qty-stepper" :class="{ 'qty-stepper--compact': compact }">
+          <button
+            type="button"
+            class="qty-stepper__btn"
+            :disabled="modelValue <= 1"
+            aria-label="Quitar una unidad"
+            @click="change(-1)"
+            v-html="SvgIcons.minus"
+          ></button>
+          <span class="qty-stepper__val" aria-live="polite">{{ modelValue }}</span>
+          <button
+            type="button"
+            class="qty-stepper__btn"
+            :disabled="modelValue >= max"
+            aria-label="Agregar una unidad"
+            @click="change(1)"
+            v-html="SvgIcons.plus"
+          ></button>
+        </div>
+      `,
+    };
+
     // --- productConfig.js ---
-    // Configuración central del producto — Sincronizada en tiempo real con Shopify Admin (Productos)
-    // Si cambias el precio, precio de comparación, stock o variantes en Shopify, se refleja automáticamente.
+    // Configuración central del producto — Neuromarketing & Alta Conversión
+    // Bundles con descuento por volumen, anclaje cognitivo y respaldo Guayaquil
     function getProductConfig() {
       const shopify = (typeof window !== 'undefined' && window.__SHOPIFY_DATA__) || {};
       const assetsBase = shopify.assetsBase || './shopify-theme/assets/';
@@ -47,59 +87,93 @@
         return `${assetsBase}${filename}`;
       };
 
-      // Variantes reales inyectadas desde Shopify (o variante local de vista previa)
-      const rawVariants =
-        Array.isArray(shopify.variants) && shopify.variants.length > 0
-          ? shopify.variants.map((v) => ({
-              id: v.id,
-              title: v.title === 'Default Title' ? 'Kit Completo Estándar' : v.title,
-              isDefaultTitle: v.title === 'Default Title',
-              sku: v.sku || shopify.sku || '208333',
-              price: Number(v.price ?? shopify.price ?? 35.0),
-              compareAtPrice: Number(v.compareAtPrice ?? shopify.compareAtPrice ?? 0),
-              available: v.available !== false,
-              inventoryQuantity:
-                typeof v.inventoryQuantity === 'number' && v.inventoryQuantity > 0
-                  ? v.inventoryQuantity
-                  : 99,
-            }))
-          : [
-              {
-                id: shopify.variantId || null,
-                title: 'Kit Completo Estándar',
-                isDefaultTitle: true,
-                sku: shopify.sku || '208333',
-                price: Number(shopify.price ?? 35.0),
-                compareAtPrice: Number(shopify.compareAtPrice ?? 55.0),
-                available: true,
-                inventoryQuantity: Number(shopify.stockLeft || 100),
-              },
-            ];
+      // Precio base y precio tachado: vienen del producto en Shopify (Admin → Productos)
+      const basePrice = Number(shopify.price || 35.0);
+      const baseCompareAt =
+        Number(shopify.compareAtPrice) > basePrice ? Number(shopify.compareAtPrice) : 55.0;
 
-      const firstVar = rawVariants[0];
+      // Precios de los packs: editables en el Personalizador de Shopify
+      const pack2Price = Number(shopify.bundle2Price || 59.9);
+      const pack3Price = Number(shopify.bundle3Price || 79.9);
+      const pack3Unit = pack3Price / 3;
+      const maxQty = Math.max(1, Math.min(20, Number(shopify.maxQty || 10)));
+
+      const money = (n) => `$${Number(n).toFixed(2)}`;
+
+      // Precio total para CUALQUIER cantidad:
+      // 1 = precio normal · 2 = pack 2 · 3 o más = precio unitario del pack 3
+      const priceForQty = (qty) => {
+        const q = Math.max(1, Number(qty) || 1);
+        if (q === 1) return basePrice;
+        if (q === 2) return pack2Price;
+        return Number((pack3Unit * q).toFixed(2));
+      };
+
+      // Código de descuento de Shopify que corresponde a cada cantidad
+      const discountCodeForQty = (qty) => {
+        if (qty >= 3) return shopify.discountCode3 || '';
+        if (qty === 2) return shopify.discountCode2 || '';
+        return '';
+      };
+
+      // Construye la oferta para cualquier cantidad elegida
+      const offerForQty = (qty) => {
+        const q = Math.max(1, Math.min(maxQty, Number(qty) || 1));
+        const price = priceForQty(q);
+        const compareAtPrice = Number((baseCompareAt * q).toFixed(2));
+        const totalSavings = Math.max(0, compareAtPrice - price);
+        const volumeSavings = Math.max(0, basePrice * q - price);
+        const badges = { 1: 'Individual', 2: 'MÁS POPULAR ⭐', 3: 'OFERTA FAMILIAR 🔥' };
+        const subtitles = {
+          1: 'Mango motorizado + 2 varas aluminio + 8 accesorios + USB-C',
+          2: 'Ideal para regalar a tu mamá o tener uno en cada piso',
+          3: 'Máximo ahorro para toda la casa, cocina y familia',
+        };
+
+        return {
+          qty: q,
+          badge: badges[q] || 'PRECIO MAYORISTA 🔥',
+          isPopular: q === 2,
+          title: `${q} ${q === 1 ? 'Kit' : 'Kits'} Cepillo 9 en 1 Pro`,
+          subtitle: subtitles[q] || `Mismo precio por unidad que el pack familiar (${money(pack3Unit)} c/u)`,
+          price,
+          compareAtPrice,
+          savingsText:
+            volumeSavings > 0.009
+              ? `Ahorras ${money(totalSavings)} (Ganas ${money(volumeSavings)} extra)`
+              : `Ahorras ${money(totalSavings)} hoy`,
+          unitPriceText: `${money(price / q)} c/u`,
+          discountCode: discountCodeForQty(q),
+        };
+      };
+
+      // Los 3 packs destacados (atajos de 1 toque)
+      const bundles = [1, 2, 3].map(offerForQty);
 
       return {
         title: shopify.title || 'Cepillo Eléctrico 9 en 1 Pro',
         handle: shopify.handle || 'cepillo-electrico-9-en-1-pro',
-        sku: firstVar.sku || '208333',
+        sku: shopify.sku || '208333',
+        variantId: shopify.variantId || null,
         currency: shopify.currency || 'USD',
-        variants: rawVariants,
-        hasMultipleVariants: rawVariants.length > 1,
-        stockLeft: Number(shopify.stockLeft || firstVar.inventoryQuantity || 14),
+        basePrice,
+        baseCompareAt,
+        bundles,
+        maxQty,
+        offerForQty,
+        stockLeft: Number(shopify.stockLeft || 14),
         warehouseCity: shopify.warehouseCity || 'Guayaquil',
-        checkoutMode: shopify.checkoutMode || 'direct_checkout', // 'direct_checkout' | 'prefill_modal'
         whatsappNumber: shopify.whatsappNumber || '',
 
         hero: {
-          eyebrow: shopify.heroBadge || 'Cuidado articular y limpieza sin esfuerzo',
+          eyebrow: 'Cuidado articular y limpieza sin esfuerzo',
           headline:
-            shopify.heroHeadline ||
             'Termina de limpiar el baño sin que te duela la cintura ni poner las rodillas en el piso frío.',
           subline:
-            shopify.heroSubline ||
             'El cepillo eléctrico que gira a 300 RPM: la máquina hace la fuerza y tú limpias de pie en 10 minutos.',
-          ctaText: shopify.ctaText || 'Pedir ahora y pagar al recibir',
-          ctaSubtext: 'Despacho desde Guayaquil · Pago contra entrega',
+          socialProof: '4.9/5 ⭐ (Más de 1,200 familias en Ecuador ya lo usan)',
+          ctaText: 'Pedir ahora y pagar al recibir',
+          ctaSubtext: '🚚 Despacho garantizado en 24-48h desde Bodega Guayaquil · Pagas solo al recibir en casa',
           gallery: [
             {
               id: 'standing',
@@ -134,7 +208,7 @@
         unboxingKit: {
           eyebrow: 'CONTENIDO EXACTO DE TU PAQUETE',
           headline: 'Lo que realmente llega en tu caja',
-          subline: 'Kit completo con motor recargable, 2 tubos de extensión de aluminio y los 9 accesorios de limpieza.',
+          subline: 'Kit completo con motor recargable de 25W, 2 tubos de extensión de aluminio y los 9 accesorios de limpieza.',
           flatlayImage: resolveImg(shopify.unboxingImage, 'unboxing_flatlay_9in1.jpg'),
           mainHeads: [
             {
@@ -167,8 +241,8 @@
             },
           ],
           boxChecklist: [
-            '1 Mango motorizado inalámbrico (300 RPM)',
-            '2 Varas extensibles ajustables hasta 1.20 m',
+            '1 Mango motorizado inalámbrico (Motor 25W de alto torque a 300 RPM)',
+            '2 Varas extensibles ajustables hasta 1.20 m de largo',
             '4 Cepillos de cerdas (plano XXL, plano chico, domo curvo y punta cónica)',
             '4 Discos de acabado (esponja, fibra abrasiva, microfibra y paño pulidor)',
             '1 Cable de carga USB-C + soporte de pared',
@@ -228,20 +302,20 @@
             {
               iconKey: 'formCheck',
               stepNum: 'Paso 1',
-              title: 'Eliges cantidad y pides',
-              sub: 'Seleccionas cuántas unidades deseas sin ingresar tarjetas de crédito.',
+              title: 'Eliges tu promo y pides',
+              sub: 'Seleccionas tu pack con descuento sin ingresar tarjetas de crédito.',
             },
             {
               iconKey: 'truck',
               stepNum: 'Paso 2',
-              title: 'Despacho local',
-              sub: 'Preparación y salida rápida desde nuestra bodega en Guayaquil.',
+              title: 'Despacho local 24-48h',
+              sub: 'Salida directa desde bodega Guayaquil con stock limitado garantizado hoy.',
             },
             {
               iconKey: 'cashHand',
               stepNum: 'Paso 3',
-              title: 'Revisas y pagas',
-              sub: 'El repartidor toca tu puerta, recibes el paquete y pagas al recibir.',
+              title: 'Revisas y pagas en mano',
+              sub: 'El repartidor toca tu puerta, verificas tu paquete y pagas en efectivo.',
             },
           ],
         },
@@ -274,15 +348,12 @@
     // --- EmotionalHeroMobile.js ---
     const EmotionalHeroMobile = {
       name: 'EmotionalHeroMobile',
+      components: { QtyStepper },
       props: {
         config: { type: Object, required: true },
-        activeVariant: { type: Object, required: true },
-        quantity: { type: Number, required: true },
-        totalPrice: { type: Number, required: true },
-        totalCompareAt: { type: Number, required: true },
-        totalSavings: { type: Number, required: true },
+        selectedBundle: { type: Object, required: true },
       },
-      emits: ['trigger-order', 'change-qty', 'select-variant'],
+      emits: ['trigger-order', 'select-bundle-qty'],
       setup(props) {
         const activeIdx = ref(0);
         const activeSlide = computed(
@@ -322,113 +393,110 @@
             </div>
           </div>
 
-          <!-- Bloque editorial claro y creíble -->
+          <!-- Bloque editorial claro: Patrón F de eye-tracking -->
           <div class="hero-clean__body">
+            <!-- 1. Cuadrante de Primer Impacto: Título + Prueba Social Masiva -->
             <div class="hero-meta-row">
               <span class="clinical-eyebrow">{{ config.hero.eyebrow }}</span>
-              <span class="rating-sober"><strong>4.9/5</strong> · Ecuador</span>
             </div>
 
             <h1 class="hero-clean__headline">
               {{ config.hero.headline }}
             </h1>
 
+            <div class="social-proof-bar">
+              <span class="social-proof-stars">★★★★★</span>
+              <span class="social-proof-text">{{ config.hero.socialProof }}</span>
+            </div>
+
             <p class="hero-clean__subline">
               {{ config.hero.subline }}
             </p>
 
-            <!-- Micro-badges concretos con iconos vectoriales limpios -->
+            <!-- Micro-badges concretos de confianza -->
             <div class="spec-pills">
               <div class="spec-pill">
                 <span class="spec-pill__icon" v-html="SvgIcons.spine"></span>
-                <span>Extensible hasta 1.2 m</span>
+                <span>Extensible hasta 1.2 m (Espalda 100% recta)</span>
               </div>
               <div class="spec-pill">
                 <span class="spec-pill__icon" v-html="SvgIcons.battery"></span>
-                <span>Sin cables (Batería USB-C)</span>
+                <span>Motor 25W alto torque · Batería USB-C</span>
               </div>
               <div class="spec-pill">
                 <span class="spec-pill__icon" v-html="SvgIcons.shieldCheck"></span>
-                <span>Pago al recibir en casa</span>
+                <span>Pago al recibir en efectivo en tu puerta</span>
               </div>
             </div>
 
-            <!-- Tarjeta limpia de precio sincronizado con Shopify + Cantidad -->
+            <!-- 2. Bloque de Anclaje de Precios (Anchoring Effect) + Selector de Bundles -->
             <div class="price-clean-card">
-              <!-- Si el producto en Shopify tiene múltiples variantes creadas -->
-              <div v-if="config.hasMultipleVariants" class="variant-pills-wrap">
-                <span class="qty-control-label">Presentación:</span>
-                <div class="variant-pills">
-                  <button
-                    v-for="v in config.variants"
-                    :key="v.id"
-                    type="button"
-                    class="variant-pill-btn"
-                    :class="{ 'variant-pill-btn--active': v.id === activeVariant.id }"
-                    :disabled="!v.available"
-                    @click="$emit('select-variant', v.id)"
-                  >
-                    <span>{{ v.title }}</span>
-                    <strong>\${{ v.price.toFixed(2) }}</strong>
-                  </button>
-                </div>
+              <span class="qty-control-label">Elige tu promoción con descuento por volumen:</span>
+
+              <div class="bundle-mini-selector">
+                <button
+                  v-for="b in config.bundles"
+                  :key="b.qty"
+                  type="button"
+                  class="bundle-mini-btn"
+                  :class="{
+                    'bundle-mini-btn--active': b.qty === selectedBundle.qty,
+                    'bundle-mini-btn--popular': b.isPopular
+                  }"
+                  @click="$emit('select-bundle-qty', b.qty)"
+                >
+                  <span v-if="b.badge" class="bundle-mini-badge">{{ b.badge }}</span>
+                  <span class="b-qty-text">{{ b.qty }} {{ b.qty === 1 ? 'Unidad' : 'Unidades' }}</span>
+                  <div class="b-price-group">
+                    <span class="b-price-now">\${{ b.price.toFixed(2) }}</span>
+                    <span class="b-price-old">\${{ b.compareAtPrice.toFixed(2) }}</span>
+                  </div>
+                  <small class="b-unit-sub">{{ b.unitPriceText }}</small>
+                </button>
               </div>
 
-              <div class="price-clean-card__row">
-                <div>
-                  <span class="price-clean__label">
-                    {{ quantity > 1 ? 'Total por ' + quantity + ' unidades' : 'Precio unitario' }}
-                  </span>
-                  <div class="price-clean__numbers">
-                    <span class="price-clean__now">\${{ totalPrice.toFixed(2) }}</span>
-                    <span class="price-clean__curr">{{ config.currency }}</span>
-                    <span v-if="totalCompareAt > totalPrice" class="price-clean__old">
-                      \${{ totalCompareAt.toFixed(2) }}
-                    </span>
+              <!-- Cantidad libre: cualquier número de unidades -->
+              <div class="qty-row">
+                <div class="qty-row__text">
+                  <strong>¿Cuántos necesitas?</strong>
+                  <small>{{ selectedBundle.unitPriceText }}</small>
+                </div>
+                <QtyStepper
+                  :model-value="selectedBundle.qty"
+                  :max="config.maxQty"
+                  @update:model-value="$emit('select-bundle-qty', $event)"
+                />
+              </div>
+
+              <!-- Total con Anclaje Visual Destacado -->
+              <div class="price-anchor-display">
+                <div class="price-anchor-display__left">
+                  <span class="price-anchor-label">Total a pagar al recibir:</span>
+                  <div class="price-numbers-row">
+                    <span class="price-anchor-old">\${{ selectedBundle.compareAtPrice.toFixed(2) }}</span>
+                    <span class="price-anchor-now">\${{ selectedBundle.price.toFixed(2) }}</span>
+                    <span class="price-currency-tag">{{ config.currency }}</span>
                   </div>
                 </div>
-
-                <span v-if="totalSavings > 0" class="price-clean__save">
-                  Ahorras \${{ totalSavings.toFixed(2) }}
-                </span>
+                <span class="price-savings-pill">{{ selectedBundle.savingsText }}</span>
               </div>
 
-              <!-- Selector táctil de Cantidad (- 1 +) -->
-              <div class="qty-selector-row">
-                <span class="qty-control-label">Cantidad:</span>
-                <div class="qty-stepper">
-                  <button
-                    type="button"
-                    class="qty-stepper__btn"
-                    :disabled="quantity <= 1"
-                    aria-label="Disminuir cantidad"
-                    @click="$emit('change-qty', quantity - 1)"
-                    v-html="SvgIcons.minus"
-                  ></button>
-                  <span class="qty-stepper__val">{{ quantity }}</span>
-                  <button
-                    type="button"
-                    class="qty-stepper__btn"
-                    aria-label="Aumentar cantidad"
-                    @click="$emit('change-qty', quantity + 1)"
-                    v-html="SvgIcons.plus"
-                  ></button>
-                </div>
-              </div>
-
+              <!-- Botón Principal Von Restorff (Naranja Cálido de Alto Contraste con Microanimación) -->
               <button
                 type="button"
-                class="btn-eucalyptus"
-                :disabled="!activeVariant.available"
+                class="btn-cta-vibrant pulse-gentle"
                 @click="$emit('trigger-order')"
               >
-                <span class="btn-eucalyptus__main">
-                  {{ activeVariant.available ? config.hero.ctaText : 'Agotado temporalmente' }}
-                </span>
-                <span class="btn-eucalyptus__sub">
-                  {{ quantity }} {{ quantity === 1 ? 'unidad' : 'unidades' }} · \${{ totalPrice.toFixed(2) }} {{ config.currency }}
+                <span class="btn-cta-vibrant__main">{{ config.hero.ctaText }}</span>
+                <span class="btn-cta-vibrant__sub">
+                  {{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'kit completo' : 'kits completos' }} · Total \${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}
                 </span>
               </button>
+
+              <!-- Microcopy de Respaldo y Garantía -->
+              <p class="cta-trust-note">
+                {{ config.hero.ctaSubtext }}
+              </p>
             </div>
           </div>
         </section>
@@ -732,26 +800,22 @@
     // --- ZeroFearCodSection.js ---
     const ZeroFearCodSection = {
       name: 'ZeroFearCodSection',
+      components: { QtyStepper },
       props: {
         config: { type: Object, required: true },
-        activeVariant: { type: Object, required: true },
-        quantity: { type: Number, required: true },
-        totalPrice: { type: Number, required: true },
-        totalCompareAt: { type: Number, required: true },
-        totalSavings: { type: Number, required: true },
+        selectedBundle: { type: Object, required: true },
       },
-      emits: ['change-qty', 'select-variant', 'trigger-order'],
+      emits: ['select-bundle-qty', 'trigger-order'],
       setup() {
         const openFaq = ref(0);
-        const quickQtys = [1, 2, 3];
         const faqs = [
+          {
+            q: '¿Se detiene el giro si lo presiono contra los azulejos?',
+            a: 'No. Cuenta con un motor de 25W de alto torque diseñado para mantener la rotación a 300 RPM incluso aplicando presión sobre la superficie, garantizando que la máquina haga la fuerza y no tus brazos.',
+          },
           {
             q: '¿Tengo que pagar algo por adelantado o poner mi tarjeta?',
             a: 'No. Seleccionas Pago contra entrega al finalizar tu dirección y pagas en efectivo directamente al repartidor cuando te entregue la caja en tu puerta.',
-          },
-          {
-            q: '¿Se detiene el giro si lo presiono contra los azulejos?',
-            a: 'Cuenta con torque estable de 300 RPM diseñado para desprender sarro y jabón acumulado sin necesidad de presionar fuerte; la rotación de las cerdas hace el trabajo.',
           },
           {
             q: '¿Cuánto dura la batería y cómo se carga?',
@@ -759,7 +823,7 @@
           },
           {
             q: '¿Desde dónde despachan el pedido?',
-            a: 'Todos los pedidos salen revisados desde nuestra bodega local en Guayaquil con envío a domicilio por transportadora.',
+            a: 'Todos los pedidos salen revisados desde nuestra bodega local en Guayaquil con envío garantizado en 24-48 horas por transportadora a todo el país.',
           },
         ];
 
@@ -767,18 +831,18 @@
           openFaq.value = openFaq.value === idx ? -1 : idx;
         };
 
-        return { openFaq, quickQtys, faqs, toggleFaq, SvgIcons };
+        return { openFaq, faqs, toggleFaq, SvgIcons };
       },
       template: `
         <section class="section-block section-block--alt" id="pedir-ahora">
-          <!-- Garantía tangible paso a paso -->
+          <!-- Garantía tangible paso a paso en Azul Cobalto de Seguridad -->
           <div class="cod-clean-card">
             <div class="cod-clean-card__media">
               <img :src="config.codTrust.image" alt="Entrega en puerta con pago en efectivo" loading="lazy" />
             </div>
 
             <div class="cod-clean-card__content">
-              <span class="section-eyebrow">COMPRA SIN RIESGO · BODEGA {{ config.warehouseCity.toUpperCase() }}</span>
+              <span class="trust-badge-blue">COMPRA SIN RIESGO · BODEGA {{ config.warehouseCity.toUpperCase() }}</span>
               <h2 class="cod-clean-title">Así funciona tu entrega a domicilio</h2>
 
               <div class="cod-steps-list">
@@ -793,101 +857,95 @@
             </div>
           </div>
 
-          <!-- Selector de variantes (si existen en Shopify) y cantidad exacta -->
+          <!-- Selector Completo de Bundles (Descuento por Volumen) -->
           <div class="bundle-clean-box">
-            <h3 class="bundle-clean-box__title">{{ config.title }}</h3>
+            <div class="bundle-clean-header">
+              <span class="trust-badge-blue">PROMOCIONES EXCLUSIVAS HOY</span>
+              <h3 class="bundle-clean-box__title">Selecciona tu paquete de ahorro:</h3>
+            </div>
 
-            <!-- Variantes reales de Shopify si creaste más de 1 en tu panel -->
-            <div v-if="config.hasMultipleVariants" class="bundle-clean-list">
+            <div class="bundle-clean-list">
               <div
-                v-for="v in config.variants"
-                :key="v.id"
+                v-for="b in config.bundles"
+                :key="b.qty"
                 role="button"
                 tabindex="0"
-                class="bundle-option-clean"
-                :class="{ 'bundle-option-clean--active': v.id === activeVariant.id }"
-                @click="$emit('select-variant', v.id)"
+                class="bundle-option-card"
+                :class="{
+                  'bundle-option-card--active': b.qty === selectedBundle.qty,
+                  'bundle-option-card--popular': b.isPopular
+                }"
+                @click="$emit('select-bundle-qty', b.qty)"
               >
-                <div class="bundle-option-clean__main">
-                  <div class="radio-circle">
-                    <span class="radio-circle__inner"></span>
+                <div class="bundle-option-card__badge-row">
+                  <span class="bundle-tag-pill" :class="{ 'bundle-tag-pill--gold': b.isPopular }">
+                    {{ b.badge }}
+                  </span>
+                  <span class="bundle-savings-tag">{{ b.savingsText }}</span>
+                </div>
+
+                <div class="bundle-option-card__body">
+                  <div class="bundle-radio-circle">
+                    <span class="bundle-radio-circle__inner"></span>
                   </div>
-                  <div class="bundle-option-clean__desc">
-                    <strong>{{ v.title }}</strong>
-                    <small>{{ v.available ? 'Disponible para despacho' : 'Agotado' }}</small>
+                  <div class="bundle-option-card__details">
+                    <strong>{{ b.title }}</strong>
+                    <p>{{ b.subtitle }}</p>
+                    <small class="bundle-unit-price">{{ b.unitPriceText }}</small>
                   </div>
-                  <div class="bundle-option-clean__price">
-                    <span class="p-now">\${{ v.price.toFixed(2) }}</span>
-                    <span v-if="v.compareAtPrice > v.price" class="p-old">
-                      \${{ v.compareAtPrice.toFixed(2) }}
-                    </span>
+                  <div class="bundle-option-card__prices">
+                    <span class="bundle-price-now">\${{ b.price.toFixed(2) }}</span>
+                    <span class="bundle-price-old">\${{ b.compareAtPrice.toFixed(2) }}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Botones rápidos de cantidad (1, 2, 3) + control exacto (- / +) -->
-            <div class="qty-quick-grid">
-              <button
-                v-for="q in quickQtys"
-                :key="q"
-                type="button"
-                class="qty-quick-card"
-                :class="{ 'qty-quick-card--active': quantity === q }"
-                @click="$emit('change-qty', q)"
-              >
-                <strong>{{ q }} {{ q === 1 ? 'Unidad' : 'Unidades' }}</strong>
-                <span>\${{ (activeVariant.price * q).toFixed(2) }} {{ config.currency }}</span>
-              </button>
+            <!-- Cantidad libre: cualquier número de unidades -->
+            <div class="qty-row qty-row--boxed">
+              <div class="qty-row__text">
+                <strong>¿Necesitas otra cantidad?</strong>
+                <small>{{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'unidad' : 'unidades' }} · {{ selectedBundle.unitPriceText }}</small>
+              </div>
+              <QtyStepper
+                :model-value="selectedBundle.qty"
+                :max="config.maxQty"
+                @update:model-value="$emit('select-bundle-qty', $event)"
+              />
             </div>
 
-            <div class="qty-selector-row qty-selector-row--boxed">
+            <div class="order-total-line">
+              <span>Total a pagar al recibir:</span>
               <div>
-                <span class="qty-control-label">Ajustar unidades:</span>
-                <small class="qty-unit-hint">\${{ activeVariant.price.toFixed(2) }} c/u</small>
-              </div>
-              <div class="qty-stepper">
-                <button
-                  type="button"
-                  class="qty-stepper__btn"
-                  :disabled="quantity <= 1"
-                  aria-label="Restar unidad"
-                  @click="$emit('change-qty', quantity - 1)"
-                  v-html="SvgIcons.minus"
-                ></button>
-                <span class="qty-stepper__val">{{ quantity }}</span>
-                <button
-                  type="button"
-                  class="qty-stepper__btn"
-                  aria-label="Sumar unidad"
-                  @click="$emit('change-qty', quantity + 1)"
-                  v-html="SvgIcons.plus"
-                ></button>
+                <span class="bundle-price-old">\${{ selectedBundle.compareAtPrice.toFixed(2) }}</span>
+                <strong>\${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}</strong>
               </div>
             </div>
 
-            <div class="order-summary-line">
-              <span>Total del pedido ({{ quantity }} {{ quantity === 1 ? 'ud.' : 'uds.' }}):</span>
-              <div class="order-summary-line__prices">
-                <span v-if="totalCompareAt > totalPrice" class="p-old">\${{ totalCompareAt.toFixed(2) }}</span>
-                <strong>\${{ totalPrice.toFixed(2) }} {{ config.currency }}</strong>
-              </div>
+            <!-- Gatillo de Escasez y Despacho Inmediato -->
+            <div class="urgency-dispatch-notice">
+              <span class="dispatch-truck-icon" v-html="SvgIcons.truck"></span>
+              <span><strong>Despacho garantizado en 24-48h desde Bodega Guayaquil</strong> (Stock limitado disponible para envío hoy).</span>
             </div>
 
+            <!-- Botón Principal Von Restorff -->
             <button
               type="button"
-              class="btn-eucalyptus"
-              :disabled="!activeVariant.available"
+              class="btn-cta-vibrant pulse-gentle"
               @click="$emit('trigger-order')"
             >
-              <span class="btn-eucalyptus__main">{{ config.hero.ctaText }}</span>
-              <span class="btn-eucalyptus__sub">
-                Ir a finalizar entrega · \${{ totalPrice.toFixed(2) }} {{ config.currency }}
+              <span class="btn-cta-vibrant__main">{{ config.hero.ctaText }}</span>
+              <span class="btn-cta-vibrant__sub">
+                {{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'kit' : 'kits' }} · Total \${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}
               </span>
             </button>
+
+            <p class="cta-trust-note">
+              🚚 Sin tarjeta de crédito · Pagas únicamente cuando el mensajero te entregue el producto
+            </p>
           </div>
 
-          <!-- Preguntas frecuentes claras -->
+          <!-- Preguntas frecuentes con Objeción del Torque Resuelta -->
           <div class="faq-clean">
             <h3 class="subsection-heading">Preguntas frecuentes</h3>
             <div
@@ -910,55 +968,34 @@
     // --- StickyThumbBar.js ---
     const StickyThumbBar = {
       name: 'StickyThumbBar',
+      components: { QtyStepper },
       props: {
         config: { type: Object, required: true },
-        quantity: { type: Number, required: true },
-        totalPrice: { type: Number, required: true },
-        totalCompareAt: { type: Number, required: true },
+        selectedBundle: { type: Object, required: true },
       },
-      emits: ['change-qty', 'trigger-order'],
-      setup() {
-        return { SvgIcons };
-      },
+      emits: ['trigger-order', 'select-bundle-qty'],
       template: `
         <div class="sticky-clean-bar" role="region" aria-label="Barra rápida de pedido">
           <div class="sticky-clean-bar__inner">
-            <!-- Control rápido de cantidad directo en la barra inferior -->
-            <div class="sticky-qty-mini">
-              <button
-                type="button"
-                class="sticky-qty-mini__btn"
-                :disabled="quantity <= 1"
-                aria-label="Menos"
-                @click="$emit('change-qty', quantity - 1)"
-                v-html="SvgIcons.minus"
-              ></button>
-              <span class="sticky-qty-mini__num">{{ quantity }}</span>
-              <button
-                type="button"
-                class="sticky-qty-mini__btn"
-                aria-label="Más"
-                @click="$emit('change-qty', quantity + 1)"
-                v-html="SvgIcons.plus"
-              ></button>
-            </div>
+            <QtyStepper
+              compact
+              :model-value="selectedBundle.qty"
+              :max="config.maxQty"
+              @update:model-value="$emit('select-bundle-qty', $event)"
+            />
 
-            <div class="sticky-clean-bar__info">
-              <span class="sticky-clean-bar__kicker">Total ({{ quantity }} {{ quantity === 1 ? 'ud' : 'uds' }})</span>
-              <div class="sticky-clean-bar__price-row">
-                <strong>\${{ totalPrice.toFixed(2) }}</strong>
-                <span v-if="totalCompareAt > totalPrice" class="sticky-clean-bar__old">
-                  \${{ totalCompareAt.toFixed(2) }}
-                </span>
-              </div>
+            <div class="sticky-bundle-info">
+              <span class="sticky-price-old">\${{ selectedBundle.compareAtPrice.toFixed(2) }}</span>
+              <strong class="sticky-price-now">\${{ selectedBundle.price.toFixed(2) }}</strong>
             </div>
 
             <button
               type="button"
-              class="sticky-eucalyptus-btn"
+              class="sticky-cta-vibrant pulse-gentle"
               @click="$emit('trigger-order')"
             >
               <span>Pedir ahora</span>
+              <small>Pagas en casa</small>
             </button>
           </div>
         </div>
@@ -968,15 +1005,14 @@
     // --- QuickOrderModal.js ---
     const QuickOrderModal = {
       name: 'QuickOrderModal',
+      components: { QtyStepper },
       props: {
         isOpen: { type: Boolean, required: true },
         config: { type: Object, required: true },
-        activeVariant: { type: Object, required: true },
-        quantity: { type: Number, required: true },
-        totalPrice: { type: Number, required: true },
+        selectedBundle: { type: Object, required: true },
         isSubmitting: { type: Boolean, default: false },
       },
-      emits: ['close', 'change-qty', 'proceed-shopify'],
+      emits: ['close', 'select-bundle-qty', 'proceed-shopify'],
       setup(props, { emit }) {
         const form = reactive({
           fullName: '',
@@ -992,7 +1028,7 @@
             return;
           }
           errorMsg.value = '';
-          emit('proceed-shopify', { ...form, qty: props.quantity });
+          emit('proceed-shopify', { ...form, qty: props.selectedBundle.qty });
         };
 
         return { form, errorMsg, handleConfirm, SvgIcons };
@@ -1004,9 +1040,9 @@
               <button type="button" class="modal-close" @click="$emit('close')" aria-label="Cerrar">✕</button>
 
               <div class="modal-head">
-                <span class="modal-badge">
+                <span class="trust-badge-blue">
                   <span class="modal-badge__icon" v-html="SvgIcons.shieldCheck"></span>
-                  <span>Pago al recibir</span>
+                  <span>Pagas solo cuando el repartidor te lo entregue</span>
                 </span>
                 <h3>Datos de entrega a domicilio</h3>
               </div>
@@ -1014,32 +1050,22 @@
               <div class="modal-order-box">
                 <img :src="config.unboxingKit.flatlayImage" alt="Kit Cepillo 9 en 1 Pro" class="modal-thumb" />
                 <div class="modal-order-box__text">
-                  <strong>{{ config.title }}</strong>
-                  <span v-if="!activeVariant.isDefaultTitle">{{ activeVariant.title }}</span>
-                  <span v-else>Bodega {{ config.warehouseCity }}</span>
+                  <strong>{{ selectedBundle.title }}</strong>
+                  <small>{{ selectedBundle.savingsText }}</small>
                 </div>
-                <div class="modal-order-box__price">\${{ totalPrice.toFixed(2) }}</div>
+                <div class="modal-order-box__price">\${{ selectedBundle.price.toFixed(2) }}</div>
               </div>
 
-              <!-- También permite cambiar cantidad aquí dentro -->
-              <div class="qty-selector-row qty-selector-row--modal">
-                <span class="qty-control-label">Cantidad de unidades:</span>
-                <div class="qty-stepper">
-                  <button
-                    type="button"
-                    class="qty-stepper__btn"
-                    :disabled="quantity <= 1"
-                    @click="$emit('change-qty', quantity - 1)"
-                    v-html="SvgIcons.minus"
-                  ></button>
-                  <span class="qty-stepper__val">{{ quantity }}</span>
-                  <button
-                    type="button"
-                    class="qty-stepper__btn"
-                    @click="$emit('change-qty', quantity + 1)"
-                    v-html="SvgIcons.plus"
-                  ></button>
+              <div class="qty-row qty-row--boxed">
+                <div class="qty-row__text">
+                  <strong>Cantidad</strong>
+                  <small>{{ selectedBundle.unitPriceText }}</small>
                 </div>
+                <QtyStepper
+                  :model-value="selectedBundle.qty"
+                  :max="config.maxQty"
+                  @update:model-value="$emit('select-bundle-qty', $event)"
+                />
               </div>
 
               <form class="modal-form" @submit.prevent="handleConfirm">
@@ -1060,19 +1086,23 @@
 
                 <label class="clean-field">
                   <span>Dirección exacta y referencia</span>
-                  <input v-model="form.address" type="text" placeholder="Calle principal, intersección y referencia" autocomplete="street-address" required />
+                  <input v-model="form.address" type="text" placeholder="Calle principal, intersección y color de casa" autocomplete="street-address" required />
                 </label>
 
                 <p v-if="errorMsg" class="modal-error">{{ errorMsg }}</p>
 
-                <button type="submit" class="btn-eucalyptus" :disabled="isSubmitting">
-                  <span class="btn-eucalyptus__main">
-                    {{ isSubmitting ? 'Abriendo resumen...' : 'Continuar con el pedido' }}
+                <button type="submit" class="btn-cta-vibrant pulse-gentle" :disabled="isSubmitting">
+                  <span class="btn-cta-vibrant__main">
+                    {{ isSubmitting ? 'Procesando entrega...' : 'Confirmar pedido contraentrega' }}
                   </span>
-                  <span class="btn-eucalyptus__sub">
-                    {{ quantity }} {{ quantity === 1 ? 'unidad' : 'unidades' }} · Total \${{ totalPrice.toFixed(2) }} {{ config.currency }}
+                  <span class="btn-cta-vibrant__sub">
+                    Total a pagar al recibir: \${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}
                   </span>
                 </button>
+
+                <p class="cta-trust-note">
+                  🚚 Despacho garantizado en 24-48h desde Bodega Guayaquil
+                </p>
               </form>
             </div>
           </div>
@@ -1096,60 +1126,33 @@
       },
       setup() {
         const config = ref(getProductConfig());
-        const selectedVariantId = ref(config.value.variants[0]?.id || null);
-        const quantity = ref(1);
+        // Por defecto bundle de 1 unidad
+        const selectedQty = ref(1);
         const isModalOpen = ref(false);
         const isSubmitting = ref(false);
         const orderSuccessToast = ref(false);
 
-        const activeVariant = computed(
-          () =>
-            config.value.variants.find((v) => v.id === selectedVariantId.value) ||
-            config.value.variants[0]
-        );
+        const selectedBundle = computed(() => config.value.offerForQty(selectedQty.value));
 
-        const totalPrice = computed(() => Number((activeVariant.value.price * quantity.value).toFixed(2)));
-        const totalCompareAt = computed(() =>
-          activeVariant.value.compareAtPrice > activeVariant.value.price
-            ? Number((activeVariant.value.compareAtPrice * quantity.value).toFixed(2))
-            : 0
-        );
-        const totalSavings = computed(() =>
-          totalCompareAt.value > totalPrice.value
-            ? Number((totalCompareAt.value - totalPrice.value).toFixed(2))
-            : 0
-        );
-
-        const syncNativeShopifyForm = () => {
-          const idInput = document.getElementById('shopify-native-variant-id');
+        const selectBundleQty = (qty) => {
+          selectedQty.value = Math.max(1, Math.min(config.value.maxQty, Number(qty) || 1));
           const qtyInput = document.getElementById('shopify-native-qty');
-          if (idInput && activeVariant.value.id) idInput.value = String(activeVariant.value.id);
-          if (qtyInput) qtyInput.value = String(quantity.value);
+          if (qtyInput) qtyInput.value = String(selectedQty.value);
         };
 
-        const selectVariant = (variantId) => {
-          selectedVariantId.value = variantId;
-          syncNativeShopifyForm();
-        };
-
-        const changeQty = (nextQty) => {
-          const maxAllowed = Math.min(20, activeVariant.value.inventoryQuantity || 20);
-          const clamped = Math.max(1, Math.min(maxAllowed, Number(nextQty) || 1));
-          quantity.value = clamped;
-          syncNativeShopifyForm();
-        };
-
-        // Construye el Permalink oficial de Shopify (/cart/VARIANT_ID:QTY?locale=es...)
-        // Reemplaza la cantidad exacta en 1 solo paso y abre el Checkout en español.
+        // Checkout permalink hacia Shopify con la cantidad elegida + código de descuento del pack
         const goToShopifyCheckout = (prefill = null) => {
-          const variantId = activeVariant.value.id;
-          const qty = quantity.value;
+          const variantId = config.value.variantId;
+          const qty = selectedBundle.value.qty;
 
           if (typeof window !== 'undefined' && variantId) {
             isSubmitting.value = true;
             const params = new URLSearchParams();
             params.set('locale', 'es');
             params.set('checkout[shipping_address][country]', 'EC');
+            if (selectedBundle.value.discountCode) {
+              params.set('discount', selectedBundle.value.discountCode);
+            }
 
             if (prefill) {
               const parts = (prefill.fullName || '').trim().split(/\s+/);
@@ -1169,9 +1172,7 @@
         };
 
         const triggerOrder = () => {
-          syncNativeShopifyForm();
-
-          // 1. Si tienes instalada una App de Formulario Contraentrega (Releasit / EasySell / Dropi COD)
+          // 1. Si hay una app de formulario COD (Releasit / EasySell / Dropi) instalada
           const externalCodBtn = document.querySelector(
             '.rsi-cod-form-button, [data-rsi-cod-btn], .es-popup-button, #rsi-cod-form-open'
           );
@@ -1180,19 +1181,16 @@
             return;
           }
 
-          // 2. Si tienes configurado WhatsApp directo o modal pre-llenado
-          if (
-            (config.value.whatsappNumber && config.value.whatsappNumber.trim() !== '') ||
-            config.value.checkoutMode === 'prefill_modal'
-          ) {
+          // 2. Si hay WhatsApp configurado
+          if (config.value.whatsappNumber && config.value.whatsappNumber.trim() !== '') {
             isModalOpen.value = true;
             return;
           }
 
-          // 3. Por defecto en Shopify: Ir directo al Checkout oficial en español con la cantidad exacta seleccionada
+          // 3. Ir directo al Checkout de Shopify en español
           const redirected = goToShopifyCheckout(null);
           if (!redirected) {
-            // En preview-mobile.html local (donde no existe servidor Shopify) abrimos el modal demostrativo
+            // En vista previa local abrimos modal demostrativo
             isModalOpen.value = true;
           }
         };
@@ -1204,9 +1202,8 @@
             const cleanPhone = config.value.whatsappNumber.replace(/\D/g, '');
             const msg = encodeURIComponent(
               `Hola, deseo pedir con Pago al Recibir:\n` +
-                `• Producto: ${config.value.title}${!activeVariant.value.isDefaultTitle ? ' (' + activeVariant.value.title + ')' : ''}\n` +
-                `• Cantidad: ${quantity.value} ${quantity.value === 1 ? 'unidad' : 'unidades'}\n` +
-                `• Total: $${totalPrice.value.toFixed(2)} ${config.value.currency}\n` +
+                `• Promoción: ${selectedBundle.value.title} (${selectedBundle.value.qty} ${selectedBundle.value.qty === 1 ? 'unidad' : 'unidades'})\n` +
+                `• Total a pagar: $${selectedBundle.value.price.toFixed(2)} ${config.value.currency}\n` +
                 `• Nombre: ${fullName}\n` +
                 `• Celular: ${phone}\n` +
                 `• Ciudad: ${city}\n` +
@@ -1228,16 +1225,12 @@
 
         return {
           config,
-          activeVariant,
-          quantity,
-          totalPrice,
-          totalCompareAt,
-          totalSavings,
+          selectedQty,
+          selectedBundle,
           isModalOpen,
           isSubmitting,
           orderSuccessToast,
-          selectVariant,
-          changeQty,
+          selectBundleQty,
           triggerOrder,
           handleModalConfirm,
         };
@@ -1247,74 +1240,61 @@
           <TopUrgencyTicker :config="config" />
 
           <main class="mobile-main">
-            <!-- A. Hero con Enfoque en la Demostración + Precio y Cantidad reales -->
+            <!-- Hero: Eye-Tracking en F + Anchoring + Botón Naranja Vibrante -->
             <EmotionalHeroMobile
               :config="config"
-              :active-variant="activeVariant"
-              :quantity="quantity"
-              :total-price="totalPrice"
-              :total-compare-at="totalCompareAt"
-              :total-savings="totalSavings"
-              @change-qty="changeQty"
-              @select-variant="selectVariant"
+              :selected-bundle="selectedBundle"
+              @select-bundle-qty="selectBundleQty"
               @trigger-order="triggerOrder"
             />
 
-            <!-- B. Módulo Interactivo: El Antes y Después que Satisface -->
+            <!-- Slider Interactivo: Antes vs Después en Sarro Real -->
             <ThumbCleanInteractive :slider="config.slider" />
 
-            <!-- C. Demostración Visual del Kit: Lo que realmente llega en tu caja -->
+            <!-- Unboxing Transparente + 9 Cabezales -->
             <VisualZoneTapper :kit="config.unboxingKit" />
 
-            <!-- D. Desactivación del Miedo Físico (Las manos y la espalda) -->
+            <!-- Alivio Físico: Manos sin químicos a 1 m -->
             <PhysicalReliefSection :relief="config.physicalRelief" />
 
-            <!-- E. Prueba Social estilo WhatsApp + Bodega Local Guayaquil -->
+            <!-- Prueba Social WhatsApp Guayaquil / Ecuador -->
             <RealFeelingsUgc :reviews="config.whatsappReviews" />
 
-            <!-- Garantía Tangible + Selector de Cantidad y Variantes -->
+            <!-- Bundles con Descuento por Volumen + FAQ Torque 25W -->
             <ZeroFearCodSection
               :config="config"
-              :active-variant="activeVariant"
-              :quantity="quantity"
-              :total-price="totalPrice"
-              :total-compare-at="totalCompareAt"
-              :total-savings="totalSavings"
-              @change-qty="changeQty"
-              @select-variant="selectVariant"
+              :selected-bundle="selectedBundle"
+              @select-bundle-qty="selectBundleQty"
               @trigger-order="triggerOrder"
             />
           </main>
 
           <footer class="clean-footer">
             <p>Despacho local desde Bodega {{ config.warehouseCity }} · Pago contra entrega</p>
-            <small>{{ config.title }} · Ref. {{ activeVariant.sku }}</small>
+            <small>{{ config.title }} · Ref. {{ config.sku }}</small>
           </footer>
 
+          <!-- Sticky CTA Fijo con Naranja Vibrante Continuo -->
           <StickyThumbBar
             :config="config"
-            :quantity="quantity"
-            :total-price="totalPrice"
-            :total-compare-at="totalCompareAt"
-            @change-qty="changeQty"
+            :selected-bundle="selectedBundle"
+            @select-bundle-qty="selectBundleQty"
             @trigger-order="triggerOrder"
           />
 
           <QuickOrderModal
             :is-open="isModalOpen"
             :config="config"
-            :active-variant="activeVariant"
-            :quantity="quantity"
-            :total-price="totalPrice"
+            :selected-bundle="selectedBundle"
             :is-submitting="isSubmitting"
             @close="isModalOpen = false"
-            @change-qty="changeQty"
+            @select-bundle-qty="selectBundleQty"
             @proceed-shopify="handleModalConfirm"
           />
 
           <transition name="fade-modal">
             <div v-if="orderSuccessToast" class="clean-toast">
-              Vista previa local: {{ quantity }} {{ quantity === 1 ? 'unidad' : 'unidades' }} (\${{ totalPrice.toFixed(2) }}). En Shopify lleva directo al Checkout en español con esa cantidad exacta.
+              Pedido de prueba registrado: {{ selectedBundle.title }} por \${{ selectedBundle.price.toFixed(2) }}.
             </div>
           </transition>
         </div>

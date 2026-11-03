@@ -32,6 +32,7 @@ OBSOLETE_IMAGES = [
 
 MODULE_ORDER = [
     SRC_DIR / "components" / "SvgIcons.js",
+    SRC_DIR / "components" / "QtyStepper.js",
     SRC_DIR / "data" / "productConfig.js",
     SRC_DIR / "components" / "TopUrgencyTicker.js",
     SRC_DIR / "components" / "EmotionalHeroMobile.js",

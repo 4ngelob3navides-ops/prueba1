@@ -1,17 +1,15 @@
 import { ref, computed } from 'vue';
 import { SvgIcons } from './SvgIcons.js';
+import { QtyStepper } from './QtyStepper.js';
 
 export const EmotionalHeroMobile = {
   name: 'EmotionalHeroMobile',
+  components: { QtyStepper },
   props: {
     config: { type: Object, required: true },
-    activeVariant: { type: Object, required: true },
-    quantity: { type: Number, required: true },
-    totalPrice: { type: Number, required: true },
-    totalCompareAt: { type: Number, required: true },
-    totalSavings: { type: Number, required: true },
+    selectedBundle: { type: Object, required: true },
   },
-  emits: ['trigger-order', 'change-qty', 'select-variant'],
+  emits: ['trigger-order', 'select-bundle-qty'],
   setup(props) {
     const activeIdx = ref(0);
     const activeSlide = computed(
@@ -51,113 +49,110 @@ export const EmotionalHeroMobile = {
         </div>
       </div>
 
-      <!-- Bloque editorial claro y creíble -->
+      <!-- Bloque editorial claro: Patrón F de eye-tracking -->
       <div class="hero-clean__body">
+        <!-- 1. Cuadrante de Primer Impacto: Título + Prueba Social Masiva -->
         <div class="hero-meta-row">
           <span class="clinical-eyebrow">{{ config.hero.eyebrow }}</span>
-          <span class="rating-sober"><strong>4.9/5</strong> · Ecuador</span>
         </div>
 
         <h1 class="hero-clean__headline">
           {{ config.hero.headline }}
         </h1>
 
+        <div class="social-proof-bar">
+          <span class="social-proof-stars">★★★★★</span>
+          <span class="social-proof-text">{{ config.hero.socialProof }}</span>
+        </div>
+
         <p class="hero-clean__subline">
           {{ config.hero.subline }}
         </p>
 
-        <!-- Micro-badges concretos con iconos vectoriales limpios -->
+        <!-- Micro-badges concretos de confianza -->
         <div class="spec-pills">
           <div class="spec-pill">
             <span class="spec-pill__icon" v-html="SvgIcons.spine"></span>
-            <span>Extensible hasta 1.2 m</span>
+            <span>Extensible hasta 1.2 m (Espalda 100% recta)</span>
           </div>
           <div class="spec-pill">
             <span class="spec-pill__icon" v-html="SvgIcons.battery"></span>
-            <span>Sin cables (Batería USB-C)</span>
+            <span>Motor 25W alto torque · Batería USB-C</span>
           </div>
           <div class="spec-pill">
             <span class="spec-pill__icon" v-html="SvgIcons.shieldCheck"></span>
-            <span>Pago al recibir en casa</span>
+            <span>Pago al recibir en efectivo en tu puerta</span>
           </div>
         </div>
 
-        <!-- Tarjeta limpia de precio sincronizado con Shopify + Cantidad -->
+        <!-- 2. Bloque de Anclaje de Precios (Anchoring Effect) + Selector de Bundles -->
         <div class="price-clean-card">
-          <!-- Si el producto en Shopify tiene múltiples variantes creadas -->
-          <div v-if="config.hasMultipleVariants" class="variant-pills-wrap">
-            <span class="qty-control-label">Presentación:</span>
-            <div class="variant-pills">
-              <button
-                v-for="v in config.variants"
-                :key="v.id"
-                type="button"
-                class="variant-pill-btn"
-                :class="{ 'variant-pill-btn--active': v.id === activeVariant.id }"
-                :disabled="!v.available"
-                @click="$emit('select-variant', v.id)"
-              >
-                <span>{{ v.title }}</span>
-                <strong>\${{ v.price.toFixed(2) }}</strong>
-              </button>
-            </div>
+          <span class="qty-control-label">Elige tu promoción con descuento por volumen:</span>
+
+          <div class="bundle-mini-selector">
+            <button
+              v-for="b in config.bundles"
+              :key="b.qty"
+              type="button"
+              class="bundle-mini-btn"
+              :class="{
+                'bundle-mini-btn--active': b.qty === selectedBundle.qty,
+                'bundle-mini-btn--popular': b.isPopular
+              }"
+              @click="$emit('select-bundle-qty', b.qty)"
+            >
+              <span v-if="b.badge" class="bundle-mini-badge">{{ b.badge }}</span>
+              <span class="b-qty-text">{{ b.qty }} {{ b.qty === 1 ? 'Unidad' : 'Unidades' }}</span>
+              <div class="b-price-group">
+                <span class="b-price-now">\${{ b.price.toFixed(2) }}</span>
+                <span class="b-price-old">\${{ b.compareAtPrice.toFixed(2) }}</span>
+              </div>
+              <small class="b-unit-sub">{{ b.unitPriceText }}</small>
+            </button>
           </div>
 
-          <div class="price-clean-card__row">
-            <div>
-              <span class="price-clean__label">
-                {{ quantity > 1 ? 'Total por ' + quantity + ' unidades' : 'Precio unitario' }}
-              </span>
-              <div class="price-clean__numbers">
-                <span class="price-clean__now">\${{ totalPrice.toFixed(2) }}</span>
-                <span class="price-clean__curr">{{ config.currency }}</span>
-                <span v-if="totalCompareAt > totalPrice" class="price-clean__old">
-                  \${{ totalCompareAt.toFixed(2) }}
-                </span>
+          <!-- Cantidad libre: cualquier número de unidades -->
+          <div class="qty-row">
+            <div class="qty-row__text">
+              <strong>¿Cuántos necesitas?</strong>
+              <small>{{ selectedBundle.unitPriceText }}</small>
+            </div>
+            <QtyStepper
+              :model-value="selectedBundle.qty"
+              :max="config.maxQty"
+              @update:model-value="$emit('select-bundle-qty', $event)"
+            />
+          </div>
+
+          <!-- Total con Anclaje Visual Destacado -->
+          <div class="price-anchor-display">
+            <div class="price-anchor-display__left">
+              <span class="price-anchor-label">Total a pagar al recibir:</span>
+              <div class="price-numbers-row">
+                <span class="price-anchor-old">\${{ selectedBundle.compareAtPrice.toFixed(2) }}</span>
+                <span class="price-anchor-now">\${{ selectedBundle.price.toFixed(2) }}</span>
+                <span class="price-currency-tag">{{ config.currency }}</span>
               </div>
             </div>
-
-            <span v-if="totalSavings > 0" class="price-clean__save">
-              Ahorras \${{ totalSavings.toFixed(2) }}
-            </span>
+            <span class="price-savings-pill">{{ selectedBundle.savingsText }}</span>
           </div>
 
-          <!-- Selector táctil de Cantidad (- 1 +) -->
-          <div class="qty-selector-row">
-            <span class="qty-control-label">Cantidad:</span>
-            <div class="qty-stepper">
-              <button
-                type="button"
-                class="qty-stepper__btn"
-                :disabled="quantity <= 1"
-                aria-label="Disminuir cantidad"
-                @click="$emit('change-qty', quantity - 1)"
-                v-html="SvgIcons.minus"
-              ></button>
-              <span class="qty-stepper__val">{{ quantity }}</span>
-              <button
-                type="button"
-                class="qty-stepper__btn"
-                aria-label="Aumentar cantidad"
-                @click="$emit('change-qty', quantity + 1)"
-                v-html="SvgIcons.plus"
-              ></button>
-            </div>
-          </div>
-
+          <!-- Botón Principal Von Restorff (Naranja Cálido de Alto Contraste con Microanimación) -->
           <button
             type="button"
-            class="btn-eucalyptus"
-            :disabled="!activeVariant.available"
+            class="btn-cta-vibrant pulse-gentle"
             @click="$emit('trigger-order')"
           >
-            <span class="btn-eucalyptus__main">
-              {{ activeVariant.available ? config.hero.ctaText : 'Agotado temporalmente' }}
-            </span>
-            <span class="btn-eucalyptus__sub">
-              {{ quantity }} {{ quantity === 1 ? 'unidad' : 'unidades' }} · \${{ totalPrice.toFixed(2) }} {{ config.currency }}
+            <span class="btn-cta-vibrant__main">{{ config.hero.ctaText }}</span>
+            <span class="btn-cta-vibrant__sub">
+              {{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'kit completo' : 'kits completos' }} · Total \${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}
             </span>
           </button>
+
+          <!-- Microcopy de Respaldo y Garantía -->
+          <p class="cta-trust-note">
+            {{ config.hero.ctaSubtext }}
+          </p>
         </div>
       </div>
     </section>
