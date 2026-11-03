@@ -1,0 +1,33 @@
+<div class="mobile-shell" style="padding: 24px 16px; min-height: 100svh;">
+  <h1 class="display-title" style="margin-bottom: 16px;">Tu Pedido</h1>
+  {%- if cart.item_count > 0 -%}
+    <form action="{{ routes.cart_url }}" method="post">
+      {%- for item in cart.items -%}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:#fff;border-radius:14px;margin-bottom:10px;border:1px solid #e2e8f0;">
+          <div>
+            <strong style="display:block;font-size:14px;">{{ item.product.title }}</strong>
+            <span style="font-size:12.5px;color:#64748b;">Cantidad: {{ item.quantity }}</span>
+          </div>
+          <strong style="font-size:16px;color:#15803d;">{{ item.final_line_price | money }}</strong>
+        </div>
+      {%- endfor -%}
+      <button type="submit" name="checkout" class="cta-giant-btn" style="margin-top: 14px;">
+        <span class="cta-giant-btn__main">Finalizar Pedido ({{ cart.total_price | money }})</span>
+        <span class="cta-giant-btn__sub">Pago seguro al recibir</span>
+      </button>
+    </form>
+  {%- else -%}
+    <p style="margin-bottom: 16px; color: #475569;">Aún no has agregado tu Cepillo 9 en 1 Pro.</p>
+    <a href="{{ routes.root_url }}" class="cta-giant-btn" style="text-decoration:none;">
+      <span class="cta-giant-btn__main">Ver Oferta de Hoy</span>
+    </a>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Carrito Movil",
+  "settings": []
+}
+{% endschema %}
+

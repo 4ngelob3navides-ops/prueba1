@@ -1,0 +1,20 @@
+{
+  "name": "cepillo-9en1-vue-shopify",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Landing page Mobile-First 100% visual y emocional en Vue 3 lista para subir a Shopify",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "package": "python scripts/package_shopify.py"
+  },
+  "dependencies": {
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "vite": "^6.0.0"
+  }
+}
+
