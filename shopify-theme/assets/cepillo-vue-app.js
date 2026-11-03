@@ -92,63 +92,26 @@
       const baseCompareAt =
         Number(shopify.compareAtPrice) > basePrice ? Number(shopify.compareAtPrice) : 55.0;
 
-      // Precios de los packs: editables en el Personalizador de Shopify
-      const pack2Price = Number(shopify.bundle2Price || 59.9);
-      const pack3Price = Number(shopify.bundle3Price || 79.9);
-      const pack3Unit = pack3Price / 3;
       const maxQty = Math.max(1, Math.min(20, Number(shopify.maxQty || 10)));
 
       const money = (n) => `$${Number(n).toFixed(2)}`;
 
-      // Precio total para CUALQUIER cantidad:
-      // 1 = precio normal · 2 = pack 2 · 3 o más = precio unitario del pack 3
-      const priceForQty = (qty) => {
-        const q = Math.max(1, Number(qty) || 1);
-        if (q === 1) return basePrice;
-        if (q === 2) return pack2Price;
-        return Number((pack3Unit * q).toFixed(2));
-      };
-
-      // Código de descuento de Shopify que corresponde a cada cantidad
-      const discountCodeForQty = (qty) => {
-        if (qty >= 3) return shopify.discountCode3 || '';
-        if (qty === 2) return shopify.discountCode2 || '';
-        return '';
-      };
-
-      // Construye la oferta para cualquier cantidad elegida
+      // Precio simple: precio de Shopify × cantidad (sin descuentos por volumen)
       const offerForQty = (qty) => {
         const q = Math.max(1, Math.min(maxQty, Number(qty) || 1));
-        const price = priceForQty(q);
+        const price = Number((basePrice * q).toFixed(2));
         const compareAtPrice = Number((baseCompareAt * q).toFixed(2));
         const totalSavings = Math.max(0, compareAtPrice - price);
-        const volumeSavings = Math.max(0, basePrice * q - price);
-        const badges = { 1: 'Individual', 2: 'MÁS POPULAR ⭐', 3: 'OFERTA FAMILIAR 🔥' };
-        const subtitles = {
-          1: 'Mango motorizado + 2 varas aluminio + 8 accesorios + USB-C',
-          2: 'Ideal para regalar a tu mamá o tener uno en cada piso',
-          3: 'Máximo ahorro para toda la casa, cocina y familia',
-        };
 
         return {
           qty: q,
-          badge: badges[q] || 'PRECIO MAYORISTA 🔥',
-          isPopular: q === 2,
           title: `${q} ${q === 1 ? 'Kit' : 'Kits'} Cepillo 9 en 1 Pro`,
-          subtitle: subtitles[q] || `Mismo precio por unidad que el pack familiar (${money(pack3Unit)} c/u)`,
           price,
           compareAtPrice,
-          savingsText:
-            volumeSavings > 0.009
-              ? `Ahorras ${money(totalSavings)} (Ganas ${money(volumeSavings)} extra)`
-              : `Ahorras ${money(totalSavings)} hoy`,
-          unitPriceText: `${money(price / q)} c/u`,
-          discountCode: discountCodeForQty(q),
+          savingsText: `Ahorras ${money(totalSavings)} hoy`,
+          unitPriceText: `${money(basePrice)} c/u`,
         };
       };
-
-      // Los 3 packs destacados (atajos de 1 toque)
-      const bundles = [1, 2, 3].map(offerForQty);
 
       return {
         title: shopify.title || 'Cepillo Eléctrico 9 en 1 Pro',
@@ -158,7 +121,6 @@
         currency: shopify.currency || 'USD',
         basePrice,
         baseCompareAt,
-        bundles,
         maxQty,
         offerForQty,
         stockLeft: Number(shopify.stockLeft || 14),
@@ -302,8 +264,8 @@
             {
               iconKey: 'formCheck',
               stepNum: 'Paso 1',
-              title: 'Eliges tu promo y pides',
-              sub: 'Seleccionas tu pack con descuento sin ingresar tarjetas de crédito.',
+              title: 'Haces tu pedido hoy',
+              sub: 'Eliges cuántas unidades deseas sin ingresar tarjetas de crédito.',
             },
             {
               iconKey: 'truck',
@@ -429,36 +391,12 @@
               </div>
             </div>
 
-            <!-- 2. Bloque de Anclaje de Precios (Anchoring Effect) + Selector de Bundles -->
+            <!-- 2. Bloque de Anclaje de Precios (Anchoring Effect) + Cantidad -->
             <div class="price-clean-card">
-              <span class="qty-control-label">Elige tu promoción con descuento por volumen:</span>
-
-              <div class="bundle-mini-selector">
-                <button
-                  v-for="b in config.bundles"
-                  :key="b.qty"
-                  type="button"
-                  class="bundle-mini-btn"
-                  :class="{
-                    'bundle-mini-btn--active': b.qty === selectedBundle.qty,
-                    'bundle-mini-btn--popular': b.isPopular
-                  }"
-                  @click="$emit('select-bundle-qty', b.qty)"
-                >
-                  <span v-if="b.badge" class="bundle-mini-badge">{{ b.badge }}</span>
-                  <span class="b-qty-text">{{ b.qty }} {{ b.qty === 1 ? 'Unidad' : 'Unidades' }}</span>
-                  <div class="b-price-group">
-                    <span class="b-price-now">\${{ b.price.toFixed(2) }}</span>
-                    <span class="b-price-old">\${{ b.compareAtPrice.toFixed(2) }}</span>
-                  </div>
-                  <small class="b-unit-sub">{{ b.unitPriceText }}</small>
-                </button>
-              </div>
-
               <!-- Cantidad libre: cualquier número de unidades -->
               <div class="qty-row">
                 <div class="qty-row__text">
-                  <strong>¿Cuántos necesitas?</strong>
+                  <strong>Cantidad</strong>
                   <small>{{ selectedBundle.unitPriceText }}</small>
                 </div>
                 <QtyStepper
@@ -857,55 +795,17 @@
             </div>
           </div>
 
-          <!-- Selector Completo de Bundles (Descuento por Volumen) -->
+          <!-- Bloque de Pedido Directo: Precio de Shopify × Cantidad -->
           <div class="bundle-clean-box">
             <div class="bundle-clean-header">
-              <span class="trust-badge-blue">PROMOCIONES EXCLUSIVAS HOY</span>
-              <h3 class="bundle-clean-box__title">Selecciona tu paquete de ahorro:</h3>
+              <span class="trust-badge-blue">PRECIO DE OFERTA HOY</span>
+              <h3 class="bundle-clean-box__title">{{ config.title }}</h3>
             </div>
 
-            <div class="bundle-clean-list">
-              <div
-                v-for="b in config.bundles"
-                :key="b.qty"
-                role="button"
-                tabindex="0"
-                class="bundle-option-card"
-                :class="{
-                  'bundle-option-card--active': b.qty === selectedBundle.qty,
-                  'bundle-option-card--popular': b.isPopular
-                }"
-                @click="$emit('select-bundle-qty', b.qty)"
-              >
-                <div class="bundle-option-card__badge-row">
-                  <span class="bundle-tag-pill" :class="{ 'bundle-tag-pill--gold': b.isPopular }">
-                    {{ b.badge }}
-                  </span>
-                  <span class="bundle-savings-tag">{{ b.savingsText }}</span>
-                </div>
-
-                <div class="bundle-option-card__body">
-                  <div class="bundle-radio-circle">
-                    <span class="bundle-radio-circle__inner"></span>
-                  </div>
-                  <div class="bundle-option-card__details">
-                    <strong>{{ b.title }}</strong>
-                    <p>{{ b.subtitle }}</p>
-                    <small class="bundle-unit-price">{{ b.unitPriceText }}</small>
-                  </div>
-                  <div class="bundle-option-card__prices">
-                    <span class="bundle-price-now">\${{ b.price.toFixed(2) }}</span>
-                    <span class="bundle-price-old">\${{ b.compareAtPrice.toFixed(2) }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Cantidad libre: cualquier número de unidades -->
             <div class="qty-row qty-row--boxed">
               <div class="qty-row__text">
-                <strong>¿Necesitas otra cantidad?</strong>
-                <small>{{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'unidad' : 'unidades' }} · {{ selectedBundle.unitPriceText }}</small>
+                <strong>Cantidad de unidades</strong>
+                <small>{{ selectedBundle.unitPriceText }} · Kit completo 9 en 1</small>
               </div>
               <QtyStepper
                 :model-value="selectedBundle.qty"
@@ -914,12 +814,18 @@
               />
             </div>
 
-            <div class="order-total-line">
-              <span>Total a pagar al recibir:</span>
-              <div>
-                <span class="bundle-price-old">\${{ selectedBundle.compareAtPrice.toFixed(2) }}</span>
-                <strong>\${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}</strong>
+            <div class="price-anchor-display">
+              <div class="price-anchor-display__left">
+                <span class="price-anchor-label">
+                  Total ({{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'unidad' : 'unidades' }}):
+                </span>
+                <div class="price-numbers-row">
+                  <span class="price-anchor-old">\${{ selectedBundle.compareAtPrice.toFixed(2) }}</span>
+                  <span class="price-anchor-now">\${{ selectedBundle.price.toFixed(2) }}</span>
+                  <span class="price-currency-tag">{{ config.currency }}</span>
+                </div>
               </div>
+              <span class="price-savings-pill">{{ selectedBundle.savingsText }}</span>
             </div>
 
             <!-- Gatillo de Escasez y Despacho Inmediato -->
@@ -1140,7 +1046,7 @@
           if (qtyInput) qtyInput.value = String(selectedQty.value);
         };
 
-        // Checkout permalink hacia Shopify con la cantidad elegida + código de descuento del pack
+        // Checkout permalink hacia Shopify con la cantidad elegida
         const goToShopifyCheckout = (prefill = null) => {
           const variantId = config.value.variantId;
           const qty = selectedBundle.value.qty;
@@ -1150,9 +1056,6 @@
             const params = new URLSearchParams();
             params.set('locale', 'es');
             params.set('checkout[shipping_address][country]', 'EC');
-            if (selectedBundle.value.discountCode) {
-              params.set('discount', selectedBundle.value.discountCode);
-            }
 
             if (prefill) {
               const parts = (prefill.fullName || '').trim().split(/\s+/);

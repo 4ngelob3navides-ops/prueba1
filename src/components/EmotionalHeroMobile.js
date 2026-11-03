@@ -85,36 +85,12 @@ export const EmotionalHeroMobile = {
           </div>
         </div>
 
-        <!-- 2. Bloque de Anclaje de Precios (Anchoring Effect) + Selector de Bundles -->
+        <!-- 2. Bloque de Anclaje de Precios (Anchoring Effect) + Cantidad -->
         <div class="price-clean-card">
-          <span class="qty-control-label">Elige tu promoción con descuento por volumen:</span>
-
-          <div class="bundle-mini-selector">
-            <button
-              v-for="b in config.bundles"
-              :key="b.qty"
-              type="button"
-              class="bundle-mini-btn"
-              :class="{
-                'bundle-mini-btn--active': b.qty === selectedBundle.qty,
-                'bundle-mini-btn--popular': b.isPopular
-              }"
-              @click="$emit('select-bundle-qty', b.qty)"
-            >
-              <span v-if="b.badge" class="bundle-mini-badge">{{ b.badge }}</span>
-              <span class="b-qty-text">{{ b.qty }} {{ b.qty === 1 ? 'Unidad' : 'Unidades' }}</span>
-              <div class="b-price-group">
-                <span class="b-price-now">\${{ b.price.toFixed(2) }}</span>
-                <span class="b-price-old">\${{ b.compareAtPrice.toFixed(2) }}</span>
-              </div>
-              <small class="b-unit-sub">{{ b.unitPriceText }}</small>
-            </button>
-          </div>
-
           <!-- Cantidad libre: cualquier número de unidades -->
           <div class="qty-row">
             <div class="qty-row__text">
-              <strong>¿Cuántos necesitas?</strong>
+              <strong>Cantidad</strong>
               <small>{{ selectedBundle.unitPriceText }}</small>
             </div>
             <QtyStepper

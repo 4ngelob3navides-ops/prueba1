@@ -81,10 +81,6 @@
       {%- endif -%}
     ],
     stockLeft: {{ real_stock | json }},
-    bundle2Price: {{ section.settings.bundle2_price | default: 59.9 | json }},
-    bundle3Price: {{ section.settings.bundle3_price | default: 79.9 | json }},
-    discountCode2: {{ section.settings.discount_code_2 | default: '' | json }},
-    discountCode3: {{ section.settings.discount_code_3 | default: '' | json }},
     maxQty: {{ section.settings.max_qty | default: 10 | json }},
     warehouseCity: {{ section.settings.warehouse_city | default: 'Guayaquil' | json }},
     checkoutMode: {{ section.settings.checkout_mode | default: 'direct_checkout' | json }},
@@ -142,34 +138,6 @@
       "id": "stock_left",
       "label": "Stock respaldo si no se rastrea",
       "default": 14
-    },
-    {
-      "type": "header",
-      "content": "Packs por volumen"
-    },
-    {
-      "type": "number",
-      "id": "bundle2_price",
-      "label": "Precio total pack 2 unidades",
-      "default": 59.9
-    },
-    {
-      "type": "text",
-      "id": "discount_code_2",
-      "label": "Codigo descuento pack 2 (ej. PACK2)",
-      "default": "PACK2"
-    },
-    {
-      "type": "number",
-      "id": "bundle3_price",
-      "label": "Precio total pack 3 unidades",
-      "default": 79.9
-    },
-    {
-      "type": "text",
-      "id": "discount_code_3",
-      "label": "Codigo descuento 3 o mas (ej. PACK3)",
-      "default": "PACK3"
     },
     {
       "type": "number",

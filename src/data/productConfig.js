@@ -17,63 +17,26 @@ export function getProductConfig() {
   const baseCompareAt =
     Number(shopify.compareAtPrice) > basePrice ? Number(shopify.compareAtPrice) : 55.0;
 
-  // Precios de los packs: editables en el Personalizador de Shopify
-  const pack2Price = Number(shopify.bundle2Price || 59.9);
-  const pack3Price = Number(shopify.bundle3Price || 79.9);
-  const pack3Unit = pack3Price / 3;
   const maxQty = Math.max(1, Math.min(20, Number(shopify.maxQty || 10)));
 
   const money = (n) => `$${Number(n).toFixed(2)}`;
 
-  // Precio total para CUALQUIER cantidad:
-  // 1 = precio normal · 2 = pack 2 · 3 o más = precio unitario del pack 3
-  const priceForQty = (qty) => {
-    const q = Math.max(1, Number(qty) || 1);
-    if (q === 1) return basePrice;
-    if (q === 2) return pack2Price;
-    return Number((pack3Unit * q).toFixed(2));
-  };
-
-  // Código de descuento de Shopify que corresponde a cada cantidad
-  const discountCodeForQty = (qty) => {
-    if (qty >= 3) return shopify.discountCode3 || '';
-    if (qty === 2) return shopify.discountCode2 || '';
-    return '';
-  };
-
-  // Construye la oferta para cualquier cantidad elegida
+  // Precio simple: precio de Shopify × cantidad (sin descuentos por volumen)
   const offerForQty = (qty) => {
     const q = Math.max(1, Math.min(maxQty, Number(qty) || 1));
-    const price = priceForQty(q);
+    const price = Number((basePrice * q).toFixed(2));
     const compareAtPrice = Number((baseCompareAt * q).toFixed(2));
     const totalSavings = Math.max(0, compareAtPrice - price);
-    const volumeSavings = Math.max(0, basePrice * q - price);
-    const badges = { 1: 'Individual', 2: 'MÁS POPULAR ⭐', 3: 'OFERTA FAMILIAR 🔥' };
-    const subtitles = {
-      1: 'Mango motorizado + 2 varas aluminio + 8 accesorios + USB-C',
-      2: 'Ideal para regalar a tu mamá o tener uno en cada piso',
-      3: 'Máximo ahorro para toda la casa, cocina y familia',
-    };
 
     return {
       qty: q,
-      badge: badges[q] || 'PRECIO MAYORISTA 🔥',
-      isPopular: q === 2,
       title: `${q} ${q === 1 ? 'Kit' : 'Kits'} Cepillo 9 en 1 Pro`,
-      subtitle: subtitles[q] || `Mismo precio por unidad que el pack familiar (${money(pack3Unit)} c/u)`,
       price,
       compareAtPrice,
-      savingsText:
-        volumeSavings > 0.009
-          ? `Ahorras ${money(totalSavings)} (Ganas ${money(volumeSavings)} extra)`
-          : `Ahorras ${money(totalSavings)} hoy`,
-      unitPriceText: `${money(price / q)} c/u`,
-      discountCode: discountCodeForQty(q),
+      savingsText: `Ahorras ${money(totalSavings)} hoy`,
+      unitPriceText: `${money(basePrice)} c/u`,
     };
   };
-
-  // Los 3 packs destacados (atajos de 1 toque)
-  const bundles = [1, 2, 3].map(offerForQty);
 
   return {
     title: shopify.title || 'Cepillo Eléctrico 9 en 1 Pro',
@@ -83,7 +46,6 @@ export function getProductConfig() {
     currency: shopify.currency || 'USD',
     basePrice,
     baseCompareAt,
-    bundles,
     maxQty,
     offerForQty,
     stockLeft: Number(shopify.stockLeft || 14),
@@ -227,8 +189,8 @@ export function getProductConfig() {
         {
           iconKey: 'formCheck',
           stepNum: 'Paso 1',
-          title: 'Eliges tu promo y pides',
-          sub: 'Seleccionas tu pack con descuento sin ingresar tarjetas de crédito.',
+          title: 'Haces tu pedido hoy',
+          sub: 'Eliges cuántas unidades deseas sin ingresar tarjetas de crédito.',
         },
         {
           iconKey: 'truck',

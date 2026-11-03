@@ -5,6 +5,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 def sync_shopify_branch():
+    # 0. Guardar cambios pendientes en main (si los hay) para que la rama shopify use lo último
+    subprocess.run(["git", "add", "-A"], cwd=str(ROOT), check=True)
+    staged = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=str(ROOT))
+    if staged.returncode != 0:
+        subprocess.run(["git", "commit", "-q", "-m", "chore: actualizar tema"], cwd=str(ROOT), check=True)
+        print("[OK] Cambios guardados en main.")
+
     # 1. Obtener el tree ID de shopify-theme
     res = subprocess.run(
         ["git", "rev-parse", "HEAD:shopify-theme"],

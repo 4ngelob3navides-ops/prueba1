@@ -61,55 +61,17 @@ export const ZeroFearCodSection = {
         </div>
       </div>
 
-      <!-- Selector Completo de Bundles (Descuento por Volumen) -->
+      <!-- Bloque de Pedido Directo: Precio de Shopify × Cantidad -->
       <div class="bundle-clean-box">
         <div class="bundle-clean-header">
-          <span class="trust-badge-blue">PROMOCIONES EXCLUSIVAS HOY</span>
-          <h3 class="bundle-clean-box__title">Selecciona tu paquete de ahorro:</h3>
+          <span class="trust-badge-blue">PRECIO DE OFERTA HOY</span>
+          <h3 class="bundle-clean-box__title">{{ config.title }}</h3>
         </div>
 
-        <div class="bundle-clean-list">
-          <div
-            v-for="b in config.bundles"
-            :key="b.qty"
-            role="button"
-            tabindex="0"
-            class="bundle-option-card"
-            :class="{
-              'bundle-option-card--active': b.qty === selectedBundle.qty,
-              'bundle-option-card--popular': b.isPopular
-            }"
-            @click="$emit('select-bundle-qty', b.qty)"
-          >
-            <div class="bundle-option-card__badge-row">
-              <span class="bundle-tag-pill" :class="{ 'bundle-tag-pill--gold': b.isPopular }">
-                {{ b.badge }}
-              </span>
-              <span class="bundle-savings-tag">{{ b.savingsText }}</span>
-            </div>
-
-            <div class="bundle-option-card__body">
-              <div class="bundle-radio-circle">
-                <span class="bundle-radio-circle__inner"></span>
-              </div>
-              <div class="bundle-option-card__details">
-                <strong>{{ b.title }}</strong>
-                <p>{{ b.subtitle }}</p>
-                <small class="bundle-unit-price">{{ b.unitPriceText }}</small>
-              </div>
-              <div class="bundle-option-card__prices">
-                <span class="bundle-price-now">\${{ b.price.toFixed(2) }}</span>
-                <span class="bundle-price-old">\${{ b.compareAtPrice.toFixed(2) }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cantidad libre: cualquier número de unidades -->
         <div class="qty-row qty-row--boxed">
           <div class="qty-row__text">
-            <strong>¿Necesitas otra cantidad?</strong>
-            <small>{{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'unidad' : 'unidades' }} · {{ selectedBundle.unitPriceText }}</small>
+            <strong>Cantidad de unidades</strong>
+            <small>{{ selectedBundle.unitPriceText }} · Kit completo 9 en 1</small>
           </div>
           <QtyStepper
             :model-value="selectedBundle.qty"
@@ -118,12 +80,18 @@ export const ZeroFearCodSection = {
           />
         </div>
 
-        <div class="order-total-line">
-          <span>Total a pagar al recibir:</span>
-          <div>
-            <span class="bundle-price-old">\${{ selectedBundle.compareAtPrice.toFixed(2) }}</span>
-            <strong>\${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}</strong>
+        <div class="price-anchor-display">
+          <div class="price-anchor-display__left">
+            <span class="price-anchor-label">
+              Total ({{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'unidad' : 'unidades' }}):
+            </span>
+            <div class="price-numbers-row">
+              <span class="price-anchor-old">\${{ selectedBundle.compareAtPrice.toFixed(2) }}</span>
+              <span class="price-anchor-now">\${{ selectedBundle.price.toFixed(2) }}</span>
+              <span class="price-currency-tag">{{ config.currency }}</span>
+            </div>
           </div>
+          <span class="price-savings-pill">{{ selectedBundle.savingsText }}</span>
         </div>
 
         <!-- Gatillo de Escasez y Despacho Inmediato -->

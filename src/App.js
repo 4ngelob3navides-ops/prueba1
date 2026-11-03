@@ -39,7 +39,7 @@ export const App = {
       if (qtyInput) qtyInput.value = String(selectedQty.value);
     };
 
-    // Checkout permalink hacia Shopify con la cantidad elegida + código de descuento del pack
+    // Checkout permalink hacia Shopify con la cantidad elegida
     const goToShopifyCheckout = (prefill = null) => {
       const variantId = config.value.variantId;
       const qty = selectedBundle.value.qty;
@@ -49,9 +49,6 @@ export const App = {
         const params = new URLSearchParams();
         params.set('locale', 'es');
         params.set('checkout[shipping_address][country]', 'EC');
-        if (selectedBundle.value.discountCode) {
-          params.set('discount', selectedBundle.value.discountCode);
-        }
 
         if (prefill) {
           const parts = (prefill.fullName || '').trim().split(/\s+/);
