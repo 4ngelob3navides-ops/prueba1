@@ -83,8 +83,6 @@
     stockLeft: {{ real_stock | json }},
     maxQty: {{ section.settings.max_qty | default: 10 | json }},
     warehouseCity: {{ section.settings.warehouse_city | default: 'Guayaquil' | json }},
-    checkoutMode: {{ section.settings.checkout_mode | default: 'direct_checkout' | json }},
-    whatsappNumber: {{ section.settings.whatsapp_number | default: '' | json }},
     heroBadge: {{ section.settings.hero_badge | json }},
     heroHeadline: {{ section.settings.hero_headline | json }},
     heroSubline: {{ section.settings.hero_subline | json }},
@@ -150,27 +148,6 @@
       "id": "warehouse_city",
       "label": "Ciudad de bodega local",
       "default": "Guayaquil"
-    },
-    {
-      "type": "select",
-      "id": "checkout_mode",
-      "label": "Accion del boton de pedido",
-      "default": "direct_checkout",
-      "options": [
-        {
-          "value": "direct_checkout",
-          "label": "Ir directo al Checkout (Espanol)"
-        },
-        {
-          "value": "prefill_modal",
-          "label": "Formulario rapido + Prellenar Checkout"
-        }
-      ]
-    },
-    {
-      "type": "text",
-      "id": "whatsapp_number",
-      "label": "WhatsApp opcional (ej. 59399...)"
     },
     {
       "type": "text",

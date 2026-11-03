@@ -42,7 +42,6 @@ MODULE_ORDER = [
     SRC_DIR / "components" / "RealFeelingsUgc.js",
     SRC_DIR / "components" / "ZeroFearCodSection.js",
     SRC_DIR / "components" / "StickyThumbBar.js",
-    SRC_DIR / "components" / "QuickOrderModal.js",
     SRC_DIR / "App.js",
     SRC_DIR / "main.js",
 ]

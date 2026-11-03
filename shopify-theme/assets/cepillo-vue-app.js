@@ -908,114 +908,6 @@
       `,
     };
 
-    // --- QuickOrderModal.js ---
-    const QuickOrderModal = {
-      name: 'QuickOrderModal',
-      components: { QtyStepper },
-      props: {
-        isOpen: { type: Boolean, required: true },
-        config: { type: Object, required: true },
-        selectedBundle: { type: Object, required: true },
-        isSubmitting: { type: Boolean, default: false },
-      },
-      emits: ['close', 'select-bundle-qty', 'proceed-shopify'],
-      setup(props, { emit }) {
-        const form = reactive({
-          fullName: '',
-          phone: '',
-          city: '',
-          address: '',
-        });
-        const errorMsg = ref('');
-
-        const handleConfirm = () => {
-          if (!form.fullName.trim() || !form.phone.trim() || !form.city.trim() || !form.address.trim()) {
-            errorMsg.value = 'Por favor completa nombre, celular, ciudad y dirección de entrega.';
-            return;
-          }
-          errorMsg.value = '';
-          emit('proceed-shopify', { ...form, qty: props.selectedBundle.qty });
-        };
-
-        return { form, errorMsg, handleConfirm, SvgIcons };
-      },
-      template: `
-        <transition name="fade-modal">
-          <div v-if="isOpen" class="modal-overlay" @click.self="$emit('close')">
-            <div class="modal-sheet" role="dialog" aria-modal="true">
-              <button type="button" class="modal-close" @click="$emit('close')" aria-label="Cerrar">✕</button>
-
-              <div class="modal-head">
-                <span class="trust-badge-blue">
-                  <span class="modal-badge__icon" v-html="SvgIcons.shieldCheck"></span>
-                  <span>Pagas solo cuando el repartidor te lo entregue</span>
-                </span>
-                <h3>Datos de entrega a domicilio</h3>
-              </div>
-
-              <div class="modal-order-box">
-                <img :src="config.unboxingKit.flatlayImage" alt="Kit Cepillo 9 en 1 Pro" class="modal-thumb" />
-                <div class="modal-order-box__text">
-                  <strong>{{ selectedBundle.title }}</strong>
-                  <small>{{ selectedBundle.savingsText }}</small>
-                </div>
-                <div class="modal-order-box__price">\${{ selectedBundle.price.toFixed(2) }}</div>
-              </div>
-
-              <div class="qty-row qty-row--boxed">
-                <div class="qty-row__text">
-                  <strong>Cantidad</strong>
-                  <small>{{ selectedBundle.unitPriceText }}</small>
-                </div>
-                <QtyStepper
-                  :model-value="selectedBundle.qty"
-                  :max="config.maxQty"
-                  @update:model-value="$emit('select-bundle-qty', $event)"
-                />
-              </div>
-
-              <form class="modal-form" @submit.prevent="handleConfirm">
-                <label class="clean-field">
-                  <span>Nombre y apellido</span>
-                  <input v-model="form.fullName" type="text" placeholder="Ej. María Fernanda López" autocomplete="name" required />
-                </label>
-
-                <label class="clean-field">
-                  <span>Número de celular / WhatsApp</span>
-                  <input v-model="form.phone" type="tel" inputmode="tel" placeholder="Ej. 099 123 4567" autocomplete="tel" required />
-                </label>
-
-                <label class="clean-field">
-                  <span>Ciudad y sector</span>
-                  <input v-model="form.city" type="text" placeholder="Ej. Guayaquil, Urdesa" autocomplete="address-level2" required />
-                </label>
-
-                <label class="clean-field">
-                  <span>Dirección exacta y referencia</span>
-                  <input v-model="form.address" type="text" placeholder="Calle principal, intersección y color de casa" autocomplete="street-address" required />
-                </label>
-
-                <p v-if="errorMsg" class="modal-error">{{ errorMsg }}</p>
-
-                <button type="submit" class="btn-cta-vibrant pulse-gentle" :disabled="isSubmitting">
-                  <span class="btn-cta-vibrant__main">
-                    {{ isSubmitting ? 'Procesando entrega...' : 'Confirmar pedido contraentrega' }}
-                  </span>
-                  <span class="btn-cta-vibrant__sub">
-                    Total a pagar al recibir: \${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}
-                  </span>
-                </button>
-
-                <p class="cta-trust-note">
-                  🚚 Despacho garantizado en 24-48h desde Bodega Guayaquil
-                </p>
-              </form>
-            </div>
-          </div>
-        </transition>
-      `,
-    };
-
     // --- App.js ---
     const App = {
       name: 'CepilloMobileLandingApp',
@@ -1028,14 +920,10 @@
         RealFeelingsUgc,
         ZeroFearCodSection,
         StickyThumbBar,
-        QuickOrderModal,
       },
       setup() {
         const config = ref(getProductConfig());
-        // Por defecto bundle de 1 unidad
         const selectedQty = ref(1);
-        const isModalOpen = ref(false);
-        const isSubmitting = ref(false);
         const orderSuccessToast = ref(false);
 
         const selectedBundle = computed(() => config.value.offerForQty(selectedQty.value));
@@ -1046,36 +934,8 @@
           if (qtyInput) qtyInput.value = String(selectedQty.value);
         };
 
-        // Checkout permalink hacia Shopify con la cantidad elegida
-        const goToShopifyCheckout = (prefill = null) => {
-          const variantId = config.value.variantId;
-          const qty = selectedBundle.value.qty;
-
-          if (typeof window !== 'undefined' && variantId) {
-            isSubmitting.value = true;
-            const params = new URLSearchParams();
-            params.set('locale', 'es');
-            params.set('checkout[shipping_address][country]', 'EC');
-
-            if (prefill) {
-              const parts = (prefill.fullName || '').trim().split(/\s+/);
-              const firstName = parts[0] || '';
-              const lastName = parts.slice(1).join(' ') || parts[0] || '';
-              if (firstName) params.set('checkout[shipping_address][first_name]', firstName);
-              if (lastName) params.set('checkout[shipping_address][last_name]', lastName);
-              if (prefill.phone) params.set('checkout[shipping_address][phone]', prefill.phone);
-              if (prefill.city) params.set('checkout[shipping_address][city]', prefill.city);
-              if (prefill.address) params.set('checkout[shipping_address][address1]', prefill.address);
-            }
-
-            window.location.href = `/cart/${variantId}:${qty}?${params.toString()}`;
-            return true;
-          }
-          return false;
-        };
-
         const triggerOrder = () => {
-          // 1. Si hay una app de formulario COD (Releasit / EasySell / Dropi) instalada
+          // 1. Si en el futuro instalas una app COD en Shopify (ej. Releasit / EasySell), la dispara directo
           const externalCodBtn = document.querySelector(
             '.rsi-cod-form-button, [data-rsi-cod-btn], .es-popup-button, #rsi-cod-form-open'
           );
@@ -1084,58 +944,32 @@
             return;
           }
 
-          // 2. Si hay WhatsApp configurado
-          if (config.value.whatsappNumber && config.value.whatsappNumber.trim() !== '') {
-            isModalOpen.value = true;
+          // 2. En Shopify: va directo al Checkout oficial en español con la cantidad elegida (sin formularios intermedios)
+          const variantId = config.value.variantId;
+          const qty = selectedBundle.value.qty;
+
+          if (typeof window !== 'undefined' && variantId) {
+            const params = new URLSearchParams();
+            params.set('locale', 'es');
+            params.set('checkout[shipping_address][country]', 'EC');
+            window.location.href = `/cart/${variantId}:${qty}?${params.toString()}`;
             return;
           }
 
-          // 3. Ir directo al Checkout de Shopify en español
-          const redirected = goToShopifyCheckout(null);
-          if (!redirected) {
-            // En vista previa local abrimos modal demostrativo
-            isModalOpen.value = true;
-          }
-        };
-
-        const handleModalConfirm = (customerData) => {
-          const { fullName, phone, city, address } = customerData;
-
-          if (config.value.whatsappNumber && config.value.whatsappNumber.trim() !== '') {
-            const cleanPhone = config.value.whatsappNumber.replace(/\D/g, '');
-            const msg = encodeURIComponent(
-              `Hola, deseo pedir con Pago al Recibir:\n` +
-                `• Promoción: ${selectedBundle.value.title} (${selectedBundle.value.qty} ${selectedBundle.value.qty === 1 ? 'unidad' : 'unidades'})\n` +
-                `• Total a pagar: $${selectedBundle.value.price.toFixed(2)} ${config.value.currency}\n` +
-                `• Nombre: ${fullName}\n` +
-                `• Celular: ${phone}\n` +
-                `• Ciudad: ${city}\n` +
-                `• Dirección: ${address}`
-            );
-            window.location.href = `https://wa.me/${cleanPhone}?text=${msg}`;
-            return;
-          }
-
-          const redirected = goToShopifyCheckout(customerData);
-          if (!redirected) {
-            isModalOpen.value = false;
-            orderSuccessToast.value = true;
-            setTimeout(() => {
-              orderSuccessToast.value = false;
-            }, 5000);
-          }
+          // 3. Solo en preview-mobile.html local (sin servidor Shopify) muestra aviso informativo
+          orderSuccessToast.value = true;
+          setTimeout(() => {
+            orderSuccessToast.value = false;
+          }, 4000);
         };
 
         return {
           config,
           selectedQty,
           selectedBundle,
-          isModalOpen,
-          isSubmitting,
           orderSuccessToast,
           selectBundleQty,
           triggerOrder,
-          handleModalConfirm,
         };
       },
       template: `
@@ -1143,7 +977,7 @@
           <TopUrgencyTicker :config="config" />
 
           <main class="mobile-main">
-            <!-- Hero: Eye-Tracking en F + Anchoring + Botón Naranja Vibrante -->
+            <!-- Hero: Eye-Tracking en F + Anchoring + Cantidad + Botón Naranja Vibrante -->
             <EmotionalHeroMobile
               :config="config"
               :selected-bundle="selectedBundle"
@@ -1163,7 +997,7 @@
             <!-- Prueba Social WhatsApp Guayaquil / Ecuador -->
             <RealFeelingsUgc :reviews="config.whatsappReviews" />
 
-            <!-- Bundles con Descuento por Volumen + FAQ Torque 25W -->
+            <!-- Paso a Paso + Selector de Cantidad + FAQ Torque 25W -->
             <ZeroFearCodSection
               :config="config"
               :selected-bundle="selectedBundle"
@@ -1185,19 +1019,9 @@
             @trigger-order="triggerOrder"
           />
 
-          <QuickOrderModal
-            :is-open="isModalOpen"
-            :config="config"
-            :selected-bundle="selectedBundle"
-            :is-submitting="isSubmitting"
-            @close="isModalOpen = false"
-            @select-bundle-qty="selectBundleQty"
-            @proceed-shopify="handleModalConfirm"
-          />
-
           <transition name="fade-modal">
             <div v-if="orderSuccessToast" class="clean-toast">
-              Pedido de prueba registrado: {{ selectedBundle.title }} por \${{ selectedBundle.price.toFixed(2) }}.
+              Vista previa local: Iría directo al Checkout de Shopify con {{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'unidad' : 'unidades' }} (\${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}).
             </div>
           </transition>
         </div>
