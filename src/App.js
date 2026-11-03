@@ -51,19 +51,17 @@ export const App = {
         return;
       }
 
-      // 2. En tienda Shopify activa: va directo al checkout sin pantallas intermedias
+      // 2. En Shopify: va directo al checkout sin parámetros conflictivos que causen 404
       const variantId = config.value.variantId;
       const qty = selectedBundle.value.qty;
 
       if (typeof window !== 'undefined' && variantId) {
-        const params = new URLSearchParams();
-        params.set('locale', 'es');
-        params.set('checkout[shipping_address][country]', 'EC');
-        window.location.href = `/cart/${variantId}:${qty}?${params.toString()}`;
+        // Enlace de carrito directo nativo (sin prefijo /es que causa error en tiendas sin subdominio regional)
+        window.location.href = `/cart/${variantId}:${qty}`;
         return;
       }
 
-      // 3. En entorno de vista previa local: abre el modal editorial
+      // 3. En entorno de vista previa local (preview-mobile.html): abre modal editorial de prueba
       isModalOpen.value = true;
     };
 
@@ -98,10 +96,11 @@ export const App = {
       <!-- 1. Barra de anuncio superior + Cabecera de marca -->
       <TopUrgencyTicker :config="config" />
 
-      <!-- 2. Hero Editorial + 3. Cinta de Valores -->
+      <!-- 2. Hero Editorial con selector de cantidad + 3. Cinta de Valores -->
       <EmotionalHeroMobile
         :config="config"
         :selected-bundle="selectedBundle"
+        @select-bundle-qty="selectBundleQty"
         @trigger-order="triggerOrder"
       />
 
@@ -117,7 +116,7 @@ export const App = {
       <!-- 7. Reseñas Editoriales (Quote Cards) -->
       <RealFeelingsUgc :reviews="config.reviews" />
 
-      <!-- 8. Oferta de Packs y Pago Contraentrega -->
+      <!-- 8. Oferta de Packs y Pago Contraentrega con selector de cantidad -->
       <ZeroFearCodSection
         :config="config"
         :selected-bundle="selectedBundle"
@@ -125,10 +124,11 @@ export const App = {
         @trigger-order="triggerOrder"
       />
 
-      <!-- Barra fija inferior editorial -->
+      <!-- Barra fija inferior editorial con stepper directo -->
       <StickyThumbBar
         :config="config"
         :selected-bundle="selectedBundle"
+        @select-bundle-qty="selectBundleQty"
         @trigger-order="triggerOrder"
       />
 

@@ -1,6 +1,3 @@
-import { SvgIcons } from './SvgIcons.js';
-
-// Selector táctil de cantidad (− N +) reutilizable en Hero, sección de pedido, barra fija y modal
 export const QtyStepper = {
   name: 'QtyStepper',
   props: {
@@ -14,7 +11,7 @@ export const QtyStepper = {
       const next = Math.max(1, Math.min(props.max, props.modelValue + delta));
       if (next !== props.modelValue) emit('update:modelValue', next);
     };
-    return { change, SvgIcons };
+    return { change };
   },
   template: `
     <div class="qty-stepper" :class="{ 'qty-stepper--compact': compact }">
@@ -24,18 +21,19 @@ export const QtyStepper = {
         :disabled="modelValue <= 1"
         aria-label="Quitar una unidad"
         @click="change(-1)"
-        v-html="SvgIcons.minus"
-      ></button>
-      <span class="qty-stepper__val" aria-live="polite">{{ modelValue }}</span>
+      >
+        −
+      </button>
+      <span class="qty-stepper__val">{{ modelValue }}</span>
       <button
         type="button"
         class="qty-stepper__btn"
         :disabled="modelValue >= max"
         aria-label="Agregar una unidad"
         @click="change(1)"
-        v-html="SvgIcons.plus"
-      ></button>
+      >
+        +
+      </button>
     </div>
   `,
 };
-

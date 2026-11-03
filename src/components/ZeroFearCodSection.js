@@ -1,5 +1,8 @@
+import { QtyStepper } from './QtyStepper.js';
+
 export const ZeroFearCodSection = {
   name: 'ZeroFearCodSection',
+  components: { QtyStepper },
   props: {
     config: { type: Object, required: true },
     selectedBundle: { type: Object, required: true },
@@ -33,12 +36,25 @@ export const ZeroFearCodSection = {
         </div>
       </div>
 
+      <!-- Selector manual de cantidad para agregar más unidades -->
+      <div class="qty-stepper-row">
+        <div class="qty-stepper-label">
+          <strong>¿Deseas agregar más productos?</strong>
+          <span>{{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'kit seleccionado' : 'kits seleccionados' }}</span>
+        </div>
+        <QtyStepper
+          :model-value="selectedBundle.qty"
+          :max="config.maxQty"
+          @update:model-value="$emit('select-bundle-qty', $event)"
+        />
+      </div>
+
       <button
         type="button"
         class="btn-editorial-primary"
         @click="$emit('trigger-order')"
       >
-        <span>Confirmar Pedido Contraentrega</span>
+        <span>Confirmar Pedido (\${{ selectedBundle.price.toFixed(2) }})</span>
         <small>Pagas únicamente cuando el repartidor te entregue la caja</small>
       </button>
 

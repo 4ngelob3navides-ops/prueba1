@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#FAF7F2">
 
     <title>
       {{ page_title }}
@@ -16,6 +16,16 @@
     {% if page_description %}
       <meta name="description" content="{{ page_description | escape }}">
     {% endif %}
+
+    <!-- Auto-redirección de protección si el navegador intenta cargar el subdirectorio regional /es que no está configurado en mercados -->
+    <script>
+      (function() {
+        var p = window.location.pathname;
+        if (p === '/es' || p === '/es/') {
+          window.location.replace('/');
+        }
+      })();
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,4 +44,3 @@
     <script src="{{ 'cepillo-vue-app.js' | asset_url }}" defer></script>
   </body>
 </html>
-

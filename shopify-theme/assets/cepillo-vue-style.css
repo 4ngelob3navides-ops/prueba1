@@ -237,6 +237,94 @@ button {
 }
 
 /* Bloque de Precio y Botón Editorial */
+/* SELECTOR DE CANTIDAD EDITORIAL (− N +) */
+.qty-stepper {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-warm);
+  border-radius: var(--radius-pill);
+  padding: 3px 6px;
+  gap: 8px;
+  user-select: none;
+}
+
+.qty-stepper--compact {
+  padding: 2px 4px;
+  gap: 6px;
+}
+
+.qty-stepper__btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-sand);
+  color: var(--text-espresso);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.qty-stepper--compact .qty-stepper__btn {
+  width: 24px;
+  height: 24px;
+  font-size: 13px;
+}
+
+.qty-stepper__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.qty-stepper__btn:active:not(:disabled) {
+  transform: scale(0.9);
+  background: var(--accent-forest);
+  color: #fff;
+}
+
+.qty-stepper__val {
+  min-width: 20px;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-espresso);
+}
+
+.qty-stepper--compact .qty-stepper__val {
+  font-size: 14px;
+  min-width: 16px;
+}
+
+.qty-stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-card);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.qty-stepper-label strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-espresso);
+}
+
+.qty-stepper-label span {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
 .price-editorial-row {
   display: flex;
   align-items: baseline;
@@ -810,42 +898,50 @@ button {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-top: 1px solid var(--border-warm);
-  padding: 12px 18px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 10px;
   z-index: 45;
   box-shadow: 0 -4px 20px rgba(28, 25, 23, 0.08);
 }
 
+.sticky-price-info {
+  text-align: right;
+  flex-shrink: 0;
+}
+
 .sticky-price-info span {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-muted);
+  line-height: 1.1;
 }
 
 .sticky-price-info strong {
   font-family: var(--font-serif);
-  font-size: 22px;
+  font-size: 19px;
   color: var(--text-espresso);
+  line-height: 1.1;
 }
 
 .sticky-btn {
   flex: 1;
   background: var(--accent-forest);
   color: #fff;
-  padding: 14px 18px;
+  padding: 12px 14px;
   border-radius: var(--radius-pill);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-align: center;
   transition: background-color 0.15s ease, transform 0.1s ease;
   box-shadow: 0 3px 10px rgba(31, 75, 60, 0.25);
+  white-space: nowrap;
 }
 
 .sticky-btn:active {

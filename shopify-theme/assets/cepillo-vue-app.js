@@ -34,7 +34,6 @@
     };
 
     // --- QtyStepper.js ---
-    // Selector táctil de cantidad (− N +) reutilizable en Hero, sección de pedido, barra fija y modal
     const QtyStepper = {
       name: 'QtyStepper',
       props: {
@@ -48,7 +47,7 @@
           const next = Math.max(1, Math.min(props.max, props.modelValue + delta));
           if (next !== props.modelValue) emit('update:modelValue', next);
         };
-        return { change, SvgIcons };
+        return { change };
       },
       template: `
         <div class="qty-stepper" :class="{ 'qty-stepper--compact': compact }">
@@ -58,17 +57,19 @@
             :disabled="modelValue <= 1"
             aria-label="Quitar una unidad"
             @click="change(-1)"
-            v-html="SvgIcons.minus"
-          ></button>
-          <span class="qty-stepper__val" aria-live="polite">{{ modelValue }}</span>
+          >
+            −
+          </button>
+          <span class="qty-stepper__val">{{ modelValue }}</span>
           <button
             type="button"
             class="qty-stepper__btn"
             :disabled="modelValue >= max"
             aria-label="Agregar una unidad"
             @click="change(1)"
-            v-html="SvgIcons.plus"
-          ></button>
+          >
+            +
+          </button>
         </div>
       `,
     };
@@ -118,20 +119,39 @@
 
       const offerForQty = (qty) => {
         const q = Math.max(1, Math.min(maxQty, Number(qty) || 1));
-        const match = offers.find((o) => o.qty === q);
-        if (match) return match;
+        let price = 0;
+        let compareAtPrice = 0;
+        let title = '';
+        let sub = '';
 
-        const price = Number((basePrice * q).toFixed(2));
-        const compareAtPrice = Number((baseCompareAt * q).toFixed(2));
+        if (q === 1) {
+          price = basePrice;
+          compareAtPrice = baseCompareAt;
+          title = '1x Kit Cepillo 9 en 1 Pro';
+          sub = '9 cabezales + Vara extensible + Envío Gratis';
+        } else if (q === 2) {
+          price = 59.0;
+          compareAtPrice = 110.0;
+          title = '2x Kits (Pack Familiar / Mamá)';
+          sub = 'Uno para baño y otro para cocina ($29.50 c/u)';
+        } else {
+          price = Number((29.5 * q).toFixed(2));
+          compareAtPrice = Number((baseCompareAt * q).toFixed(2));
+          title = `${q}x Kits Cepillo 9 en 1 Pro`;
+          sub = `$29.50 cada kit + Envío Gratis a todo Ecuador`;
+        }
+
+        const totalSavings = Math.max(0, compareAtPrice - price);
+
         return {
           id: q,
           qty: q,
-          title: `${q}x Kits Cepillo 9 en 1 Pro`,
-          sub: `${money(basePrice)} cada kit + Envío Gratis`,
+          title,
+          sub,
           price,
           compareAtPrice,
-          savingsText: `Ahorras ${money(compareAtPrice - price)} hoy`,
-          badge: `${q} Kits`,
+          savingsText: `Ahorras ${money(totalSavings)} hoy`,
+          badge: q > 1 ? `${q} Kits` : 'Oferta de hoy',
         };
       };
 
@@ -312,11 +332,12 @@
     // --- EmotionalHeroMobile.js ---
     const EmotionalHeroMobile = {
       name: 'EmotionalHeroMobile',
+      components: { QtyStepper },
       props: {
         config: { type: Object, required: true },
         selectedBundle: { type: Object, required: true },
       },
-      emits: ['trigger-order'],
+      emits: ['trigger-order', 'select-bundle-qty'],
       template: `
         <div>
           <!-- 2. Hero Editorial: Cero melodrama, 100% postura y alivio real -->
@@ -356,6 +377,19 @@
                   <span class="price-compare">\${{ selectedBundle.compareAtPrice.toFixed(2) }} USD</span>
                 </div>
                 <span class="price-badge-save">{{ selectedBundle.badge || config.hero.priceBadge }}</span>
+              </div>
+
+              <!-- Selector táctil de cantidad en el Hero -->
+              <div class="qty-stepper-row">
+                <div class="qty-stepper-label">
+                  <strong>Cantidad a pedir:</strong>
+                  <span>{{ selectedBundle.qty === 1 ? '1 unidad (Kit completo)' : selectedBundle.qty + ' unidades' }}</span>
+                </div>
+                <QtyStepper
+                  :model-value="selectedBundle.qty"
+                  :max="config.maxQty"
+                  @update:model-value="$emit('select-bundle-qty', $event)"
+                />
               </div>
 
               <button
@@ -618,6 +652,7 @@
     // --- ZeroFearCodSection.js ---
     const ZeroFearCodSection = {
       name: 'ZeroFearCodSection',
+      components: { QtyStepper },
       props: {
         config: { type: Object, required: true },
         selectedBundle: { type: Object, required: true },
@@ -651,12 +686,25 @@
             </div>
           </div>
 
+          <!-- Selector manual de cantidad para agregar más unidades -->
+          <div class="qty-stepper-row">
+            <div class="qty-stepper-label">
+              <strong>¿Deseas agregar más productos?</strong>
+              <span>{{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'kit seleccionado' : 'kits seleccionados' }}</span>
+            </div>
+            <QtyStepper
+              :model-value="selectedBundle.qty"
+              :max="config.maxQty"
+              @update:model-value="$emit('select-bundle-qty', $event)"
+            />
+          </div>
+
           <button
             type="button"
             class="btn-editorial-primary"
             @click="$emit('trigger-order')"
           >
-            <span>Confirmar Pedido Contraentrega</span>
+            <span>Confirmar Pedido (\${{ selectedBundle.price.toFixed(2) }})</span>
             <small>Pagas únicamente cuando el repartidor te entregue la caja</small>
           </button>
 
@@ -678,23 +726,32 @@
     // --- StickyThumbBar.js ---
     const StickyThumbBar = {
       name: 'StickyThumbBar',
+      components: { QtyStepper },
       props: {
         config: { type: Object, required: true },
         selectedBundle: { type: Object, required: true },
       },
-      emits: ['trigger-order'],
+      emits: ['trigger-order', 'select-bundle-qty'],
       template: `
         <div class="sticky-editorial-bar" role="region" aria-label="Barra fija de pedido rápido">
+          <QtyStepper
+            compact
+            :model-value="selectedBundle.qty"
+            :max="config.maxQty"
+            @update:model-value="$emit('select-bundle-qty', $event)"
+          />
+
           <div class="sticky-price-info">
             <span>Total al recibir</span>
             <strong>\${{ selectedBundle.price.toFixed(2) }} USD</strong>
           </div>
+
           <button
             type="button"
             class="sticky-btn"
             @click="$emit('trigger-order')"
           >
-            Pedir y Pagar en Casa
+            Pedir
           </button>
         </div>
       `,
@@ -743,19 +800,17 @@
             return;
           }
 
-          // 2. En tienda Shopify activa: va directo al checkout sin pantallas intermedias
+          // 2. En Shopify: va directo al checkout sin parámetros conflictivos que causen 404
           const variantId = config.value.variantId;
           const qty = selectedBundle.value.qty;
 
           if (typeof window !== 'undefined' && variantId) {
-            const params = new URLSearchParams();
-            params.set('locale', 'es');
-            params.set('checkout[shipping_address][country]', 'EC');
-            window.location.href = `/cart/${variantId}:${qty}?${params.toString()}`;
+            // Enlace de carrito directo nativo (sin prefijo /es que causa error en tiendas sin subdominio regional)
+            window.location.href = `/cart/${variantId}:${qty}`;
             return;
           }
 
-          // 3. En entorno de vista previa local: abre el modal editorial
+          // 3. En entorno de vista previa local (preview-mobile.html): abre modal editorial de prueba
           isModalOpen.value = true;
         };
 
@@ -790,10 +845,11 @@
           <!-- 1. Barra de anuncio superior + Cabecera de marca -->
           <TopUrgencyTicker :config="config" />
 
-          <!-- 2. Hero Editorial + 3. Cinta de Valores -->
+          <!-- 2. Hero Editorial con selector de cantidad + 3. Cinta de Valores -->
           <EmotionalHeroMobile
             :config="config"
             :selected-bundle="selectedBundle"
+            @select-bundle-qty="selectBundleQty"
             @trigger-order="triggerOrder"
           />
 
@@ -809,7 +865,7 @@
           <!-- 7. Reseñas Editoriales (Quote Cards) -->
           <RealFeelingsUgc :reviews="config.reviews" />
 
-          <!-- 8. Oferta de Packs y Pago Contraentrega -->
+          <!-- 8. Oferta de Packs y Pago Contraentrega con selector de cantidad -->
           <ZeroFearCodSection
             :config="config"
             :selected-bundle="selectedBundle"
@@ -817,10 +873,11 @@
             @trigger-order="triggerOrder"
           />
 
-          <!-- Barra fija inferior editorial -->
+          <!-- Barra fija inferior editorial con stepper directo -->
           <StickyThumbBar
             :config="config"
             :selected-bundle="selectedBundle"
+            @select-bundle-qty="selectBundleQty"
             @trigger-order="triggerOrder"
           />
 

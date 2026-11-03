@@ -1,10 +1,13 @@
+import { QtyStepper } from './QtyStepper.js';
+
 export const EmotionalHeroMobile = {
   name: 'EmotionalHeroMobile',
+  components: { QtyStepper },
   props: {
     config: { type: Object, required: true },
     selectedBundle: { type: Object, required: true },
   },
-  emits: ['trigger-order'],
+  emits: ['trigger-order', 'select-bundle-qty'],
   template: `
     <div>
       <!-- 2. Hero Editorial: Cero melodrama, 100% postura y alivio real -->
@@ -44,6 +47,19 @@ export const EmotionalHeroMobile = {
               <span class="price-compare">\${{ selectedBundle.compareAtPrice.toFixed(2) }} USD</span>
             </div>
             <span class="price-badge-save">{{ selectedBundle.badge || config.hero.priceBadge }}</span>
+          </div>
+
+          <!-- Selector táctil de cantidad en el Hero -->
+          <div class="qty-stepper-row">
+            <div class="qty-stepper-label">
+              <strong>Cantidad a pedir:</strong>
+              <span>{{ selectedBundle.qty === 1 ? '1 unidad (Kit completo)' : selectedBundle.qty + ' unidades' }}</span>
+            </div>
+            <QtyStepper
+              :model-value="selectedBundle.qty"
+              :max="config.maxQty"
+              @update:model-value="$emit('select-bundle-qty', $event)"
+            />
           </div>
 
           <button

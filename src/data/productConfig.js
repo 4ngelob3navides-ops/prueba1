@@ -43,20 +43,39 @@ export function getProductConfig() {
 
   const offerForQty = (qty) => {
     const q = Math.max(1, Math.min(maxQty, Number(qty) || 1));
-    const match = offers.find((o) => o.qty === q);
-    if (match) return match;
+    let price = 0;
+    let compareAtPrice = 0;
+    let title = '';
+    let sub = '';
 
-    const price = Number((basePrice * q).toFixed(2));
-    const compareAtPrice = Number((baseCompareAt * q).toFixed(2));
+    if (q === 1) {
+      price = basePrice;
+      compareAtPrice = baseCompareAt;
+      title = '1x Kit Cepillo 9 en 1 Pro';
+      sub = '9 cabezales + Vara extensible + Envío Gratis';
+    } else if (q === 2) {
+      price = 59.0;
+      compareAtPrice = 110.0;
+      title = '2x Kits (Pack Familiar / Mamá)';
+      sub = 'Uno para baño y otro para cocina ($29.50 c/u)';
+    } else {
+      price = Number((29.5 * q).toFixed(2));
+      compareAtPrice = Number((baseCompareAt * q).toFixed(2));
+      title = `${q}x Kits Cepillo 9 en 1 Pro`;
+      sub = `$29.50 cada kit + Envío Gratis a todo Ecuador`;
+    }
+
+    const totalSavings = Math.max(0, compareAtPrice - price);
+
     return {
       id: q,
       qty: q,
-      title: `${q}x Kits Cepillo 9 en 1 Pro`,
-      sub: `${money(basePrice)} cada kit + Envío Gratis`,
+      title,
+      sub,
       price,
       compareAtPrice,
-      savingsText: `Ahorras ${money(compareAtPrice - price)} hoy`,
-      badge: `${q} Kits`,
+      savingsText: `Ahorras ${money(totalSavings)} hoy`,
+      badge: q > 1 ? `${q} Kits` : 'Oferta de hoy',
     };
   };
 
