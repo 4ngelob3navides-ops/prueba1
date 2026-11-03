@@ -1,5 +1,4 @@
-// Configuración central del producto — Neuromarketing & Alta Conversión
-// Bundles con descuento por volumen, anclaje cognitivo y respaldo Guayaquil
+// Configuración central del producto — Edición Editorial Hogar & Alivio
 
 export function getProductConfig() {
   const shopify = (typeof window !== 'undefined' && window.__SHOPIFY_DATA__) || {};
@@ -12,34 +11,58 @@ export function getProductConfig() {
     return `${assetsBase}${filename}`;
   };
 
-  // Precio base y precio tachado: vienen del producto en Shopify (Admin → Productos)
   const basePrice = Number(shopify.price || 35.0);
   const baseCompareAt =
     Number(shopify.compareAtPrice) > basePrice ? Number(shopify.compareAtPrice) : 55.0;
 
   const maxQty = Math.max(1, Math.min(20, Number(shopify.maxQty || 10)));
-
   const money = (n) => `$${Number(n).toFixed(2)}`;
 
-  // Precio simple: precio de Shopify × cantidad (sin descuentos por volumen)
+  const offers = [
+    {
+      id: 1,
+      qty: 1,
+      title: '1x Kit Cepillo 9 en 1 Pro',
+      sub: '9 cabezales + Vara extensible + Envío Gratis',
+      price: basePrice,
+      compareAtPrice: baseCompareAt,
+      savingsText: 'Ahorras $20 hoy',
+      badge: 'Oferta de hoy',
+    },
+    {
+      id: 2,
+      qty: 2,
+      title: '2x Kits (Pack Familiar / Mamá)',
+      sub: 'Uno para baño y otro para cocina ($29.50 c/u)',
+      price: 59.0,
+      compareAtPrice: 110.0,
+      savingsText: 'Ahorras $51 hoy',
+      badge: 'Pack Familiar',
+    },
+  ];
+
   const offerForQty = (qty) => {
     const q = Math.max(1, Math.min(maxQty, Number(qty) || 1));
+    const match = offers.find((o) => o.qty === q);
+    if (match) return match;
+
     const price = Number((basePrice * q).toFixed(2));
     const compareAtPrice = Number((baseCompareAt * q).toFixed(2));
-    const totalSavings = Math.max(0, compareAtPrice - price);
-
     return {
+      id: q,
       qty: q,
-      title: `${q} ${q === 1 ? 'Kit' : 'Kits'} Cepillo 9 en 1 Pro`,
+      title: `${q}x Kits Cepillo 9 en 1 Pro`,
+      sub: `${money(basePrice)} cada kit + Envío Gratis`,
       price,
       compareAtPrice,
-      savingsText: `Ahorras ${money(totalSavings)} hoy`,
-      unitPriceText: `${money(basePrice)} c/u`,
+      savingsText: `Ahorras ${money(compareAtPrice - price)} hoy`,
+      badge: `${q} Kits`,
     };
   };
 
   return {
-    title: shopify.title || 'Cepillo Eléctrico 9 en 1 Pro',
+    brandName: 'CASA ALIVIO™',
+    title: shopify.title || 'Cepillo 9 en 1 Pro — Edición Hogar & Alivio',
     handle: shopify.handle || 'cepillo-electrico-9-en-1-pro',
     sku: shopify.sku || '208333',
     variantId: shopify.variantId || null,
@@ -47,164 +70,143 @@ export function getProductConfig() {
     basePrice,
     baseCompareAt,
     maxQty,
+    offers,
     offerForQty,
     stockLeft: Number(shopify.stockLeft || 14),
     warehouseCity: shopify.warehouseCity || 'Guayaquil',
-    whatsappNumber: shopify.whatsappNumber || '',
+
+    announcement: {
+      text: 'Envío Contraentrega · Bodega Guayaquil',
+      tag: 'Ahorras $20',
+    },
 
     hero: {
-      eyebrow: 'Cuidado articular y limpieza sin esfuerzo',
-      headline:
-        'Termina de limpiar el baño sin que te duela la cintura ni poner las rodillas en el piso frío.',
+      image: resolveImg(shopify.hero_image, 'relief_standing_clean.jpg'),
+      floatingPill: 'Kit Completo 9 en 1',
+      kicker: 'Cuidado articular & hogar',
+      headlineStart: 'Limpia tu baño desde arriba hasta el piso ',
+      headlineEm: 'sin doblar la espalda.',
       subline:
-        'El cepillo eléctrico que gira a 300 RPM: la máquina hace la fuerza y tú limpias de pie en 10 minutos.',
-      socialProof: '4.9/5 ⭐ (Más de 1,200 familias en Ecuador ya lo usan)',
-      ctaText: 'Pedir ahora y pagar al recibir',
-      ctaSubtext: '🚚 Despacho garantizado en 24-48h desde Bodega Guayaquil · Pagas solo al recibir en casa',
-      gallery: [
-        {
-          id: 'standing',
-          label: 'De pie (1.2 m)',
-          caption: 'Vara extensible hasta 1.2 m: alcanzas duchas altas y pisos con la espalda recta.',
-          image: resolveImg(shopify.heroImage, 'relief_standing_clean.jpg'),
-        },
-        {
-          id: 'faucet',
-          label: 'Sarro en grifos',
-          caption: '300 RPM reales arrancando moho y sarro acumulado en la base del grifo.',
-          image: resolveImg(shopify.zoneCornersImage, 'zone_cone_corner.jpg'),
-        },
-        {
-          id: 'stove',
-          label: 'Grasa de cocina',
-          caption: 'Remueve grasa quemada de hornillas sin hacer presión con la muñeca.',
-          image: resolveImg(shopify.zoneStoveImage, 'zone_stove_grease.jpg'),
-        },
+        'Un motor rotativo de 300 RPM acoplado a un brazo extensible de 1.20 metros. Él hace la presión contra el sarro y el moho; tú solo lo guías de pie.',
+      specs: [
+        { strong: '100% de pie', span: 'Cero dolor lumbar' },
+        { strong: '300 RPM', span: 'Sin frotar a mano' },
+        { strong: '90 Minutos', span: 'Batería sin cables' },
       ],
+      priceBadge: 'Oferta de hoy',
+      ctaMain: 'Pedir Ahora — Pagar al Recibir',
+      ctaSub: 'Despacho rápido desde Guayaquil a todo Ecuador',
     },
+
+    trustStrip: [
+      '✓ 9 Cabezales Incluidos',
+      '✓ Resistente al Agua',
+      '✓ Pago en Efectivo',
+    ],
 
     slider: {
-      eyebrow: 'PRUEBA DE RENDIMIENTO EN JUNTAS REALES',
-      headline: 'El antes y después en el sarro que todos tenemos en casa',
-      subline: 'Arrastra la barra central sobre el azulejo para comparar el resultado.',
-      footnote: '30 segundos con el cabezal cónico vs. 20 minutos frotando con esponja manual.',
-      beforeImage: resolveImg(shopify.beforeImage, 'before_dirty_tiles.jpg'),
-      afterImage: resolveImg(shopify.afterImage, 'after_clean_tiles.jpg'),
+      kicker: 'Prueba física en 30 segundos',
+      title: 'El moho negro de las juntas no sale con trapo.',
+      lead:
+        'Desliza con el dedo para ver cómo las cerdas de alta densidad arrancan el hongo incrustado en la esquina de la ducha.',
+      beforeImg: resolveImg(shopify.slider_before_image, 'before_dirty_tiles.jpg'),
+      afterImg: resolveImg(shopify.slider_after_image, 'after_clean_tiles.jpg'),
+      caption: 'Fotografía real en cerámica de ducha sin retoques digitales.',
     },
 
-    unboxingKit: {
-      eyebrow: 'CONTENIDO EXACTO DE TU PAQUETE',
-      headline: 'Lo que realmente llega en tu caja',
-      subline: 'Kit completo con motor recargable de 25W, 2 tubos de extensión de aluminio y los 9 accesorios de limpieza.',
-      flatlayImage: resolveImg(shopify.unboxingImage, 'unboxing_flatlay_9in1.jpg'),
-      mainHeads: [
+    pains: {
+      kicker: 'Por qué cambiar el cepillo manual',
+      title: 'Tres problemas cotidianos que damos por normales.',
+      lead:
+        'Limpiar la casa no debería costarte salud en las manos, en los pulmones ni en la cintura.',
+      cards: [
         {
-          id: 'cone',
-          iconKey: 'cone',
-          name: 'Cabezal de punta cónica',
-          desc: 'Llega detrás del inodoro, a los rieles de la ventana y al borde del grifo donde ningún trapo entra.',
-          actionImage: resolveImg(shopify.zoneCornersImage, 'zone_cone_corner.jpg'),
+          num: 'Problema 01 · Contacto directo',
+          title: 'Manos agrietadas por cloro y esponjas con bacterias',
+          desc:
+            'Exprimir a mano una esponja llena de grasa o moho del inodoro reseca la piel, rompe las uñas y te obliga a respirar vapores químicos de cerca.',
+          solution:
+            'Solución: Mantén tus manos a 1.20 m de distancia de la suciedad y los químicos.',
+          image: resolveImg(shopify.pain_image_1, 'fear_disgust_germs.jpg'),
         },
         {
-          id: 'flat',
-          iconKey: 'disc',
-          name: 'Cabezal plano ancho',
-          desc: 'Cubre pisos, paredes completas de ducha y tinas en pasadas rápidas sin agacharte.',
-          actionImage: resolveImg(shopify.reliefImage, 'relief_standing_clean.jpg'),
+          num: 'Problema 02 · Rincones imposibles',
+          title: 'El sarro acumulado detrás del grifo y rieles de ducha',
+          desc:
+            'Ni los trapos ni las esponjas entran en las ranuras estrechas. Terminas usando cepillos de dientes viejos y lastimándote los nudillos.',
+          solution:
+            'Solución: El cabezal cónico penetra en esquinas de 90° y bordes de grifería en segundos.',
+          image: resolveImg(shopify.pain_image_2, 'zone_cone_corner.jpg'),
         },
-        {
-          id: 'hard',
-          iconKey: 'bristles',
-          name: 'Cepillo de cerdas duras y fibra',
-          desc: 'Desprende grasa quemada de hornillas, sartenes y manchas secas en cocina.',
-          actionImage: resolveImg(shopify.zoneStoveImage, 'zone_stove_grease.jpg'),
-        },
-        {
-          id: 'sponge',
-          iconKey: 'sparklesClean',
-          name: 'Esponja, microfibra y paño pulidor',
-          desc: 'Limpia espejos, mamparas de vidrio y carrocería del auto sin dejar rayones.',
-          actionImage: resolveImg(shopify.afterImage, 'after_clean_tiles.jpg'),
-        },
-      ],
-      boxChecklist: [
-        '1 Mango motorizado inalámbrico (Motor 25W de alto torque a 300 RPM)',
-        '2 Varas extensibles ajustables hasta 1.20 m de largo',
-        '4 Cepillos de cerdas (plano XXL, plano chico, domo curvo y punta cónica)',
-        '4 Discos de acabado (esponja, fibra abrasiva, microfibra y paño pulidor)',
-        '1 Cable de carga USB-C + soporte de pared',
       ],
     },
 
-    physicalRelief: {
-      eyebrow: 'PROTECCIÓN PARA TUS MANOS Y TU COLUMNA',
-      headline: 'Olvídate de toser por el olor a cloro y de terminar con las manos agrietadas por restregar.',
-      handsPhoto: resolveImg(shopify.fear3Image, 'fear_disgust_germs.jpg'),
-      standingPhoto: resolveImg(shopify.reliefImage, 'relief_standing_clean.jpg'),
-      manualProblems: [
-        'Inhalas vapores fuertes de cloro y desengrasante al estar encorvada dentro de la ducha.',
-        'Te quemas y cuartea la piel de los nudillos con detergentes agresivos.',
-        'El agua turbia del inodoro y del moho te salpica directo en los dedos.',
+    zones: {
+      kicker: 'Un cabezal para cada superficie',
+      title: 'Cómo funciona en cada rincón de tu casa.',
+      list: [
+        {
+          tabLabel: 'Cocina y Grasa',
+          img: resolveImg(shopify.zone_image_1, 'zone_stove_grease.jpg'),
+          tool: 'Cabezal Plano de Cerdas Duras',
+          title: 'Despega grasa quemada de estufas y sartenes',
+          text:
+            'El torque constante levanta los restos pegados en hornillas, campanas extractoras y mesones de acero sin rayar la superficie.',
+        },
+        {
+          tabLabel: 'Grifos y Esquinas',
+          img: resolveImg(shopify.zone_image_2, 'zone_cone_corner.jpg'),
+          tool: 'Cabezal Cónico de Precisión',
+          title: 'Elimina el sarro en bordes de grifos y rieles',
+          text:
+            'Diseñado en punta para entrar detrás de las llaves de agua, esquinas de ducha y rieles de ventanas corredizas.',
+        },
+        {
+          tabLabel: 'Ducha y Paredes Altas',
+          img: resolveImg(shopify.zone_image_3, 'relief_standing_clean.jpg'),
+          tool: 'Brazo Telescópico de 1.20 m',
+          title: 'Alcanza azulejos altos y pisos sin agacharte',
+          text:
+            'Ajusta el largo en un clic para limpiar desde el techo de la ducha hasta el piso manteniendo tu columna totalmente recta.',
+        },
       ],
-      electricSolutions: [
-        'El mango extensible mantiene tus manos y tu rostro a 1 metro de los químicos y bacterias.',
-        'La columna queda recta y la muñeca relajada: solo apoyas el cabezal y dejas que gire.',
-        'Cabezales lavables bajo el grifo en segundos sin exprimir esponjas sucias.',
+      kitGrid: [
+        { name: 'Cepillo Ancho', sub: 'Pisos y tinas' },
+        { name: 'Punta Cónica', sub: 'Juntas y rieles' },
+        { name: 'Domo Curvo', sub: 'Inodoro y lavabo' },
+        { name: 'Fibra Verde', sub: 'Ollas y parrillas' },
+        { name: 'Esponja Suave', sub: 'Platos y mesón' },
+        { name: 'Microfibra', sub: 'Vidrios y espejos' },
+        { name: 'Paño Pulidor', sub: 'Acero y auto' },
+        { name: 'Cepillo Fino', sub: 'Grifería delicada' },
+        { name: 'Vara 1.20 m', sub: '3 tramos + USB-C' },
       ],
     },
 
-    whatsappReviews: [
+    reviews: [
       {
         id: 1,
-        name: 'Mariana C.',
-        location: 'Urdesa, Guayaquil',
-        time: '10:42 a. m.',
-        image: resolveImg(shopify.ugc1Image, 'after_clean_tiles.jpg'),
-        message:
-          'Me llegó ayer por Servientrega aquí a Urdesa, todo bien empacado. Lo probé en la junta de la ducha que tenía moho de meses y salió al toque. Ya no me duele la columna.',
+        stars: '★★★★★',
+        text:
+          '"Tengo hernia discal y limpiar la cerámica de la ducha era un suplicio cada sábado. Con el tubo largo limpio hasta arriba parada recta."',
+        author: 'Patricia M. — Guayaquil',
+        tag: 'Compra verificada',
       },
       {
         id: 2,
-        name: 'Roberto A.',
-        location: 'La Carolina, Quito',
-        time: '3:18 p. m.',
-        image: resolveImg(shopify.ugc2Image, 'unboxing_flatlay_9in1.jpg'),
-        message:
-          'Tenía duda de qué venía en la caja y llegó completito con los tubos largos de aluminio y todos los cepillos. Revisé el paquete en la puerta y ahí pagué en efectivo.',
-      },
-      {
-        id: 3,
-        name: 'Patricia V.',
-        location: 'Cuenca',
-        time: '6:05 p. m.',
-        image: resolveImg(shopify.zoneStoveImage, 'zone_stove_grease.jpg'),
-        message:
-          'Se lo compré a mi mamá para que no siga haciendo fuerza en las hornillas ni arrodillándose a lavar el piso del baño. Tiene buena potencia y es liviano.',
+        stars: '★★★★★',
+        text:
+          '"El cepillo en punta sacó el sarro negro que estaba pegado detrás de las llaves del lavamanos. Llegó en 24 horas y pagué en efectivo."',
+        author: 'Gabriela R. — Quito',
+        tag: 'Compra verificada',
       },
     ],
 
-    codTrust: {
-      image: resolveImg(shopify.codImage, 'cod_door_delivery.jpg'),
-      steps: [
-        {
-          iconKey: 'formCheck',
-          stepNum: 'Paso 1',
-          title: 'Haces tu pedido hoy',
-          sub: 'Eliges cuántas unidades deseas sin ingresar tarjetas de crédito.',
-        },
-        {
-          iconKey: 'truck',
-          stepNum: 'Paso 2',
-          title: 'Despacho local 24-48h',
-          sub: 'Salida directa desde bodega Guayaquil con stock limitado garantizado hoy.',
-        },
-        {
-          iconKey: 'cashHand',
-          stepNum: 'Paso 3',
-          title: 'Revisas y pagas en mano',
-          sub: 'El repartidor toca tu puerta, verificas tu paquete y pagas en efectivo.',
-        },
-      ],
+    codCard: {
+      image: resolveImg(shopify.cod_image, 'cod_door_delivery.jpg'),
+      title: 'Compra 100% libre de riesgo',
+      desc:
+        'No pedimos tarjetas. Despachamos desde nuestra bodega en Guayaquil y pagas al recibir.',
     },
   };
 }

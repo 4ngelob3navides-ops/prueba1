@@ -15,8 +15,8 @@ export const App = {
     TopUrgencyTicker,
     EmotionalHeroMobile,
     ThumbCleanInteractive,
-    VisualZoneTapper,
     PhysicalReliefSection,
+    VisualZoneTapper,
     RealFeelingsUgc,
     ZeroFearCodSection,
     StickyThumbBar,
@@ -24,7 +24,14 @@ export const App = {
   setup() {
     const config = ref(getProductConfig());
     const selectedQty = ref(1);
-    const orderSuccessToast = ref(false);
+    const isModalOpen = ref(false);
+    const orderToast = ref(false);
+
+    const formData = ref({
+      name: '',
+      phone: '',
+      address: '',
+    });
 
     const selectedBundle = computed(() => config.value.offerForQty(selectedQty.value));
 
@@ -35,7 +42,7 @@ export const App = {
     };
 
     const triggerOrder = () => {
-      // 1. Si en el futuro instalas una app COD en Shopify (ej. Releasit / EasySell), la dispara directo
+      // 1. Si existe app COD instalada en Shopify (Releasit / EasySell)
       const externalCodBtn = document.querySelector(
         '.rsi-cod-form-button, [data-rsi-cod-btn], .es-popup-button, #rsi-cod-form-open'
       );
@@ -44,7 +51,7 @@ export const App = {
         return;
       }
 
-      // 2. En Shopify: va directo al Checkout oficial en español con la cantidad elegida (sin formularios intermedios)
+      // 2. En tienda Shopify activa: va directo al checkout sin pantallas intermedias
       const variantId = config.value.variantId;
       const qty = selectedBundle.value.qty;
 
@@ -56,10 +63,20 @@ export const App = {
         return;
       }
 
-      // 3. Solo en preview-mobile.html local (sin servidor Shopify) muestra aviso informativo
-      orderSuccessToast.value = true;
+      // 3. En entorno de vista previa local: abre el modal editorial
+      isModalOpen.value = true;
+    };
+
+    const closeModal = () => {
+      isModalOpen.value = false;
+    };
+
+    const submitOrder = (e) => {
+      if (e) e.preventDefault();
+      closeModal();
+      orderToast.value = true;
       setTimeout(() => {
-        orderSuccessToast.value = false;
+        orderToast.value = false;
       }, 4000);
     };
 
@@ -67,63 +84,118 @@ export const App = {
       config,
       selectedQty,
       selectedBundle,
-      orderSuccessToast,
+      isModalOpen,
+      orderToast,
+      formData,
       selectBundleQty,
       triggerOrder,
+      closeModal,
+      submitOrder,
     };
   },
   template: `
-    <div class="mobile-shell">
+    <div class="editorial-shell">
+      <!-- 1. Barra de anuncio superior + Cabecera de marca -->
       <TopUrgencyTicker :config="config" />
 
-      <main class="mobile-main">
-        <!-- Hero: Eye-Tracking en F + Anchoring + Cantidad + Botón Naranja Vibrante -->
-        <EmotionalHeroMobile
-          :config="config"
-          :selected-bundle="selectedBundle"
-          @select-bundle-qty="selectBundleQty"
-          @trigger-order="triggerOrder"
-        />
+      <!-- 2. Hero Editorial + 3. Cinta de Valores -->
+      <EmotionalHeroMobile
+        :config="config"
+        :selected-bundle="selectedBundle"
+        @trigger-order="triggerOrder"
+      />
 
-        <!-- Slider Interactivo: Antes vs Después en Sarro Real -->
-        <ThumbCleanInteractive :slider="config.slider" />
+      <!-- 4. Slider Antes / Después en moho real -->
+      <ThumbCleanInteractive :slider="config.slider" />
 
-        <!-- Unboxing Transparente + 9 Cabezales -->
-        <VisualZoneTapper :kit="config.unboxingKit" />
+      <!-- 5. Dolores Reales y Tangibles -->
+      <PhysicalReliefSection :pains="config.pains" />
 
-        <!-- Alivio Físico: Manos sin químicos a 1 m -->
-        <PhysicalReliefSection :relief="config.physicalRelief" />
+      <!-- 6. Demostración por Zonas y los 9 Cabezales -->
+      <VisualZoneTapper :zones="config.zones" />
 
-        <!-- Prueba Social WhatsApp Guayaquil / Ecuador -->
-        <RealFeelingsUgc :reviews="config.whatsappReviews" />
+      <!-- 7. Reseñas Editoriales (Quote Cards) -->
+      <RealFeelingsUgc :reviews="config.reviews" />
 
-        <!-- Paso a Paso + Selector de Cantidad + FAQ Torque 25W -->
-        <ZeroFearCodSection
-          :config="config"
-          :selected-bundle="selectedBundle"
-          @select-bundle-qty="selectBundleQty"
-          @trigger-order="triggerOrder"
-        />
-      </main>
-
-      <footer class="clean-footer">
-        <p>Despacho local desde Bodega {{ config.warehouseCity }} · Pago contra entrega</p>
-        <small>{{ config.title }} · Ref. {{ config.sku }}</small>
-      </footer>
-
-      <!-- Sticky CTA Fijo con Naranja Vibrante Continuo -->
-      <StickyThumbBar
+      <!-- 8. Oferta de Packs y Pago Contraentrega -->
+      <ZeroFearCodSection
         :config="config"
         :selected-bundle="selectedBundle"
         @select-bundle-qty="selectBundleQty"
         @trigger-order="triggerOrder"
       />
 
-      <transition name="fade-modal">
-        <div v-if="orderSuccessToast" class="clean-toast">
-          Vista previa local: Iría directo al Checkout de Shopify con {{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'unidad' : 'unidades' }} (\${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}).
+      <!-- Barra fija inferior editorial -->
+      <StickyThumbBar
+        :config="config"
+        :selected-bundle="selectedBundle"
+        @trigger-order="triggerOrder"
+      />
+
+      <!-- Modal Contraentrega Editorial (para vista previa local) -->
+      <div
+        class="modal-overlay"
+        :class="{ open: isModalOpen }"
+        @click.self="closeModal"
+      >
+        <div class="modal-sheet">
+          <button
+            type="button"
+            class="modal-close"
+            @click="closeModal"
+            aria-label="Cerrar modal"
+          >
+            ✕
+          </button>
+          <span class="editorial-kicker">Pago Contraentrega Ecuador</span>
+          <h3 style="font-family: var(--font-serif); font-size: 24px; color: var(--text-espresso); margin-bottom: 16px;">
+            Datos para el repartidor
+          </h3>
+
+          <form @submit="submitOrder">
+            <div class="form-group">
+              <label>Nombre y Apellido</label>
+              <input
+                v-model="formData.name"
+                type="text"
+                required
+                placeholder="Ej. María Fernanda Gómez"
+              />
+            </div>
+            <div class="form-group">
+              <label>WhatsApp / Celular</label>
+              <input
+                v-model="formData.phone"
+                type="tel"
+                required
+                placeholder="Ej. 099 123 4567"
+              />
+            </div>
+            <div class="form-group">
+              <label>Ciudad y Dirección Exacta</label>
+              <input
+                v-model="formData.address"
+                type="text"
+                required
+                placeholder="Ciudad, sector, calle principal y referencia"
+              />
+            </div>
+            <button
+              type="submit"
+              class="btn-editorial-primary"
+              style="margin-top: 10px;"
+            >
+              <span>Finalizar Pedido (\${{ selectedBundle.price.toFixed(2) }})</span>
+              <small>Te confirmaremos el despacho por WhatsApp</small>
+            </button>
+          </form>
         </div>
-      </transition>
+      </div>
+
+      <!-- Toast informativo -->
+      <div v-if="orderToast" class="editorial-toast">
+        <span>✓ ¡Pedido registrado con éxito! Preparando despacho desde Guayaquil.</span>
+      </div>
     </div>
   `,
 };

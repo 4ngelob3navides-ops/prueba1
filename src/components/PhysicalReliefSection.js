@@ -1,62 +1,34 @@
-import { SvgIcons } from './SvgIcons.js';
-
 export const PhysicalReliefSection = {
   name: 'PhysicalReliefSection',
   props: {
-    relief: { type: Object, required: true },
-  },
-  setup() {
-    return { SvgIcons };
+    pains: { type: Object, required: true },
   },
   template: `
-    <section class="section-block section-block--alt">
-      <div class="section-header">
-        <span class="section-eyebrow">{{ relief.eyebrow }}</span>
-        <h2 class="section-title">{{ relief.headline }}</h2>
-      </div>
+    <!-- 5. Dolores Reales y Tangibles (Sin melodrama) -->
+    <section class="section-block">
+      <span class="editorial-kicker">{{ pains.kicker }}</span>
+      <h2 class="section-title">{{ pains.title }}</h2>
+      <p class="section-lead">{{ pains.lead }}</p>
 
-      <div class="relief-stack">
-        <!-- Tarjeta 1: El problema real del cepillo/esponja manual -->
-        <article class="relief-card relief-card--manual">
-          <div class="relief-card__photo">
-            <img
-              :src="relief.handsPhoto"
-              alt="Manos irritadas y resecas por químicos y esponja sucia"
-              loading="lazy"
-            />
-            <span class="relief-card__pill relief-card__pill--muted">
-              Con esponja o cepillo manual
-            </span>
+      <div class="pain-editorial-grid">
+        <article
+          v-for="(card, idx) in pains.cards"
+          :key="idx"
+          class="pain-editorial-card"
+        >
+          <div class="pain-editorial-card__img">
+            <img :src="card.image" :alt="card.title" loading="lazy" />
           </div>
-          <ul class="relief-points">
-            <li v-for="(item, idx) in relief.manualProblems" :key="idx">
-              <span class="point-mark point-mark--cross" v-html="SvgIcons.cross"></span>
-              <span>{{ item }}</span>
-            </li>
-          </ul>
-        </article>
-
-        <!-- Tarjeta 2: Solución ergonómica a 1 metro de distancia -->
-        <article class="relief-card relief-card--solution">
-          <div class="relief-card__photo">
-            <img
-              :src="relief.standingPhoto"
-              alt="Limpieza erguida a 1 metro de distancia con Cepillo 9 en 1 Pro"
-              loading="lazy"
-            />
-            <span class="relief-card__pill relief-card__pill--sage">
-              Con el Cepillo 9 en 1 Pro
-            </span>
+          <div class="pain-editorial-card__body">
+            <span class="pain-number">{{ card.num }}</span>
+            <h3 class="pain-editorial-card__title">{{ card.title }}</h3>
+            <p class="pain-editorial-card__desc">{{ card.desc }}</p>
+            <div class="relief-solution-bar">
+              {{ card.solution }}
+            </div>
           </div>
-          <ul class="relief-points">
-            <li v-for="(item, idx) in relief.electricSolutions" :key="idx">
-              <span class="point-mark point-mark--check" v-html="SvgIcons.check"></span>
-              <span>{{ item }}</span>
-            </li>
-          </ul>
         </article>
       </div>
     </section>
   `,
 };
-

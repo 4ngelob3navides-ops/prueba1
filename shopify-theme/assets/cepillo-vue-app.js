@@ -74,8 +74,7 @@
     };
 
     // --- productConfig.js ---
-    // Configuración central del producto — Neuromarketing & Alta Conversión
-    // Bundles con descuento por volumen, anclaje cognitivo y respaldo Guayaquil
+    // Configuración central del producto — Edición Editorial Hogar & Alivio
     function getProductConfig() {
       const shopify = (typeof window !== 'undefined' && window.__SHOPIFY_DATA__) || {};
       const assetsBase = shopify.assetsBase || './shopify-theme/assets/';
@@ -87,34 +86,58 @@
         return `${assetsBase}${filename}`;
       };
 
-      // Precio base y precio tachado: vienen del producto en Shopify (Admin → Productos)
       const basePrice = Number(shopify.price || 35.0);
       const baseCompareAt =
         Number(shopify.compareAtPrice) > basePrice ? Number(shopify.compareAtPrice) : 55.0;
 
       const maxQty = Math.max(1, Math.min(20, Number(shopify.maxQty || 10)));
-
       const money = (n) => `$${Number(n).toFixed(2)}`;
 
-      // Precio simple: precio de Shopify × cantidad (sin descuentos por volumen)
+      const offers = [
+        {
+          id: 1,
+          qty: 1,
+          title: '1x Kit Cepillo 9 en 1 Pro',
+          sub: '9 cabezales + Vara extensible + Envío Gratis',
+          price: basePrice,
+          compareAtPrice: baseCompareAt,
+          savingsText: 'Ahorras $20 hoy',
+          badge: 'Oferta de hoy',
+        },
+        {
+          id: 2,
+          qty: 2,
+          title: '2x Kits (Pack Familiar / Mamá)',
+          sub: 'Uno para baño y otro para cocina ($29.50 c/u)',
+          price: 59.0,
+          compareAtPrice: 110.0,
+          savingsText: 'Ahorras $51 hoy',
+          badge: 'Pack Familiar',
+        },
+      ];
+
       const offerForQty = (qty) => {
         const q = Math.max(1, Math.min(maxQty, Number(qty) || 1));
+        const match = offers.find((o) => o.qty === q);
+        if (match) return match;
+
         const price = Number((basePrice * q).toFixed(2));
         const compareAtPrice = Number((baseCompareAt * q).toFixed(2));
-        const totalSavings = Math.max(0, compareAtPrice - price);
-
         return {
+          id: q,
           qty: q,
-          title: `${q} ${q === 1 ? 'Kit' : 'Kits'} Cepillo 9 en 1 Pro`,
+          title: `${q}x Kits Cepillo 9 en 1 Pro`,
+          sub: `${money(basePrice)} cada kit + Envío Gratis`,
           price,
           compareAtPrice,
-          savingsText: `Ahorras ${money(totalSavings)} hoy`,
-          unitPriceText: `${money(basePrice)} c/u`,
+          savingsText: `Ahorras ${money(compareAtPrice - price)} hoy`,
+          badge: `${q} Kits`,
         };
       };
 
       return {
-        title: shopify.title || 'Cepillo Eléctrico 9 en 1 Pro',
+        brandName: 'CASA ALIVIO™',
+        title: shopify.title || 'Cepillo 9 en 1 Pro — Edición Hogar & Alivio',
         handle: shopify.handle || 'cepillo-electrico-9-en-1-pro',
         sku: shopify.sku || '208333',
         variantId: shopify.variantId || null,
@@ -122,164 +145,143 @@
         basePrice,
         baseCompareAt,
         maxQty,
+        offers,
         offerForQty,
         stockLeft: Number(shopify.stockLeft || 14),
         warehouseCity: shopify.warehouseCity || 'Guayaquil',
-        whatsappNumber: shopify.whatsappNumber || '',
+
+        announcement: {
+          text: 'Envío Contraentrega · Bodega Guayaquil',
+          tag: 'Ahorras $20',
+        },
 
         hero: {
-          eyebrow: 'Cuidado articular y limpieza sin esfuerzo',
-          headline:
-            'Termina de limpiar el baño sin que te duela la cintura ni poner las rodillas en el piso frío.',
+          image: resolveImg(shopify.hero_image, 'relief_standing_clean.jpg'),
+          floatingPill: 'Kit Completo 9 en 1',
+          kicker: 'Cuidado articular & hogar',
+          headlineStart: 'Limpia tu baño desde arriba hasta el piso ',
+          headlineEm: 'sin doblar la espalda.',
           subline:
-            'El cepillo eléctrico que gira a 300 RPM: la máquina hace la fuerza y tú limpias de pie en 10 minutos.',
-          socialProof: '4.9/5 ⭐ (Más de 1,200 familias en Ecuador ya lo usan)',
-          ctaText: 'Pedir ahora y pagar al recibir',
-          ctaSubtext: '🚚 Despacho garantizado en 24-48h desde Bodega Guayaquil · Pagas solo al recibir en casa',
-          gallery: [
-            {
-              id: 'standing',
-              label: 'De pie (1.2 m)',
-              caption: 'Vara extensible hasta 1.2 m: alcanzas duchas altas y pisos con la espalda recta.',
-              image: resolveImg(shopify.heroImage, 'relief_standing_clean.jpg'),
-            },
-            {
-              id: 'faucet',
-              label: 'Sarro en grifos',
-              caption: '300 RPM reales arrancando moho y sarro acumulado en la base del grifo.',
-              image: resolveImg(shopify.zoneCornersImage, 'zone_cone_corner.jpg'),
-            },
-            {
-              id: 'stove',
-              label: 'Grasa de cocina',
-              caption: 'Remueve grasa quemada de hornillas sin hacer presión con la muñeca.',
-              image: resolveImg(shopify.zoneStoveImage, 'zone_stove_grease.jpg'),
-            },
+            'Un motor rotativo de 300 RPM acoplado a un brazo extensible de 1.20 metros. Él hace la presión contra el sarro y el moho; tú solo lo guías de pie.',
+          specs: [
+            { strong: '100% de pie', span: 'Cero dolor lumbar' },
+            { strong: '300 RPM', span: 'Sin frotar a mano' },
+            { strong: '90 Minutos', span: 'Batería sin cables' },
           ],
+          priceBadge: 'Oferta de hoy',
+          ctaMain: 'Pedir Ahora — Pagar al Recibir',
+          ctaSub: 'Despacho rápido desde Guayaquil a todo Ecuador',
         },
+
+        trustStrip: [
+          '✓ 9 Cabezales Incluidos',
+          '✓ Resistente al Agua',
+          '✓ Pago en Efectivo',
+        ],
 
         slider: {
-          eyebrow: 'PRUEBA DE RENDIMIENTO EN JUNTAS REALES',
-          headline: 'El antes y después en el sarro que todos tenemos en casa',
-          subline: 'Arrastra la barra central sobre el azulejo para comparar el resultado.',
-          footnote: '30 segundos con el cabezal cónico vs. 20 minutos frotando con esponja manual.',
-          beforeImage: resolveImg(shopify.beforeImage, 'before_dirty_tiles.jpg'),
-          afterImage: resolveImg(shopify.afterImage, 'after_clean_tiles.jpg'),
+          kicker: 'Prueba física en 30 segundos',
+          title: 'El moho negro de las juntas no sale con trapo.',
+          lead:
+            'Desliza con el dedo para ver cómo las cerdas de alta densidad arrancan el hongo incrustado en la esquina de la ducha.',
+          beforeImg: resolveImg(shopify.slider_before_image, 'before_dirty_tiles.jpg'),
+          afterImg: resolveImg(shopify.slider_after_image, 'after_clean_tiles.jpg'),
+          caption: 'Fotografía real en cerámica de ducha sin retoques digitales.',
         },
 
-        unboxingKit: {
-          eyebrow: 'CONTENIDO EXACTO DE TU PAQUETE',
-          headline: 'Lo que realmente llega en tu caja',
-          subline: 'Kit completo con motor recargable de 25W, 2 tubos de extensión de aluminio y los 9 accesorios de limpieza.',
-          flatlayImage: resolveImg(shopify.unboxingImage, 'unboxing_flatlay_9in1.jpg'),
-          mainHeads: [
+        pains: {
+          kicker: 'Por qué cambiar el cepillo manual',
+          title: 'Tres problemas cotidianos que damos por normales.',
+          lead:
+            'Limpiar la casa no debería costarte salud en las manos, en los pulmones ni en la cintura.',
+          cards: [
             {
-              id: 'cone',
-              iconKey: 'cone',
-              name: 'Cabezal de punta cónica',
-              desc: 'Llega detrás del inodoro, a los rieles de la ventana y al borde del grifo donde ningún trapo entra.',
-              actionImage: resolveImg(shopify.zoneCornersImage, 'zone_cone_corner.jpg'),
+              num: 'Problema 01 · Contacto directo',
+              title: 'Manos agrietadas por cloro y esponjas con bacterias',
+              desc:
+                'Exprimir a mano una esponja llena de grasa o moho del inodoro reseca la piel, rompe las uñas y te obliga a respirar vapores químicos de cerca.',
+              solution:
+                'Solución: Mantén tus manos a 1.20 m de distancia de la suciedad y los químicos.',
+              image: resolveImg(shopify.pain_image_1, 'fear_disgust_germs.jpg'),
             },
             {
-              id: 'flat',
-              iconKey: 'disc',
-              name: 'Cabezal plano ancho',
-              desc: 'Cubre pisos, paredes completas de ducha y tinas en pasadas rápidas sin agacharte.',
-              actionImage: resolveImg(shopify.reliefImage, 'relief_standing_clean.jpg'),
+              num: 'Problema 02 · Rincones imposibles',
+              title: 'El sarro acumulado detrás del grifo y rieles de ducha',
+              desc:
+                'Ni los trapos ni las esponjas entran en las ranuras estrechas. Terminas usando cepillos de dientes viejos y lastimándote los nudillos.',
+              solution:
+                'Solución: El cabezal cónico penetra en esquinas de 90° y bordes de grifería en segundos.',
+              image: resolveImg(shopify.pain_image_2, 'zone_cone_corner.jpg'),
             },
-            {
-              id: 'hard',
-              iconKey: 'bristles',
-              name: 'Cepillo de cerdas duras y fibra',
-              desc: 'Desprende grasa quemada de hornillas, sartenes y manchas secas en cocina.',
-              actionImage: resolveImg(shopify.zoneStoveImage, 'zone_stove_grease.jpg'),
-            },
-            {
-              id: 'sponge',
-              iconKey: 'sparklesClean',
-              name: 'Esponja, microfibra y paño pulidor',
-              desc: 'Limpia espejos, mamparas de vidrio y carrocería del auto sin dejar rayones.',
-              actionImage: resolveImg(shopify.afterImage, 'after_clean_tiles.jpg'),
-            },
-          ],
-          boxChecklist: [
-            '1 Mango motorizado inalámbrico (Motor 25W de alto torque a 300 RPM)',
-            '2 Varas extensibles ajustables hasta 1.20 m de largo',
-            '4 Cepillos de cerdas (plano XXL, plano chico, domo curvo y punta cónica)',
-            '4 Discos de acabado (esponja, fibra abrasiva, microfibra y paño pulidor)',
-            '1 Cable de carga USB-C + soporte de pared',
           ],
         },
 
-        physicalRelief: {
-          eyebrow: 'PROTECCIÓN PARA TUS MANOS Y TU COLUMNA',
-          headline: 'Olvídate de toser por el olor a cloro y de terminar con las manos agrietadas por restregar.',
-          handsPhoto: resolveImg(shopify.fear3Image, 'fear_disgust_germs.jpg'),
-          standingPhoto: resolveImg(shopify.reliefImage, 'relief_standing_clean.jpg'),
-          manualProblems: [
-            'Inhalas vapores fuertes de cloro y desengrasante al estar encorvada dentro de la ducha.',
-            'Te quemas y cuartea la piel de los nudillos con detergentes agresivos.',
-            'El agua turbia del inodoro y del moho te salpica directo en los dedos.',
+        zones: {
+          kicker: 'Un cabezal para cada superficie',
+          title: 'Cómo funciona en cada rincón de tu casa.',
+          list: [
+            {
+              tabLabel: 'Cocina y Grasa',
+              img: resolveImg(shopify.zone_image_1, 'zone_stove_grease.jpg'),
+              tool: 'Cabezal Plano de Cerdas Duras',
+              title: 'Despega grasa quemada de estufas y sartenes',
+              text:
+                'El torque constante levanta los restos pegados en hornillas, campanas extractoras y mesones de acero sin rayar la superficie.',
+            },
+            {
+              tabLabel: 'Grifos y Esquinas',
+              img: resolveImg(shopify.zone_image_2, 'zone_cone_corner.jpg'),
+              tool: 'Cabezal Cónico de Precisión',
+              title: 'Elimina el sarro en bordes de grifos y rieles',
+              text:
+                'Diseñado en punta para entrar detrás de las llaves de agua, esquinas de ducha y rieles de ventanas corredizas.',
+            },
+            {
+              tabLabel: 'Ducha y Paredes Altas',
+              img: resolveImg(shopify.zone_image_3, 'relief_standing_clean.jpg'),
+              tool: 'Brazo Telescópico de 1.20 m',
+              title: 'Alcanza azulejos altos y pisos sin agacharte',
+              text:
+                'Ajusta el largo en un clic para limpiar desde el techo de la ducha hasta el piso manteniendo tu columna totalmente recta.',
+            },
           ],
-          electricSolutions: [
-            'El mango extensible mantiene tus manos y tu rostro a 1 metro de los químicos y bacterias.',
-            'La columna queda recta y la muñeca relajada: solo apoyas el cabezal y dejas que gire.',
-            'Cabezales lavables bajo el grifo en segundos sin exprimir esponjas sucias.',
+          kitGrid: [
+            { name: 'Cepillo Ancho', sub: 'Pisos y tinas' },
+            { name: 'Punta Cónica', sub: 'Juntas y rieles' },
+            { name: 'Domo Curvo', sub: 'Inodoro y lavabo' },
+            { name: 'Fibra Verde', sub: 'Ollas y parrillas' },
+            { name: 'Esponja Suave', sub: 'Platos y mesón' },
+            { name: 'Microfibra', sub: 'Vidrios y espejos' },
+            { name: 'Paño Pulidor', sub: 'Acero y auto' },
+            { name: 'Cepillo Fino', sub: 'Grifería delicada' },
+            { name: 'Vara 1.20 m', sub: '3 tramos + USB-C' },
           ],
         },
 
-        whatsappReviews: [
+        reviews: [
           {
             id: 1,
-            name: 'Mariana C.',
-            location: 'Urdesa, Guayaquil',
-            time: '10:42 a. m.',
-            image: resolveImg(shopify.ugc1Image, 'after_clean_tiles.jpg'),
-            message:
-              'Me llegó ayer por Servientrega aquí a Urdesa, todo bien empacado. Lo probé en la junta de la ducha que tenía moho de meses y salió al toque. Ya no me duele la columna.',
+            stars: '★★★★★',
+            text:
+              '"Tengo hernia discal y limpiar la cerámica de la ducha era un suplicio cada sábado. Con el tubo largo limpio hasta arriba parada recta."',
+            author: 'Patricia M. — Guayaquil',
+            tag: 'Compra verificada',
           },
           {
             id: 2,
-            name: 'Roberto A.',
-            location: 'La Carolina, Quito',
-            time: '3:18 p. m.',
-            image: resolveImg(shopify.ugc2Image, 'unboxing_flatlay_9in1.jpg'),
-            message:
-              'Tenía duda de qué venía en la caja y llegó completito con los tubos largos de aluminio y todos los cepillos. Revisé el paquete en la puerta y ahí pagué en efectivo.',
-          },
-          {
-            id: 3,
-            name: 'Patricia V.',
-            location: 'Cuenca',
-            time: '6:05 p. m.',
-            image: resolveImg(shopify.zoneStoveImage, 'zone_stove_grease.jpg'),
-            message:
-              'Se lo compré a mi mamá para que no siga haciendo fuerza en las hornillas ni arrodillándose a lavar el piso del baño. Tiene buena potencia y es liviano.',
+            stars: '★★★★★',
+            text:
+              '"El cepillo en punta sacó el sarro negro que estaba pegado detrás de las llaves del lavamanos. Llegó en 24 horas y pagué en efectivo."',
+            author: 'Gabriela R. — Quito',
+            tag: 'Compra verificada',
           },
         ],
 
-        codTrust: {
-          image: resolveImg(shopify.codImage, 'cod_door_delivery.jpg'),
-          steps: [
-            {
-              iconKey: 'formCheck',
-              stepNum: 'Paso 1',
-              title: 'Haces tu pedido hoy',
-              sub: 'Eliges cuántas unidades deseas sin ingresar tarjetas de crédito.',
-            },
-            {
-              iconKey: 'truck',
-              stepNum: 'Paso 2',
-              title: 'Despacho local 24-48h',
-              sub: 'Salida directa desde bodega Guayaquil con stock limitado garantizado hoy.',
-            },
-            {
-              iconKey: 'cashHand',
-              stepNum: 'Paso 3',
-              title: 'Revisas y pagas en mano',
-              sub: 'El repartidor toca tu puerta, verificas tu paquete y pagas en efectivo.',
-            },
-          ],
+        codCard: {
+          image: resolveImg(shopify.cod_image, 'cod_door_delivery.jpg'),
+          title: 'Compra 100% libre de riesgo',
+          desc:
+            'No pedimos tarjetas. Despachamos desde nuestra bodega en Guayaquil y pagas al recibir.',
         },
       };
     }
@@ -290,154 +292,88 @@
       props: {
         config: { type: Object, required: true },
       },
-      setup() {
-        return { SvgIcons };
-      },
       template: `
-        <header class="top-bar" role="banner">
-          <div class="top-bar__inner">
-            <span class="top-bar__icon" v-html="SvgIcons.truck"></span>
-            <p class="top-bar__text">
-              Despacho local desde <strong>{{ config.warehouseCity }}</strong>
-              <span class="top-bar__sep">·</span>
-              <span>Pago en efectivo al recibir</span>
-            </p>
+        <div>
+          <!-- 1. Barra de anuncio superior (estilo boutique) -->
+          <div class="announcement-bar">
+            <span>{{ config.announcement.text }}</span>
+            <span class="announcement-bar__tag">{{ config.announcement.tag }}</span>
           </div>
-        </header>
+
+          <!-- Cabecera de marca minimalista -->
+          <header class="brand-header">
+            <div class="brand-logo">{{ config.brandName }}</div>
+            <div class="brand-location">Stock: {{ config.stockLeft }} uds</div>
+          </header>
+        </div>
       `,
     };
 
     // --- EmotionalHeroMobile.js ---
     const EmotionalHeroMobile = {
       name: 'EmotionalHeroMobile',
-      components: { QtyStepper },
       props: {
         config: { type: Object, required: true },
         selectedBundle: { type: Object, required: true },
       },
-      emits: ['trigger-order', 'select-bundle-qty'],
-      setup(props) {
-        const activeIdx = ref(0);
-        const activeSlide = computed(
-          () => props.config.hero.gallery[activeIdx.value] || props.config.hero.gallery[0]
-        );
-        return { activeIdx, activeSlide, SvgIcons };
-      },
+      emits: ['trigger-order'],
       template: `
-        <section class="hero-clean">
-          <!-- Galería de demostración real en uso -->
-          <div class="hero-gallery">
-            <div class="hero-gallery__main">
+        <div>
+          <!-- 2. Hero Editorial: Cero melodrama, 100% postura y alivio real -->
+          <section class="hero-editorial">
+            <div class="hero-media">
               <img
-                :src="activeSlide.image"
-                :alt="config.title"
-                class="hero-gallery__img"
+                :src="config.hero.image"
+                alt="Limpieza de baño de pie sin agacharse"
                 fetchpriority="high"
               />
-              <div class="hero-gallery__caption-bar">
-                <span class="hero-live-dot"></span>
-                <span>{{ activeSlide.caption }}</span>
-              </div>
+              <span class="hero-floating-pill">{{ config.hero.floatingPill }}</span>
             </div>
 
-            <div class="hero-gallery__thumbs" role="tablist" aria-label="Demostraciones en uso">
-              <button
-                v-for="(slide, idx) in config.hero.gallery"
-                :key="slide.id"
-                type="button"
-                class="hero-thumb-btn"
-                :class="{ 'hero-thumb-btn--active': idx === activeIdx }"
-                @click="activeIdx = idx"
-              >
-                <img :src="slide.image" :alt="slide.label" />
-                <span>{{ slide.label }}</span>
-              </button>
-            </div>
-          </div>
+            <div class="hero-content">
+              <span class="editorial-kicker">{{ config.hero.kicker }}</span>
+              <h1 class="editorial-headline">
+                {{ config.hero.headlineStart }}<em>{{ config.hero.headlineEm }}</em>
+              </h1>
+              <p class="editorial-subline">
+                {{ config.hero.subline }}
+              </p>
 
-          <!-- Bloque editorial claro: Patrón F de eye-tracking -->
-          <div class="hero-clean__body">
-            <!-- 1. Cuadrante de Primer Impacto: Título + Prueba Social Masiva -->
-            <div class="hero-meta-row">
-              <span class="clinical-eyebrow">{{ config.hero.eyebrow }}</span>
-            </div>
-
-            <h1 class="hero-clean__headline">
-              {{ config.hero.headline }}
-            </h1>
-
-            <div class="social-proof-bar">
-              <span class="social-proof-stars">★★★★★</span>
-              <span class="social-proof-text">{{ config.hero.socialProof }}</span>
-            </div>
-
-            <p class="hero-clean__subline">
-              {{ config.hero.subline }}
-            </p>
-
-            <!-- Micro-badges concretos de confianza -->
-            <div class="spec-pills">
-              <div class="spec-pill">
-                <span class="spec-pill__icon" v-html="SvgIcons.spine"></span>
-                <span>Extensible hasta 1.2 m (Espalda 100% recta)</span>
-              </div>
-              <div class="spec-pill">
-                <span class="spec-pill__icon" v-html="SvgIcons.battery"></span>
-                <span>Motor 25W alto torque · Batería USB-C</span>
-              </div>
-              <div class="spec-pill">
-                <span class="spec-pill__icon" v-html="SvgIcons.shieldCheck"></span>
-                <span>Pago al recibir en efectivo en tu puerta</span>
-              </div>
-            </div>
-
-            <!-- 2. Bloque de Anclaje de Precios (Anchoring Effect) + Cantidad -->
-            <div class="price-clean-card">
-              <!-- Cantidad libre: cualquier número de unidades -->
-              <div class="qty-row">
-                <div class="qty-row__text">
-                  <strong>Cantidad</strong>
-                  <small>{{ selectedBundle.unitPriceText }}</small>
+              <div class="clean-specs-row">
+                <div
+                  v-for="(spec, i) in config.hero.specs"
+                  :key="i"
+                  class="clean-spec"
+                >
+                  <strong>{{ spec.strong }}</strong>
+                  <span>{{ spec.span }}</span>
                 </div>
-                <QtyStepper
-                  :model-value="selectedBundle.qty"
-                  :max="config.maxQty"
-                  @update:model-value="$emit('select-bundle-qty', $event)"
-                />
               </div>
 
-              <!-- Total con Anclaje Visual Destacado -->
-              <div class="price-anchor-display">
-                <div class="price-anchor-display__left">
-                  <span class="price-anchor-label">Total a pagar al recibir:</span>
-                  <div class="price-numbers-row">
-                    <span class="price-anchor-old">\${{ selectedBundle.compareAtPrice.toFixed(2) }}</span>
-                    <span class="price-anchor-now">\${{ selectedBundle.price.toFixed(2) }}</span>
-                    <span class="price-currency-tag">{{ config.currency }}</span>
-                  </div>
+              <div class="price-editorial-row">
+                <div class="price-main-group">
+                  <span class="price-current">\${{ selectedBundle.price.toFixed(2) }}</span>
+                  <span class="price-compare">\${{ selectedBundle.compareAtPrice.toFixed(2) }} USD</span>
                 </div>
-                <span class="price-savings-pill">{{ selectedBundle.savingsText }}</span>
+                <span class="price-badge-save">{{ selectedBundle.badge || config.hero.priceBadge }}</span>
               </div>
 
-              <!-- Botón Principal Von Restorff (Naranja Cálido de Alto Contraste con Microanimación) -->
               <button
                 type="button"
-                class="btn-cta-vibrant pulse-gentle"
+                class="btn-editorial-primary"
                 @click="$emit('trigger-order')"
               >
-                <span class="btn-cta-vibrant__main">{{ config.hero.ctaText }}</span>
-                <span class="btn-cta-vibrant__sub">
-                  {{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'kit completo' : 'kits completos' }} · Total \${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}
-                </span>
+                <span>{{ config.hero.ctaMain }}</span>
+                <small>{{ config.hero.ctaSub }}</small>
               </button>
-
-              <!-- Microcopy de Respaldo y Garantía -->
-              <p class="cta-trust-note">
-                {{ config.hero.ctaSubtext }}
-              </p>
             </div>
+          </section>
+
+          <!-- 3. Cinta de Valores -->
+          <div class="trust-strip">
+            <span v-for="(val, idx) in config.trustStrip" :key="idx">{{ val }}</span>
           </div>
-        </section>
+        </div>
       `,
     };
 
@@ -448,107 +384,100 @@
         slider: { type: Object, required: true },
       },
       setup() {
-        // Izquierda: Antes (moho negro acumulado) | Derecha: Después (azulejo blanco limpio)
-        const position = ref(50);
-        const hasInteracted = ref(false);
-        const containerRef = ref(null);
-        let demoTimer = null;
+        const pos = ref(50);
+        const isDragging = ref(false);
+        const wrapperRef = ref(null);
+        let autoplayTimer = null;
+        let hasInteracted = false;
 
-        const updateFromClientX = (clientX) => {
-          if (!containerRef.value) return;
-          const rect = containerRef.value.getBoundingClientRect();
-          const raw = ((clientX - rect.left) / rect.width) * 100;
-          position.value = Math.min(94, Math.max(6, Math.round(raw)));
+        const moveSlider = (clientX) => {
+          if (!wrapperRef.value) return;
+          const rect = wrapperRef.value.getBoundingClientRect();
+          let p = ((clientX - rect.left) / rect.width) * 100;
+          pos.value = Math.max(5, Math.min(95, Math.round(p)));
         };
 
         const onPointerDown = (e) => {
-          hasInteracted.value = true;
-          updateFromClientX(e.clientX);
+          hasInteracted = true;
+          isDragging.value = true;
+          moveSlider(e.clientX);
         };
 
         const onPointerMove = (e) => {
-          if (e.buttons !== 1) return;
-          hasInteracted.value = true;
-          updateFromClientX(e.clientX);
+          if (!isDragging.value) return;
+          moveSlider(e.clientX);
         };
 
-        const onTouchMove = (e) => {
-          if (!e.touches || !e.touches[0]) return;
-          hasInteracted.value = true;
-          updateFromClientX(e.touches[0].clientX);
+        const onPointerUp = () => {
+          isDragging.value = false;
         };
 
         onMounted(() => {
+          window.addEventListener('pointerup', onPointerUp);
+          window.addEventListener('pointermove', onPointerMove);
+
+          // Sutil animación introductoria si no ha interactuado
           let dir = -1;
-          demoTimer = setInterval(() => {
-            if (hasInteracted.value) return;
-            position.value += dir * 1.1;
-            if (position.value <= 30) dir = 1;
-            if (position.value >= 68) dir = -1;
+          autoplayTimer = setInterval(() => {
+            if (hasInteracted || isDragging.value) return;
+            pos.value += dir * 0.8;
+            if (pos.value <= 35) dir = 1;
+            if (pos.value >= 65) dir = -1;
           }, 50);
         });
 
         onUnmounted(() => {
-          if (demoTimer) clearInterval(demoTimer);
+          window.removeEventListener('pointerup', onPointerUp);
+          window.removeEventListener('pointermove', onPointerMove);
+          if (autoplayTimer) clearInterval(autoplayTimer);
         });
 
         return {
-          position,
-          hasInteracted,
-          containerRef,
+          pos,
+          wrapperRef,
           onPointerDown,
-          onPointerMove,
-          onTouchMove,
-          SvgIcons,
         };
       },
       template: `
-        <section class="section-block section-block--alt" id="demo-juntas">
-          <div class="section-header">
-            <span class="section-eyebrow">{{ slider.eyebrow }}</span>
-            <h2 class="section-title">{{ slider.headline }}</h2>
-            <p class="section-desc">{{ slider.subline }}</p>
-          </div>
+        <!-- 4. Slider Antes / Después (La mugre real de las juntas) -->
+        <section class="section-block section-block--white">
+          <span class="editorial-kicker">{{ slider.kicker }}</span>
+          <h2 class="section-title">{{ slider.title }}</h2>
+          <p class="section-lead">{{ slider.lead }}</p>
 
           <div
-            ref="containerRef"
-            class="ba-frame"
+            ref="wrapperRef"
+            class="ba-wrapper"
             @pointerdown="onPointerDown"
-            @pointermove="onPointerMove"
-            @touchstart.passive="hasInteracted = true"
-            @touchmove.passive="onTouchMove"
           >
-            <!-- Fondo completo: LADO DERECHO (Después: Azulejo blanco limpio) -->
+            <!-- Imagen ANTES (Fondo) -->
             <img
-              :src="slider.afterImage"
-              alt="Después: azulejo limpio con agua limpia"
-              class="ba-frame__img"
+              :src="slider.beforeImg"
+              alt="Azulejo con moho antes"
+              loading="lazy"
             />
 
-            <!-- Recorte izquierdo: LADO IZQUIERDO (Antes: Moho negro y silicona manchada) -->
+            <!-- Imagen DESPUÉS (Recorte dinámico) -->
             <div
-              class="ba-frame__before-clip"
-              :style="{ clipPath: 'inset(0 ' + (100 - position) + '% 0 0)' }"
+              class="ba-after-layer"
+              :style="{ clipPath: 'inset(0 ' + (100 - pos) + '% 0 0)' }"
             >
               <img
-                :src="slider.beforeImage"
-                alt="Antes: esquina con moho negro acumulado"
-                class="ba-frame__img"
+                :src="slider.afterImg"
+                alt="Azulejo limpio después"
+                loading="lazy"
               />
             </div>
 
-            <span class="ba-tag ba-tag--left">Antes · Moho en junta</span>
-            <span class="ba-tag ba-tag--right">Después · 30 seg</span>
+            <span class="ba-tag ba-tag--clean">Después (30 seg)</span>
+            <span class="ba-tag ba-tag--dirty">Antes</span>
 
-            <!-- Barra divisoria limpia -->
-            <div class="ba-line" :style="{ left: position + '%' }">
-              <div class="ba-handle" aria-hidden="true" v-html="SvgIcons.sliderArrows"></div>
+            <div class="ba-handle" :style="{ left: pos + '%' }">
+              <div class="ba-circle">↔</div>
             </div>
           </div>
 
-          <p class="ba-caption">
-            {{ slider.footnote }}
-          </p>
+          <p class="ba-caption">{{ slider.caption }}</p>
         </section>
       `,
     };
@@ -557,67 +486,61 @@
     const VisualZoneTapper = {
       name: 'VisualZoneTapper',
       props: {
-        kit: { type: Object, required: true },
+        zones: { type: Object, required: true },
       },
       setup(props) {
-        const selectedHeadId = ref(props.kit.mainHeads[0]?.id || 'cone');
-        return { selectedHeadId, SvgIcons };
+        const activeZoneIdx = ref(0);
+        return { activeZoneIdx };
       },
       template: `
-        <section class="section-block">
-          <div class="section-header">
-            <span class="section-eyebrow">{{ kit.eyebrow }}</span>
-            <h2 class="section-title">{{ kit.headline }}</h2>
-            <p class="section-desc">{{ kit.subline }}</p>
+        <!-- 6. Demostración por Zonas y los 9 Cabezales -->
+        <section class="section-block section-block--white">
+          <span class="editorial-kicker">{{ zones.kicker }}</span>
+          <h2 class="section-title">{{ zones.title }}</h2>
+
+          <div class="zone-pills" role="tablist">
+            <button
+              v-for="(zone, idx) in zones.list"
+              :key="idx"
+              type="button"
+              class="zone-pill-btn"
+              :class="{ active: idx === activeZoneIdx }"
+              @click="activeZoneIdx = idx"
+            >
+              {{ zone.tabLabel }}
+            </button>
           </div>
 
-          <!-- Foto transparente de Unboxing sobre mesa de madera clara -->
-          <figure class="unboxing-card">
-            <div class="unboxing-card__photo-wrap">
+          <div class="zone-showcase">
+            <div class="zone-showcase__img">
               <img
-                :src="kit.flatlayImage"
-                alt="Contenido real de la caja Cepillo 9 en 1 Pro sobre mesa"
+                :src="zones.list[activeZoneIdx].img"
+                :alt="zones.list[activeZoneIdx].title"
                 loading="lazy"
               />
-              <span class="unboxing-badge">
-                <span class="unboxing-badge__icon" v-html="SvgIcons.boxOpen"></span>
-                <span>Foto del kit completo incluido</span>
-              </span>
             </div>
+            <div class="zone-showcase__info">
+              <span class="zone-showcase__tool">{{ zones.list[activeZoneIdx].tool }}</span>
+              <h3 class="zone-showcase__title">{{ zones.list[activeZoneIdx].title }}</h3>
+              <p class="zone-showcase__text">{{ zones.list[activeZoneIdx].text }}</p>
+            </div>
+          </div>
 
-            <ul class="unboxing-checklist">
-              <li v-for="(line, i) in kit.boxChecklist" :key="i">
-                <span class="check-dot" v-html="SvgIcons.check"></span>
-                <span>{{ line }}</span>
-              </li>
-            </ul>
-          </figure>
-
-          <!-- Uso cotidiano de los cabezales en acción real -->
-          <div class="heads-usage-wrap">
-            <h3 class="subsection-heading">Para qué usarás cada cabezal en casa:</h3>
-
-            <div class="heads-accordion-cards">
-              <article
-                v-for="(head, idx) in kit.mainHeads"
-                :key="head.id"
-                class="head-use-card"
-                :class="{ 'head-use-card--open': selectedHeadId === head.id }"
-                @click="selectedHeadId = head.id"
+          <!-- Grilla Minimalista de los 9 Cabezales -->
+          <div class="kit-minimal-box">
+            <span class="editorial-kicker">Qué incluye tu caja</span>
+            <h3 style="font-family: var(--font-serif); font-size: 20px; color: var(--text-espresso); margin-bottom: 4px;">
+              Los 9 accesorios intercambiables a presión
+            </h3>
+            <div class="kit-minimal-grid">
+              <div
+                v-for="(item, i) in zones.kitGrid"
+                :key="i"
+                class="kit-cell"
               >
-                <div class="head-use-card__top">
-                  <span class="head-num">{{ idx + 1 }}</span>
-                  <span class="head-svg" v-html="SvgIcons[head.iconKey] || SvgIcons.disc"></span>
-                  <div class="head-use-card__titles">
-                    <strong>{{ head.name }}</strong>
-                    <p>{{ head.desc }}</p>
-                  </div>
-                </div>
-
-                <div v-if="selectedHeadId === head.id" class="head-use-card__media">
-                  <img :src="head.actionImage" :alt="head.name" loading="lazy" />
-                </div>
-              </article>
+                <strong>{{ item.name }}</strong>
+                <span>{{ item.sub }}</span>
+              </div>
             </div>
           </div>
         </section>
@@ -628,57 +551,32 @@
     const PhysicalReliefSection = {
       name: 'PhysicalReliefSection',
       props: {
-        relief: { type: Object, required: true },
-      },
-      setup() {
-        return { SvgIcons };
+        pains: { type: Object, required: true },
       },
       template: `
-        <section class="section-block section-block--alt">
-          <div class="section-header">
-            <span class="section-eyebrow">{{ relief.eyebrow }}</span>
-            <h2 class="section-title">{{ relief.headline }}</h2>
-          </div>
+        <!-- 5. Dolores Reales y Tangibles (Sin melodrama) -->
+        <section class="section-block">
+          <span class="editorial-kicker">{{ pains.kicker }}</span>
+          <h2 class="section-title">{{ pains.title }}</h2>
+          <p class="section-lead">{{ pains.lead }}</p>
 
-          <div class="relief-stack">
-            <!-- Tarjeta 1: El problema real del cepillo/esponja manual -->
-            <article class="relief-card relief-card--manual">
-              <div class="relief-card__photo">
-                <img
-                  :src="relief.handsPhoto"
-                  alt="Manos irritadas y resecas por químicos y esponja sucia"
-                  loading="lazy"
-                />
-                <span class="relief-card__pill relief-card__pill--muted">
-                  Con esponja o cepillo manual
-                </span>
+          <div class="pain-editorial-grid">
+            <article
+              v-for="(card, idx) in pains.cards"
+              :key="idx"
+              class="pain-editorial-card"
+            >
+              <div class="pain-editorial-card__img">
+                <img :src="card.image" :alt="card.title" loading="lazy" />
               </div>
-              <ul class="relief-points">
-                <li v-for="(item, idx) in relief.manualProblems" :key="idx">
-                  <span class="point-mark point-mark--cross" v-html="SvgIcons.cross"></span>
-                  <span>{{ item }}</span>
-                </li>
-              </ul>
-            </article>
-
-            <!-- Tarjeta 2: Solución ergonómica a 1 metro de distancia -->
-            <article class="relief-card relief-card--solution">
-              <div class="relief-card__photo">
-                <img
-                  :src="relief.standingPhoto"
-                  alt="Limpieza erguida a 1 metro de distancia con Cepillo 9 en 1 Pro"
-                  loading="lazy"
-                />
-                <span class="relief-card__pill relief-card__pill--sage">
-                  Con el Cepillo 9 en 1 Pro
-                </span>
+              <div class="pain-editorial-card__body">
+                <span class="pain-number">{{ card.num }}</span>
+                <h3 class="pain-editorial-card__title">{{ card.title }}</h3>
+                <p class="pain-editorial-card__desc">{{ card.desc }}</p>
+                <div class="relief-solution-bar">
+                  {{ card.solution }}
+                </div>
               </div>
-              <ul class="relief-points">
-                <li v-for="(item, idx) in relief.electricSolutions" :key="idx">
-                  <span class="point-mark point-mark--check" v-html="SvgIcons.check"></span>
-                  <span>{{ item }}</span>
-                </li>
-              </ul>
             </article>
           </div>
         </section>
@@ -691,43 +589,25 @@
       props: {
         reviews: { type: Array, required: true },
       },
-      setup() {
-        return { SvgIcons };
-      },
       template: `
-        <section class="section-block">
-          <div class="section-header">
-            <span class="section-eyebrow">CLIENTES EN GUAYAQUIL, QUITO Y CUENCA</span>
-            <h2 class="section-title">Mensajes de quienes ya lo recibieron en casa</h2>
-            <p class="section-desc">Desliza hacia el lado para leer sus comentarios.</p>
-          </div>
+        <!-- 7. Reseñas Editoriales (Estilo Quote Cards) -->
+        <section class="section-block section-block--sand">
+          <span class="editorial-kicker">Hogares reales en Ecuador</span>
+          <h2 class="section-title">Lo que dicen quienes dejaron de limpiar de rodillas.</h2>
 
-          <div class="wa-carousel">
-            <article v-for="rev in reviews" :key="rev.id" class="wa-card">
-              <div class="wa-card__top-bar">
-                <div class="wa-avatar">{{ rev.name.charAt(0) }}</div>
-                <div class="wa-contact-info">
-                  <strong>{{ rev.name }}</strong>
-                  <span>
-                    <span class="wa-pin" v-html="SvgIcons.mapPin"></span>
-                    {{ rev.location }}
-                  </span>
-                </div>
-                <span class="wa-verified-tag">Entrega verificada</span>
+          <div class="editorial-quotes">
+            <article
+              v-for="rev in reviews"
+              :key="rev.id"
+              class="quote-card"
+            >
+              <div>
+                <div class="quote-stars">{{ rev.stars }}</div>
+                <p class="quote-text">{{ rev.text }}</p>
               </div>
-
-              <!-- Lienzo estilo captura real de conversación WhatsApp -->
-              <div class="wa-chat-canvas">
-                <div class="wa-bubble">
-                  <div class="wa-bubble__photo">
-                    <img :src="rev.image" :alt="'Foto enviada por ' + rev.name" loading="lazy" />
-                  </div>
-                  <p class="wa-bubble__text">{{ rev.message }}</p>
-                  <div class="wa-bubble__meta">
-                    <span>{{ rev.time }}</span>
-                    <span class="wa-dblcheck" v-html="SvgIcons.doubleCheck"></span>
-                  </div>
-                </div>
+              <div class="quote-meta">
+                <strong>{{ rev.author }}</strong>
+                <span>{{ rev.tag }}</span>
               </div>
             </article>
           </div>
@@ -738,133 +618,57 @@
     // --- ZeroFearCodSection.js ---
     const ZeroFearCodSection = {
       name: 'ZeroFearCodSection',
-      components: { QtyStepper },
       props: {
         config: { type: Object, required: true },
         selectedBundle: { type: Object, required: true },
       },
       emits: ['select-bundle-qty', 'trigger-order'],
-      setup() {
-        const openFaq = ref(0);
-        const faqs = [
-          {
-            q: '¿Se detiene el giro si lo presiono contra los azulejos?',
-            a: 'No. Cuenta con un motor de 25W de alto torque diseñado para mantener la rotación a 300 RPM incluso aplicando presión sobre la superficie, garantizando que la máquina haga la fuerza y no tus brazos.',
-          },
-          {
-            q: '¿Tengo que pagar algo por adelantado o poner mi tarjeta?',
-            a: 'No. Seleccionas Pago contra entrega al finalizar tu dirección y pagas en efectivo directamente al repartidor cuando te entregue la caja en tu puerta.',
-          },
-          {
-            q: '¿Cuánto dura la batería y cómo se carga?',
-            a: 'Incluye cable USB-C recargable con autonomía de hasta 90 minutos de limpieza continua, suficiente para lavar baños y cocina completos varias veces con una sola carga.',
-          },
-          {
-            q: '¿Desde dónde despachan el pedido?',
-            a: 'Todos los pedidos salen revisados desde nuestra bodega local en Guayaquil con envío garantizado en 24-48 horas por transportadora a todo el país.',
-          },
-        ];
-
-        const toggleFaq = (idx) => {
-          openFaq.value = openFaq.value === idx ? -1 : idx;
-        };
-
-        return { openFaq, faqs, toggleFaq, SvgIcons };
-      },
       template: `
-        <section class="section-block section-block--alt" id="pedir-ahora">
-          <!-- Garantía tangible paso a paso en Azul Cobalto de Seguridad -->
-          <div class="cod-clean-card">
-            <div class="cod-clean-card__media">
-              <img :src="config.codTrust.image" alt="Entrega en puerta con pago en efectivo" loading="lazy" />
-            </div>
+        <!-- 8. Oferta y Pago Contraentrega Editorial -->
+        <section class="section-block section-block--white" id="pedir-ahora">
+          <span class="editorial-kicker">Selecciona tu kit</span>
+          <h2 class="section-title">Recíbelo en tu puerta sin pagos anticipados.</h2>
 
-            <div class="cod-clean-card__content">
-              <span class="trust-badge-blue">COMPRA SIN RIESGO · BODEGA {{ config.warehouseCity.toUpperCase() }}</span>
-              <h2 class="cod-clean-title">Así funciona tu entrega a domicilio</h2>
-
-              <div class="cod-steps-list">
-                <div v-for="(step, idx) in config.codTrust.steps" :key="idx" class="cod-step-row">
-                  <div class="cod-step-icon" v-html="SvgIcons[step.iconKey] || SvgIcons.shieldCheck"></div>
-                  <div class="cod-step-text">
-                    <strong>{{ step.stepNum }}: {{ step.title }}</strong>
-                    <p>{{ step.sub }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bloque de Pedido Directo: Precio de Shopify × Cantidad -->
-          <div class="bundle-clean-box">
-            <div class="bundle-clean-header">
-              <span class="trust-badge-blue">PRECIO DE OFERTA HOY</span>
-              <h3 class="bundle-clean-box__title">{{ config.title }}</h3>
-            </div>
-
-            <div class="qty-row qty-row--boxed">
-              <div class="qty-row__text">
-                <strong>Cantidad de unidades</strong>
-                <small>{{ selectedBundle.unitPriceText }} · Kit completo 9 en 1</small>
-              </div>
-              <QtyStepper
-                :model-value="selectedBundle.qty"
-                :max="config.maxQty"
-                @update:model-value="$emit('select-bundle-qty', $event)"
-              />
-            </div>
-
-            <div class="price-anchor-display">
-              <div class="price-anchor-display__left">
-                <span class="price-anchor-label">
-                  Total ({{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'unidad' : 'unidades' }}):
-                </span>
-                <div class="price-numbers-row">
-                  <span class="price-anchor-old">\${{ selectedBundle.compareAtPrice.toFixed(2) }}</span>
-                  <span class="price-anchor-now">\${{ selectedBundle.price.toFixed(2) }}</span>
-                  <span class="price-currency-tag">{{ config.currency }}</span>
-                </div>
-              </div>
-              <span class="price-savings-pill">{{ selectedBundle.savingsText }}</span>
-            </div>
-
-            <!-- Gatillo de Escasez y Despacho Inmediato -->
-            <div class="urgency-dispatch-notice">
-              <span class="dispatch-truck-icon" v-html="SvgIcons.truck"></span>
-              <span><strong>Despacho garantizado en 24-48h desde Bodega Guayaquil</strong> (Stock limitado disponible para envío hoy).</span>
-            </div>
-
-            <!-- Botón Principal Von Restorff -->
-            <button
-              type="button"
-              class="btn-cta-vibrant pulse-gentle"
-              @click="$emit('trigger-order')"
-            >
-              <span class="btn-cta-vibrant__main">{{ config.hero.ctaText }}</span>
-              <span class="btn-cta-vibrant__sub">
-                {{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'kit' : 'kits' }} · Total \${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}
-              </span>
-            </button>
-
-            <p class="cta-trust-note">
-              🚚 Sin tarjeta de crédito · Pagas únicamente cuando el mensajero te entregue el producto
-            </p>
-          </div>
-
-          <!-- Preguntas frecuentes con Objeción del Torque Resuelta -->
-          <div class="faq-clean">
-            <h3 class="subsection-heading">Preguntas frecuentes</h3>
+          <div class="bundle-selector">
             <div
-              v-for="(f, idx) in faqs"
-              :key="idx"
-              class="faq-row"
-              :class="{ 'faq-row--open': openFaq === idx }"
+              v-for="pack in config.offers"
+              :key="pack.id"
+              class="bundle-option"
+              :class="{ selected: selectedBundle.qty === pack.qty }"
+              @click="$emit('select-bundle-qty', pack.qty)"
             >
-              <button type="button" class="faq-row__q" @click="toggleFaq(idx)">
-                <span>{{ f.q }}</span>
-                <span class="faq-row__sign">{{ openFaq === idx ? '−' : '+' }}</span>
-              </button>
-              <p v-if="openFaq === idx" class="faq-row__a">{{ f.a }}</p>
+              <div class="bundle-left">
+                <div class="radio-dot"></div>
+                <div>
+                  <span class="bundle-title">{{ pack.title }}</span>
+                  <span class="bundle-sub">{{ pack.sub }}</span>
+                </div>
+              </div>
+              <div class="bundle-price-col">
+                <span class="bundle-price-now">\${{ pack.price.toFixed(2) }}</span>
+                <span class="bundle-price-old">\${{ pack.compareAtPrice.toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="btn-editorial-primary"
+            @click="$emit('trigger-order')"
+          >
+            <span>Confirmar Pedido Contraentrega</span>
+            <small>Pagas únicamente cuando el repartidor te entregue la caja</small>
+          </button>
+
+          <div class="cod-editorial-card">
+            <img
+              :src="config.codCard.image"
+              alt="Entrega en puerta"
+              loading="lazy"
+            />
+            <div class="cod-editorial-card__text">
+              <strong>{{ config.codCard.title }}</strong>
+              <p>{{ config.codCard.desc }}</p>
             </div>
           </div>
         </section>
@@ -874,36 +678,24 @@
     // --- StickyThumbBar.js ---
     const StickyThumbBar = {
       name: 'StickyThumbBar',
-      components: { QtyStepper },
       props: {
         config: { type: Object, required: true },
         selectedBundle: { type: Object, required: true },
       },
-      emits: ['trigger-order', 'select-bundle-qty'],
+      emits: ['trigger-order'],
       template: `
-        <div class="sticky-clean-bar" role="region" aria-label="Barra rápida de pedido">
-          <div class="sticky-clean-bar__inner">
-            <QtyStepper
-              compact
-              :model-value="selectedBundle.qty"
-              :max="config.maxQty"
-              @update:model-value="$emit('select-bundle-qty', $event)"
-            />
-
-            <div class="sticky-bundle-info">
-              <span class="sticky-price-old">\${{ selectedBundle.compareAtPrice.toFixed(2) }}</span>
-              <strong class="sticky-price-now">\${{ selectedBundle.price.toFixed(2) }}</strong>
-            </div>
-
-            <button
-              type="button"
-              class="sticky-cta-vibrant pulse-gentle"
-              @click="$emit('trigger-order')"
-            >
-              <span>Pedir ahora</span>
-              <small>Pagas en casa</small>
-            </button>
+        <div class="sticky-editorial-bar" role="region" aria-label="Barra fija de pedido rápido">
+          <div class="sticky-price-info">
+            <span>Total al recibir</span>
+            <strong>\${{ selectedBundle.price.toFixed(2) }} USD</strong>
           </div>
+          <button
+            type="button"
+            class="sticky-btn"
+            @click="$emit('trigger-order')"
+          >
+            Pedir y Pagar en Casa
+          </button>
         </div>
       `,
     };
@@ -915,8 +707,8 @@
         TopUrgencyTicker,
         EmotionalHeroMobile,
         ThumbCleanInteractive,
-        VisualZoneTapper,
         PhysicalReliefSection,
+        VisualZoneTapper,
         RealFeelingsUgc,
         ZeroFearCodSection,
         StickyThumbBar,
@@ -924,7 +716,14 @@
       setup() {
         const config = ref(getProductConfig());
         const selectedQty = ref(1);
-        const orderSuccessToast = ref(false);
+        const isModalOpen = ref(false);
+        const orderToast = ref(false);
+
+        const formData = ref({
+          name: '',
+          phone: '',
+          address: '',
+        });
 
         const selectedBundle = computed(() => config.value.offerForQty(selectedQty.value));
 
@@ -935,7 +734,7 @@
         };
 
         const triggerOrder = () => {
-          // 1. Si en el futuro instalas una app COD en Shopify (ej. Releasit / EasySell), la dispara directo
+          // 1. Si existe app COD instalada en Shopify (Releasit / EasySell)
           const externalCodBtn = document.querySelector(
             '.rsi-cod-form-button, [data-rsi-cod-btn], .es-popup-button, #rsi-cod-form-open'
           );
@@ -944,7 +743,7 @@
             return;
           }
 
-          // 2. En Shopify: va directo al Checkout oficial en español con la cantidad elegida (sin formularios intermedios)
+          // 2. En tienda Shopify activa: va directo al checkout sin pantallas intermedias
           const variantId = config.value.variantId;
           const qty = selectedBundle.value.qty;
 
@@ -956,10 +755,20 @@
             return;
           }
 
-          // 3. Solo en preview-mobile.html local (sin servidor Shopify) muestra aviso informativo
-          orderSuccessToast.value = true;
+          // 3. En entorno de vista previa local: abre el modal editorial
+          isModalOpen.value = true;
+        };
+
+        const closeModal = () => {
+          isModalOpen.value = false;
+        };
+
+        const submitOrder = (e) => {
+          if (e) e.preventDefault();
+          closeModal();
+          orderToast.value = true;
           setTimeout(() => {
-            orderSuccessToast.value = false;
+            orderToast.value = false;
           }, 4000);
         };
 
@@ -967,63 +776,118 @@
           config,
           selectedQty,
           selectedBundle,
-          orderSuccessToast,
+          isModalOpen,
+          orderToast,
+          formData,
           selectBundleQty,
           triggerOrder,
+          closeModal,
+          submitOrder,
         };
       },
       template: `
-        <div class="mobile-shell">
+        <div class="editorial-shell">
+          <!-- 1. Barra de anuncio superior + Cabecera de marca -->
           <TopUrgencyTicker :config="config" />
 
-          <main class="mobile-main">
-            <!-- Hero: Eye-Tracking en F + Anchoring + Cantidad + Botón Naranja Vibrante -->
-            <EmotionalHeroMobile
-              :config="config"
-              :selected-bundle="selectedBundle"
-              @select-bundle-qty="selectBundleQty"
-              @trigger-order="triggerOrder"
-            />
+          <!-- 2. Hero Editorial + 3. Cinta de Valores -->
+          <EmotionalHeroMobile
+            :config="config"
+            :selected-bundle="selectedBundle"
+            @trigger-order="triggerOrder"
+          />
 
-            <!-- Slider Interactivo: Antes vs Después en Sarro Real -->
-            <ThumbCleanInteractive :slider="config.slider" />
+          <!-- 4. Slider Antes / Después en moho real -->
+          <ThumbCleanInteractive :slider="config.slider" />
 
-            <!-- Unboxing Transparente + 9 Cabezales -->
-            <VisualZoneTapper :kit="config.unboxingKit" />
+          <!-- 5. Dolores Reales y Tangibles -->
+          <PhysicalReliefSection :pains="config.pains" />
 
-            <!-- Alivio Físico: Manos sin químicos a 1 m -->
-            <PhysicalReliefSection :relief="config.physicalRelief" />
+          <!-- 6. Demostración por Zonas y los 9 Cabezales -->
+          <VisualZoneTapper :zones="config.zones" />
 
-            <!-- Prueba Social WhatsApp Guayaquil / Ecuador -->
-            <RealFeelingsUgc :reviews="config.whatsappReviews" />
+          <!-- 7. Reseñas Editoriales (Quote Cards) -->
+          <RealFeelingsUgc :reviews="config.reviews" />
 
-            <!-- Paso a Paso + Selector de Cantidad + FAQ Torque 25W -->
-            <ZeroFearCodSection
-              :config="config"
-              :selected-bundle="selectedBundle"
-              @select-bundle-qty="selectBundleQty"
-              @trigger-order="triggerOrder"
-            />
-          </main>
-
-          <footer class="clean-footer">
-            <p>Despacho local desde Bodega {{ config.warehouseCity }} · Pago contra entrega</p>
-            <small>{{ config.title }} · Ref. {{ config.sku }}</small>
-          </footer>
-
-          <!-- Sticky CTA Fijo con Naranja Vibrante Continuo -->
-          <StickyThumbBar
+          <!-- 8. Oferta de Packs y Pago Contraentrega -->
+          <ZeroFearCodSection
             :config="config"
             :selected-bundle="selectedBundle"
             @select-bundle-qty="selectBundleQty"
             @trigger-order="triggerOrder"
           />
 
-          <transition name="fade-modal">
-            <div v-if="orderSuccessToast" class="clean-toast">
-              Vista previa local: Iría directo al Checkout de Shopify con {{ selectedBundle.qty }} {{ selectedBundle.qty === 1 ? 'unidad' : 'unidades' }} (\${{ selectedBundle.price.toFixed(2) }} {{ config.currency }}).
+          <!-- Barra fija inferior editorial -->
+          <StickyThumbBar
+            :config="config"
+            :selected-bundle="selectedBundle"
+            @trigger-order="triggerOrder"
+          />
+
+          <!-- Modal Contraentrega Editorial (para vista previa local) -->
+          <div
+            class="modal-overlay"
+            :class="{ open: isModalOpen }"
+            @click.self="closeModal"
+          >
+            <div class="modal-sheet">
+              <button
+                type="button"
+                class="modal-close"
+                @click="closeModal"
+                aria-label="Cerrar modal"
+              >
+                ✕
+              </button>
+              <span class="editorial-kicker">Pago Contraentrega Ecuador</span>
+              <h3 style="font-family: var(--font-serif); font-size: 24px; color: var(--text-espresso); margin-bottom: 16px;">
+                Datos para el repartidor
+              </h3>
+
+              <form @submit="submitOrder">
+                <div class="form-group">
+                  <label>Nombre y Apellido</label>
+                  <input
+                    v-model="formData.name"
+                    type="text"
+                    required
+                    placeholder="Ej. María Fernanda Gómez"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>WhatsApp / Celular</label>
+                  <input
+                    v-model="formData.phone"
+                    type="tel"
+                    required
+                    placeholder="Ej. 099 123 4567"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Ciudad y Dirección Exacta</label>
+                  <input
+                    v-model="formData.address"
+                    type="text"
+                    required
+                    placeholder="Ciudad, sector, calle principal y referencia"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn-editorial-primary"
+                  style="margin-top: 10px;"
+                >
+                  <span>Finalizar Pedido (\${{ selectedBundle.price.toFixed(2) }})</span>
+                  <small>Te confirmaremos el despacho por WhatsApp</small>
+                </button>
+              </form>
             </div>
-          </transition>
+          </div>
+
+          <!-- Toast informativo -->
+          <div v-if="orderToast" class="editorial-toast">
+            <span>✓ ¡Pedido registrado con éxito! Preparando despacho desde Guayaquil.</span>
+          </div>
         </div>
       `,
     };

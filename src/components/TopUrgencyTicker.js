@@ -1,23 +1,21 @@
-import { SvgIcons } from './SvgIcons.js';
-
 export const TopUrgencyTicker = {
   name: 'TopUrgencyTicker',
   props: {
     config: { type: Object, required: true },
   },
-  setup() {
-    return { SvgIcons };
-  },
   template: `
-    <header class="top-bar" role="banner">
-      <div class="top-bar__inner">
-        <span class="top-bar__icon" v-html="SvgIcons.truck"></span>
-        <p class="top-bar__text">
-          Despacho local desde <strong>{{ config.warehouseCity }}</strong>
-          <span class="top-bar__sep">·</span>
-          <span>Pago en efectivo al recibir</span>
-        </p>
+    <div>
+      <!-- 1. Barra de anuncio superior (estilo boutique) -->
+      <div class="announcement-bar">
+        <span>{{ config.announcement.text }}</span>
+        <span class="announcement-bar__tag">{{ config.announcement.tag }}</span>
       </div>
-    </header>
+
+      <!-- Cabecera de marca minimalista -->
+      <header class="brand-header">
+        <div class="brand-logo">{{ config.brandName }}</div>
+        <div class="brand-location">Stock: {{ config.stockLeft }} uds</div>
+      </header>
+    </div>
   `,
 };

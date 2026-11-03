@@ -1,5 +1,4 @@
 import { ref, onMounted, onUnmounted } from 'vue';
-import { SvgIcons } from './SvgIcons.js';
 
 export const ThumbCleanInteractive = {
   name: 'ThumbCleanInteractive',
@@ -7,107 +6,100 @@ export const ThumbCleanInteractive = {
     slider: { type: Object, required: true },
   },
   setup() {
-    // Izquierda: Antes (moho negro acumulado) | Derecha: Después (azulejo blanco limpio)
-    const position = ref(50);
-    const hasInteracted = ref(false);
-    const containerRef = ref(null);
-    let demoTimer = null;
+    const pos = ref(50);
+    const isDragging = ref(false);
+    const wrapperRef = ref(null);
+    let autoplayTimer = null;
+    let hasInteracted = false;
 
-    const updateFromClientX = (clientX) => {
-      if (!containerRef.value) return;
-      const rect = containerRef.value.getBoundingClientRect();
-      const raw = ((clientX - rect.left) / rect.width) * 100;
-      position.value = Math.min(94, Math.max(6, Math.round(raw)));
+    const moveSlider = (clientX) => {
+      if (!wrapperRef.value) return;
+      const rect = wrapperRef.value.getBoundingClientRect();
+      let p = ((clientX - rect.left) / rect.width) * 100;
+      pos.value = Math.max(5, Math.min(95, Math.round(p)));
     };
 
     const onPointerDown = (e) => {
-      hasInteracted.value = true;
-      updateFromClientX(e.clientX);
+      hasInteracted = true;
+      isDragging.value = true;
+      moveSlider(e.clientX);
     };
 
     const onPointerMove = (e) => {
-      if (e.buttons !== 1) return;
-      hasInteracted.value = true;
-      updateFromClientX(e.clientX);
+      if (!isDragging.value) return;
+      moveSlider(e.clientX);
     };
 
-    const onTouchMove = (e) => {
-      if (!e.touches || !e.touches[0]) return;
-      hasInteracted.value = true;
-      updateFromClientX(e.touches[0].clientX);
+    const onPointerUp = () => {
+      isDragging.value = false;
     };
 
     onMounted(() => {
+      window.addEventListener('pointerup', onPointerUp);
+      window.addEventListener('pointermove', onPointerMove);
+
+      // Sutil animación introductoria si no ha interactuado
       let dir = -1;
-      demoTimer = setInterval(() => {
-        if (hasInteracted.value) return;
-        position.value += dir * 1.1;
-        if (position.value <= 30) dir = 1;
-        if (position.value >= 68) dir = -1;
+      autoplayTimer = setInterval(() => {
+        if (hasInteracted || isDragging.value) return;
+        pos.value += dir * 0.8;
+        if (pos.value <= 35) dir = 1;
+        if (pos.value >= 65) dir = -1;
       }, 50);
     });
 
     onUnmounted(() => {
-      if (demoTimer) clearInterval(demoTimer);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointermove', onPointerMove);
+      if (autoplayTimer) clearInterval(autoplayTimer);
     });
 
     return {
-      position,
-      hasInteracted,
-      containerRef,
+      pos,
+      wrapperRef,
       onPointerDown,
-      onPointerMove,
-      onTouchMove,
-      SvgIcons,
     };
   },
   template: `
-    <section class="section-block section-block--alt" id="demo-juntas">
-      <div class="section-header">
-        <span class="section-eyebrow">{{ slider.eyebrow }}</span>
-        <h2 class="section-title">{{ slider.headline }}</h2>
-        <p class="section-desc">{{ slider.subline }}</p>
-      </div>
+    <!-- 4. Slider Antes / Después (La mugre real de las juntas) -->
+    <section class="section-block section-block--white">
+      <span class="editorial-kicker">{{ slider.kicker }}</span>
+      <h2 class="section-title">{{ slider.title }}</h2>
+      <p class="section-lead">{{ slider.lead }}</p>
 
       <div
-        ref="containerRef"
-        class="ba-frame"
+        ref="wrapperRef"
+        class="ba-wrapper"
         @pointerdown="onPointerDown"
-        @pointermove="onPointerMove"
-        @touchstart.passive="hasInteracted = true"
-        @touchmove.passive="onTouchMove"
       >
-        <!-- Fondo completo: LADO DERECHO (Después: Azulejo blanco limpio) -->
+        <!-- Imagen ANTES (Fondo) -->
         <img
-          :src="slider.afterImage"
-          alt="Después: azulejo limpio con agua limpia"
-          class="ba-frame__img"
+          :src="slider.beforeImg"
+          alt="Azulejo con moho antes"
+          loading="lazy"
         />
 
-        <!-- Recorte izquierdo: LADO IZQUIERDO (Antes: Moho negro y silicona manchada) -->
+        <!-- Imagen DESPUÉS (Recorte dinámico) -->
         <div
-          class="ba-frame__before-clip"
-          :style="{ clipPath: 'inset(0 ' + (100 - position) + '% 0 0)' }"
+          class="ba-after-layer"
+          :style="{ clipPath: 'inset(0 ' + (100 - pos) + '% 0 0)' }"
         >
           <img
-            :src="slider.beforeImage"
-            alt="Antes: esquina con moho negro acumulado"
-            class="ba-frame__img"
+            :src="slider.afterImg"
+            alt="Azulejo limpio después"
+            loading="lazy"
           />
         </div>
 
-        <span class="ba-tag ba-tag--left">Antes · Moho en junta</span>
-        <span class="ba-tag ba-tag--right">Después · 30 seg</span>
+        <span class="ba-tag ba-tag--clean">Después (30 seg)</span>
+        <span class="ba-tag ba-tag--dirty">Antes</span>
 
-        <!-- Barra divisoria limpia -->
-        <div class="ba-line" :style="{ left: position + '%' }">
-          <div class="ba-handle" aria-hidden="true" v-html="SvgIcons.sliderArrows"></div>
+        <div class="ba-handle" :style="{ left: pos + '%' }">
+          <div class="ba-circle">↔</div>
         </div>
       </div>
 
-      <p class="ba-caption">
-        {{ slider.footnote }}
-      </p>
+      <p class="ba-caption">{{ slider.caption }}</p>
     </section>
   `,
 };

@@ -1,70 +1,63 @@
 import { ref } from 'vue';
-import { SvgIcons } from './SvgIcons.js';
 
 export const VisualZoneTapper = {
   name: 'VisualZoneTapper',
   props: {
-    kit: { type: Object, required: true },
+    zones: { type: Object, required: true },
   },
   setup(props) {
-    const selectedHeadId = ref(props.kit.mainHeads[0]?.id || 'cone');
-    return { selectedHeadId, SvgIcons };
+    const activeZoneIdx = ref(0);
+    return { activeZoneIdx };
   },
   template: `
-    <section class="section-block">
-      <div class="section-header">
-        <span class="section-eyebrow">{{ kit.eyebrow }}</span>
-        <h2 class="section-title">{{ kit.headline }}</h2>
-        <p class="section-desc">{{ kit.subline }}</p>
+    <!-- 6. Demostración por Zonas y los 9 Cabezales -->
+    <section class="section-block section-block--white">
+      <span class="editorial-kicker">{{ zones.kicker }}</span>
+      <h2 class="section-title">{{ zones.title }}</h2>
+
+      <div class="zone-pills" role="tablist">
+        <button
+          v-for="(zone, idx) in zones.list"
+          :key="idx"
+          type="button"
+          class="zone-pill-btn"
+          :class="{ active: idx === activeZoneIdx }"
+          @click="activeZoneIdx = idx"
+        >
+          {{ zone.tabLabel }}
+        </button>
       </div>
 
-      <!-- Foto transparente de Unboxing sobre mesa de madera clara -->
-      <figure class="unboxing-card">
-        <div class="unboxing-card__photo-wrap">
+      <div class="zone-showcase">
+        <div class="zone-showcase__img">
           <img
-            :src="kit.flatlayImage"
-            alt="Contenido real de la caja Cepillo 9 en 1 Pro sobre mesa"
+            :src="zones.list[activeZoneIdx].img"
+            :alt="zones.list[activeZoneIdx].title"
             loading="lazy"
           />
-          <span class="unboxing-badge">
-            <span class="unboxing-badge__icon" v-html="SvgIcons.boxOpen"></span>
-            <span>Foto del kit completo incluido</span>
-          </span>
         </div>
+        <div class="zone-showcase__info">
+          <span class="zone-showcase__tool">{{ zones.list[activeZoneIdx].tool }}</span>
+          <h3 class="zone-showcase__title">{{ zones.list[activeZoneIdx].title }}</h3>
+          <p class="zone-showcase__text">{{ zones.list[activeZoneIdx].text }}</p>
+        </div>
+      </div>
 
-        <ul class="unboxing-checklist">
-          <li v-for="(line, i) in kit.boxChecklist" :key="i">
-            <span class="check-dot" v-html="SvgIcons.check"></span>
-            <span>{{ line }}</span>
-          </li>
-        </ul>
-      </figure>
-
-      <!-- Uso cotidiano de los cabezales en acción real -->
-      <div class="heads-usage-wrap">
-        <h3 class="subsection-heading">Para qué usarás cada cabezal en casa:</h3>
-
-        <div class="heads-accordion-cards">
-          <article
-            v-for="(head, idx) in kit.mainHeads"
-            :key="head.id"
-            class="head-use-card"
-            :class="{ 'head-use-card--open': selectedHeadId === head.id }"
-            @click="selectedHeadId = head.id"
+      <!-- Grilla Minimalista de los 9 Cabezales -->
+      <div class="kit-minimal-box">
+        <span class="editorial-kicker">Qué incluye tu caja</span>
+        <h3 style="font-family: var(--font-serif); font-size: 20px; color: var(--text-espresso); margin-bottom: 4px;">
+          Los 9 accesorios intercambiables a presión
+        </h3>
+        <div class="kit-minimal-grid">
+          <div
+            v-for="(item, i) in zones.kitGrid"
+            :key="i"
+            class="kit-cell"
           >
-            <div class="head-use-card__top">
-              <span class="head-num">{{ idx + 1 }}</span>
-              <span class="head-svg" v-html="SvgIcons[head.iconKey] || SvgIcons.disc"></span>
-              <div class="head-use-card__titles">
-                <strong>{{ head.name }}</strong>
-                <p>{{ head.desc }}</p>
-              </div>
-            </div>
-
-            <div v-if="selectedHeadId === head.id" class="head-use-card__media">
-              <img :src="head.actionImage" :alt="head.name" loading="lazy" />
-            </div>
-          </article>
+            <strong>{{ item.name }}</strong>
+            <span>{{ item.sub }}</span>
+          </div>
         </div>
       </div>
     </section>
