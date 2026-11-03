@@ -1,7 +1,7 @@
 {
   "sections": {
     "main": {
-      "type": "vue-landing-cepillo",
+      "type": "home-catalog",
       "settings": {}
     }
   },
@@ -9,4 +9,3 @@
     "main"
   ]
 }
-
