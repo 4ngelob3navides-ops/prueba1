@@ -165,6 +165,39 @@ def generate_local_preview():
     preview_html.write_text(content, encoding="utf-8")
     print(f"[PREVIEW] Updated {preview_html.name}")
 
+    # Generar Vista Previa de la Mini Licuadora Conejito
+    blender_liquid = (THEME_DIR / "snippets" / "blender-landing.liquid").read_text(encoding="utf-8")
+    # Remover liquid logic block
+    blender_html_body = re.sub(r"\{%-\s*liquid[\s\S]*?-%\}", "", blender_liquid).strip()
+    # Reemplazar variables Liquid
+    blender_html_body = re.sub(r"\{\{\s*'([^']+)'\s*\|\s*asset_url\s*\}\}", r"./shopify-theme/assets/\1", blender_html_body)
+    blender_html_body = blender_html_body.replace("{{ price_usd | string }}", "34.90")
+    blender_html_body = blender_html_body.replace("{{ price_usd | json }}", "34.90")
+    blender_html_body = blender_html_body.replace("{{ compare_usd | string }}", "54.90")
+    blender_html_body = blender_html_body.replace("{{ compare_usd | json }}", "54.90")
+    blender_html_body = blender_html_body.replace("{{ savings_usd | string }}", "20.00")
+    blender_html_body = blender_html_body.replace("{{ real_stock }}", "18")
+    blender_html_body = blender_html_body.replace("{{ current_variant.id | json }}", "null")
+
+    bunny_preview = ROOT / "preview-bunny.html"
+    bunny_content = f"""<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1A202C">
+    <title>MINI LICUADORA CONEJITO PORTÁTIL — Vista Previa Móvil</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body style="background-color: #E2E8F0; margin: 0; padding: 0;">
+    {blender_html_body}
+  </body>
+</html>"""
+    bunny_preview.write_text(bunny_content, encoding="utf-8")
+    print(f"[PREVIEW] Updated {bunny_preview.name}")
+
 
 def validate_shopify_theme():
     theme_liquid = (THEME_DIR / "layout" / "theme.liquid").read_text(encoding="utf-8")

@@ -374,11 +374,11 @@
       };
 
       // Precio dinámico desde Shopify (Admin > Productos)
-      const basePrice = Number(shopify.price || 22.50);
+      const basePrice = Number(shopify.price || 34.90);
       const baseCompareAt =
         Number(shopify.compareAtPrice) > basePrice
           ? Number(shopify.compareAtPrice)
-          : Number((basePrice * 1.6).toFixed(2));
+          : 54.90;
 
       const maxQty = Math.max(1, Math.min(20, Number(shopify.maxQty || 10)));
       const money = (n) => `$${Number(n).toFixed(2)}`;
@@ -388,21 +388,21 @@
           id: 1,
           qty: 1,
           title: '1x Mini Licuadora Conejito Portátil',
-          sub: 'Vaso Tritán 350ml + Tapa Orejitas + Cable USB-C + Envío',
+          sub: 'Vaso Tritán 350ml + Tapa Orejitas + Cable USB-C + Envío Gratis',
           price: basePrice,
           compareAtPrice: baseCompareAt,
           savingsText: `Ahorras ${money(baseCompareAt - basePrice)} hoy`,
-          badge: 'Oferta de hoy',
+          badge: 'Oferta Individual',
         },
         {
           id: 2,
           qty: 2,
-          title: '2x Mini Licuadoras (Pack Pareja / Regalo)',
-          sub: 'Una para ti y otra para regalar o tener en la oficina ($19.50 c/u)',
-          price: Number((basePrice * 2 - 5).toFixed(2)),
-          compareAtPrice: Number((baseCompareAt * 2).toFixed(2)),
-          savingsText: `Ahorras ${money(baseCompareAt * 2 - (basePrice * 2 - 5))} hoy`,
-          badge: 'Más Popular ⭐',
+          title: '2x Mini Licuadoras (Pack Dúo / Regalo)',
+          sub: 'Para ti y una amiga ($27.45 c/u — Ahorro Máximo)',
+          price: 54.90,
+          compareAtPrice: 109.80,
+          savingsText: 'Ahorras $54.90 hoy',
+          badge: 'Pack Dúo ⭐',
         },
       ];
 
