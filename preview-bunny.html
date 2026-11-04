@@ -762,8 +762,8 @@
       <!-- PRECIO DINÁMICO DESDE SHOPIFY -->
       <div class="blender-price-box">
         <div>
-          <span class="blender-price-now" id="bPriceNow">$34.90</span>
-          <span class="blender-price-old" id="bPriceOld">$54.90 USD</span>
+          <span class="blender-price-now" id="bPriceNow">$29.90</span>
+          <span class="blender-price-old" id="bPriceOld">$49.90 USD</span>
         </div>
         <span class="blender-save-pill" id="bSavePill">Ahorras $20.00 Hoy</span>
       </div>
@@ -992,8 +992,8 @@
           </div>
         </div>
         <div class="b-bundle-price-col">
-          <span class="b-bundle-price-now" id="b1PriceNow">$34.90</span>
-          <span class="b-bundle-price-old" id="b1PriceOld">$54.90</span>
+          <span class="b-bundle-price-now" id="b1PriceNow">$29.90</span>
+          <span class="b-bundle-price-old" id="b1PriceOld">$49.90</span>
         </div>
       </div>
 
@@ -1006,12 +1006,12 @@
           <div class="b-radio-circle"></div>
           <div>
             <span class="b-bundle-title">2x Mini Licuadoras (Pack Dúo / Regalo)</span>
-            <span class="b-bundle-sub">Para ti y tu amiga ($27.45 c/u — Ahorro Máximo)</span>
+            <span class="b-bundle-sub">Para ti y tu amiga ($24.95 c/u — Ahorro Máximo)</span>
           </div>
         </div>
         <div class="b-bundle-price-col">
-          <span class="b-bundle-price-now" id="b2PriceNow">$54.90</span>
-          <span class="b-bundle-price-old" id="b2PriceOld">$109.80</span>
+          <span class="b-bundle-price-now" id="b2PriceNow">$49.90</span>
+          <span class="b-bundle-price-old" id="b2PriceOld">$59.80</span>
         </div>
       </div>
     </div>
@@ -1020,7 +1020,7 @@
       <div>
         <strong style="font-size: 14px; display: block;">Total a pagar:</strong>
         <span id="bTotalText" style="font-size: 12px; color: var(--blender-green-dark); font-weight: 700;">
-          1x Licuadora por $34.90 USD
+          1x Licuadora por $29.90 USD
         </span>
       </div>
       <div class="blender-stepper">
@@ -1085,7 +1085,7 @@
 
   <div class="blender-sticky-info">
     <span>Total al recibir</span>
-    <strong id="bStickyTotal">$34.90</strong>
+    <strong id="bStickyTotal">$29.90</strong>
   </div>
 
   <button
@@ -1099,8 +1099,8 @@
 
 <script>
   (function() {
-    var basePrice = 34.90;
-    var baseCompare = 54.90;
+    var basePrice = 29.90;
+    var baseCompare = 49.90;
     var variantId = null;
     var currentQty = 1;
     var maxQty = 10;
@@ -1111,8 +1111,8 @@
 
     function calculatePrice(q) {
       if (q === 1) return basePrice;
-      if (q === 2) return 54.90;
-      return Number((27.45 * q).toFixed(2));
+      if (q === 2) return 49.90;
+      return Number((24.95 * q).toFixed(2));
     }
 
     function calculateCompare(q) {

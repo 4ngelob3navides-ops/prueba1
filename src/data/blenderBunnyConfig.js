@@ -12,11 +12,11 @@ export function getBlenderBunnyConfig(shopify = {}) {
   };
 
   // Precio dinámico desde Shopify (Admin > Productos)
-  const basePrice = Number(shopify.price || 34.90);
+  const basePrice = Number(shopify.price || 29.90);
   const baseCompareAt =
     Number(shopify.compareAtPrice) > basePrice
       ? Number(shopify.compareAtPrice)
-      : 54.90;
+      : 49.90;
 
   const maxQty = Math.max(1, Math.min(20, Number(shopify.maxQty || 10)));
   const money = (n) => `$${Number(n).toFixed(2)}`;
@@ -36,10 +36,10 @@ export function getBlenderBunnyConfig(shopify = {}) {
       id: 2,
       qty: 2,
       title: '2x Mini Licuadoras (Pack Dúo / Regalo)',
-      sub: 'Para ti y una amiga ($27.45 c/u — Ahorro Máximo)',
-      price: 54.90,
-      compareAtPrice: 109.80,
-      savingsText: 'Ahorras $54.90 hoy',
+      sub: 'Para ti y una amiga ($24.95 c/u — Ahorro Máximo)',
+      price: 49.90,
+      compareAtPrice: 59.80,
+      savingsText: 'Ahorras $9.90 hoy',
       badge: 'Pack Dúo ⭐',
     },
   ];
@@ -55,14 +55,14 @@ export function getBlenderBunnyConfig(shopify = {}) {
       price = basePrice;
       compareAtPrice = baseCompareAt;
       title = '1x Mini Licuadora Conejito Portátil';
-      sub = 'Vaso Tritán 350ml + Tapa Orejitas + Cable USB-C + Envío';
+      sub = 'Vaso Tritán 350ml + Tapa Orejitas + Cable USB-C + Envío Gratis';
     } else if (q === 2) {
-      price = Number((basePrice * 2 - 5).toFixed(2));
-      compareAtPrice = Number((baseCompareAt * 2).toFixed(2));
-      title = '2x Mini Licuadoras (Pack Pareja / Regalo)';
-      sub = 'Una para ti y otra para regalar o para la oficina';
+      price = 49.90;
+      compareAtPrice = 59.80;
+      title = '2x Mini Licuadoras (Pack Dúo / Regalo)';
+      sub = 'Una para ti y otra para regalar o para la oficina ($24.95 c/u)';
     } else {
-      const unit = basePrice - 2.5;
+      const unit = 24.95;
       price = Number((unit * q).toFixed(2));
       compareAtPrice = Number((baseCompareAt * q).toFixed(2));
       title = `${q}x Mini Licuadoras Conejito Portátiles`;

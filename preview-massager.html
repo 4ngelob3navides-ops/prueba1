@@ -780,10 +780,10 @@
       <!-- PRECIO DINÁMICO DE SHOPIFY -->
       <div class="spa-price-box">
         <div>
-          <span class="spa-price-now" id="mPriceNow">$39.90</span>
-          <span class="spa-price-old" id="mPriceOld">$59.90 USD</span>
+          <span class="spa-price-now" id="mPriceNow">$42.50</span>
+          <span class="spa-price-old" id="mPriceOld">$65.00 USD</span>
         </div>
-        <span class="spa-save-pill" id="mSavePill">Ahorras $20.00 Hoy</span>
+        <span class="spa-save-pill" id="mSavePill">Ahorras $22.50 Hoy</span>
       </div>
 
       <!-- SELECTOR DE CANTIDAD -->
@@ -1012,8 +1012,8 @@
           </div>
         </div>
         <div class="s-bundle-price-col">
-          <span class="s-bundle-price-now" id="m1PriceNow">$39.90</span>
-          <span class="s-bundle-price-old" id="m1PriceOld">$59.90</span>
+          <span class="s-bundle-price-now" id="m1PriceNow">$42.50</span>
+          <span class="s-bundle-price-old" id="m1PriceOld">$65.00</span>
         </div>
       </div>
 
@@ -1026,12 +1026,12 @@
           <div class="s-radio-circle"></div>
           <div>
             <span class="s-bundle-title">2x Masajeadores (Pack Pareja / Regalo Mamá)</span>
-            <span class="s-bundle-sub">Uno para ti y otro de regalo ($32.45 c/u — Ahorro Máximo)</span>
+            <span class="s-bundle-sub">Uno para ti y otro de regalo ($34.95 c/u — Ahorro Máximo)</span>
           </div>
         </div>
         <div class="s-bundle-price-col">
-          <span class="s-bundle-price-now" id="m2PriceNow">$64.90</span>
-          <span class="s-bundle-price-old" id="m2PriceOld">$119.80</span>
+          <span class="s-bundle-price-now" id="m2PriceNow">$69.90</span>
+          <span class="s-bundle-price-old" id="m2PriceOld">$85.00</span>
         </div>
       </div>
     </div>
@@ -1040,7 +1040,7 @@
       <div>
         <strong style="font-size: 14px; display: block;">Total al recibir:</strong>
         <span id="mTotalText" style="font-size: 12px; color: var(--spa-accent-blue); font-weight: 700;">
-          1x Masajeador por $39.90 USD
+          1x Masajeador por $42.50 USD
         </span>
       </div>
       <div class="spa-stepper">
@@ -1105,7 +1105,7 @@
 
   <div class="spa-sticky-info">
     <span>Total al recibir</span>
-    <strong id="mStickyTotal">$39.90</strong>
+    <strong id="mStickyTotal">$42.50</strong>
   </div>
 
   <button
@@ -1119,8 +1119,8 @@
 
 <script>
   (function() {
-    var basePrice = 39.90;
-    var baseCompare = 59.90;
+    var basePrice = 42.50;
+    var baseCompare = 65.00;
     var variantId = null;
     var currentQty = 1;
     var maxQty = 10;
@@ -1131,8 +1131,8 @@
 
     function calculatePrice(q) {
       if (q === 1) return basePrice;
-      if (q === 2) return 64.90;
-      return Number((32.45 * q).toFixed(2));
+      if (q === 2) return 69.90;
+      return Number((34.95 * q).toFixed(2));
     }
 
     function calculateCompare(q) {
