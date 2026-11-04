@@ -567,6 +567,175 @@
     cursor: pointer;
     box-shadow: 0 3px 12px rgba(255, 107, 0, 0.3);
   }
+
+  /* SELLOS DE CONFIANZA CRO */
+  .spa-trust-badges {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: #F8FAFC;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px dashed rgba(59, 96, 121, 0.3);
+  }
+
+  .s-trust-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--spa-text-muted);
+    line-height: 1.35;
+  }
+
+  .s-trust-icon {
+    color: var(--spa-accent-blue);
+    font-weight: 800;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .s-trust-item strong {
+    color: var(--spa-text-dark);
+    display: inline;
+  }
+
+  /* SELECTOR DE PAQUETES AOV */
+  .spa-bundle-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .spa-bundle-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border: 2px solid var(--spa-border);
+    border-radius: 14px;
+    background: #FFFFFF;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .spa-bundle-card.selected {
+    border-color: var(--spa-accent-blue);
+    background: var(--spa-accent-soft);
+    box-shadow: 0 4px 14px rgba(59, 96, 121, 0.12);
+  }
+
+  .s-bundle-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .s-radio-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #CBD5E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .spa-bundle-card.selected .s-radio-circle {
+    border-color: var(--spa-accent-blue);
+  }
+
+  .s-radio-circle::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  .spa-bundle-card.selected .s-radio-circle::after {
+    background: var(--spa-accent-blue);
+  }
+
+  .s-bundle-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--spa-text-dark);
+    display: block;
+  }
+
+  .s-bundle-sub {
+    font-size: 11.5px;
+    color: var(--spa-text-muted);
+  }
+
+  .s-bundle-price-col {
+    text-align: right;
+  }
+
+  .s-bundle-price-now {
+    font-family: var(--spa-font-serif);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--spa-text-dark);
+    display: block;
+  }
+
+  .s-bundle-price-old {
+    font-size: 11px;
+    color: #94A3B8;
+    text-decoration: line-through;
+  }
+
+  /* EL PLAN EN 3 PASOS STORYBRAND */
+  .spa-plan-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .spa-plan-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #FFFFFF;
+    border: 1px solid var(--spa-border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .spa-plan-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--spa-text-dark);
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .spa-plan-text strong {
+    display: block;
+    font-size: 14.5px;
+    color: var(--spa-text-dark);
+    margin-bottom: 3px;
+  }
+
+  .spa-plan-text p {
+    font-size: 12.5px;
+    color: var(--spa-text-muted);
+    line-height: 1.4;
+    margin: 0;
+  }
 </style>
 
 <div class="spa-shell" id="spaRoot">
@@ -657,6 +826,26 @@
         <span>Pedir Ahora — Pagar al Recibir</span>
         <small>🚚 Despacho rápido en 24-48h · Pagas en efectivo</small>
       </button>
+
+      <!-- SELLOS DE CONFIANZA INMEDIATA (AUDITORÍA CRO) -->
+      <div class="spa-trust-badges">
+        <div class="s-trust-item">
+          <span class="s-trust-icon">✓</span>
+          <div><strong>Pago Contra Entrega:</strong> Pagas en efectivo al recibir</div>
+        </div>
+        <div class="s-trust-item">
+          <span class="s-trust-icon">✓</span>
+          <div><strong>Envío Gratis:</strong> Despacho asegurado a todo Ecuador</div>
+        </div>
+        <div class="s-trust-item">
+          <span class="s-trust-icon">✓</span>
+          <div><strong>Despacho 24h:</strong> Desde bodega física Guayaquil</div>
+        </div>
+        <div class="s-trust-item">
+          <span class="s-trust-icon">✓</span>
+          <div><strong>Garantía 30 Días:</strong> Cambio directo de fábrica</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -783,6 +972,41 @@
     </div>
   </section>
 
+  <!-- 5.1 EL PLAN EN 3 PASOS STORYBRAND -->
+  <section class="spa-section spa-section--soft">
+    <span class="spa-kicker">Proceso 100% Seguro</span>
+    <h2 class="spa-section-title">¿Cómo pedir tu Masajeador en 3 pasos?</h2>
+    <p class="spa-section-sub">
+      Cero riesgos y cero pagos anticipados. La forma más transparente de comprar en Ecuador.
+    </p>
+
+    <div class="spa-plan-grid">
+      <div class="spa-plan-card">
+        <div class="spa-plan-num">01</div>
+        <div class="spa-plan-text">
+          <strong>Pides en 30 segundos</strong>
+          <p>Solo dejas tus datos de entrega (nombre, celular, ciudad y dirección). Sin ingresar tarjetas.</p>
+        </div>
+      </div>
+
+      <div class="spa-plan-card">
+        <div class="spa-plan-num">02</div>
+        <div class="spa-plan-text">
+          <strong>Coordinamos por WhatsApp</strong>
+          <p>Nuestro equipo de bodega en Guayaquil confirma tu pedido y te comparte tu guía de Servientrega o Urbano.</p>
+        </div>
+      </div>
+
+      <div class="spa-plan-card">
+        <div class="spa-plan-num">03</div>
+        <div class="spa-plan-text">
+          <strong>Pagas al recibir en casa</strong>
+          <p>El repartidor llega a tu puerta, recibes tu caja sellada y abonas en efectivo en ese instante.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- 6. OFERTA FINAL Y CONFIRMACIÓN CONTRAENTREGA -->
   <section class="spa-section" id="pedir-masajeador">
     <span class="spa-kicker">Despacho desde Guayaquil</span>
@@ -790,6 +1014,45 @@
     <p class="spa-section-sub">
       Sin pagos anticipados. Recibes en 24 a 48 horas en cualquier rincón del país y pagas al repartidor en efectivo.
     </p>
+
+    <!-- SELECTOR DE PAQUETES AOV -->
+    <div class="spa-bundle-picker">
+      <div
+        id="mBundleOption1"
+        class="spa-bundle-card selected"
+        onclick="selectMassagerBundle(1)"
+      >
+        <div class="s-bundle-left">
+          <div class="s-radio-circle"></div>
+          <div>
+            <span class="s-bundle-title">1x Masajeador Capilar Antiestrés</span>
+            <span class="s-bundle-sub">4 Nodos 3D + Base USB + Envío Gratis</span>
+          </div>
+        </div>
+        <div class="s-bundle-price-col">
+          <span class="s-bundle-price-now" id="m1PriceNow">${{ price_usd | string }}</span>
+          <span class="s-bundle-price-old" id="m1PriceOld">${{ compare_usd | string }}</span>
+        </div>
+      </div>
+
+      <div
+        id="mBundleOption2"
+        class="spa-bundle-card"
+        onclick="selectMassagerBundle(2)"
+      >
+        <div class="s-bundle-left">
+          <div class="s-radio-circle"></div>
+          <div>
+            <span class="s-bundle-title">2x Masajeadores (Pack Pareja / Regalo Mamá)</span>
+            <span class="s-bundle-sub">Uno para ti y otro de regalo ($32.45 c/u — Ahorro Máximo)</span>
+          </div>
+        </div>
+        <div class="s-bundle-price-col">
+          <span class="s-bundle-price-now" id="m2PriceNow">$64.90</span>
+          <span class="s-bundle-price-old" id="m2PriceOld">$119.80</span>
+        </div>
+      </div>
+    </div>
 
     <div class="spa-qty-row" style="margin-bottom: 16px;">
       <div>
@@ -813,6 +1076,26 @@
       <span>Confirmar Pedido Contraentrega</span>
       <small>🚚 Pagas únicamente cuando el repartidor te entregue la caja</small>
     </button>
+
+    <!-- SELLOS DE CONFIANZA INMEDIATA -->
+    <div class="spa-trust-badges">
+      <div class="s-trust-item">
+        <span class="s-trust-icon">✓</span>
+        <div><strong>Pago Contra Entrega:</strong> Pagas en efectivo al recibir</div>
+      </div>
+      <div class="s-trust-item">
+        <span class="s-trust-icon">✓</span>
+        <div><strong>Envío Gratis:</strong> Despacho asegurado a todo Ecuador</div>
+      </div>
+      <div class="s-trust-item">
+        <span class="s-trust-icon">✓</span>
+        <div><strong>Despacho 24h:</strong> Desde bodega física Guayaquil</div>
+      </div>
+      <div class="s-trust-item">
+        <span class="s-trust-icon">✓</span>
+        <div><strong>Garantía 30 Días:</strong> Cambio directo de fábrica</div>
+      </div>
+    </div>
 
     <div style="display: flex; gap: 12px; align-items: center; background: #F8FAFC; border: 1px solid var(--spa-border); border-radius: 12px; padding: 12px; margin-top: 16px;">
       <img
@@ -864,9 +1147,19 @@
       return '$' + Number(num).toFixed(2);
     }
 
+    function calculatePrice(q) {
+      if (q === 1) return basePrice;
+      if (q === 2) return 64.90;
+      return Number((32.45 * q).toFixed(2));
+    }
+
+    function calculateCompare(q) {
+      return Number((baseCompare * q).toFixed(2));
+    }
+
     function updateUi() {
-      var totalPrice = basePrice * currentQty;
-      var totalCompare = baseCompare * currentQty;
+      var totalPrice = calculatePrice(currentQty);
+      var totalCompare = calculateCompare(currentQty);
       var savings = totalCompare - totalPrice;
 
       document.getElementById('mQtyVal').textContent = currentQty;
@@ -878,9 +1171,19 @@
       document.getElementById('mSavePill').textContent = 'Ahorras ' + formatMoney(savings) + ' Hoy';
 
       document.getElementById('mStickyTotal').textContent = formatMoney(totalPrice);
-      document.getElementById('mTotalText').textContent = currentQty + 'x Masajeador(es) por ' + formatMoney(totalPrice) + ' USD';
-      document.getElementById('mQtyLabel').textContent = currentQty === 1 ? '1 unidad para envío inmediato' : currentQty + ' unidades seleccionadas';
+      document.getElementById('mTotalText').textContent = (currentQty === 1 ? '1x Masajeador por ' : currentQty + 'x Masajeadores (Pack Pareja) por ') + formatMoney(totalPrice) + ' USD';
+      document.getElementById('mQtyLabel').textContent = currentQty === 1 ? '1 unidad (Kit completo con Envío Gratis)' : currentQty + ' unidades seleccionadas';
+
+      var opt1 = document.getElementById('mBundleOption1');
+      var opt2 = document.getElementById('mBundleOption2');
+      if (opt1) opt1.classList.toggle('selected', currentQty === 1);
+      if (opt2) opt2.classList.toggle('selected', currentQty === 2);
     }
+
+    window.selectMassagerBundle = function(qty) {
+      currentQty = qty;
+      updateUi();
+    };
 
     window.changeMassagerQty = function(delta) {
       var next = currentQty + delta;

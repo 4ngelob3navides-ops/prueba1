@@ -198,6 +198,37 @@ def generate_local_preview():
     bunny_preview.write_text(bunny_content, encoding="utf-8")
     print(f"[PREVIEW] Updated {bunny_preview.name}")
 
+    # Generar Vista Previa del Masajeador Capilar
+    massager_liquid = (THEME_DIR / "snippets" / "massager-landing.liquid").read_text(encoding="utf-8")
+    massager_html_body = re.sub(r"\{%-\s*liquid[\s\S]*?-%\}", "", massager_liquid).strip()
+    massager_html_body = re.sub(r"\{\{\s*'([^']+)'\s*\|\s*asset_url\s*\}\}", r"./shopify-theme/assets/\1", massager_html_body)
+    massager_html_body = massager_html_body.replace("{{ price_usd | string }}", "39.90")
+    massager_html_body = massager_html_body.replace("{{ price_usd | json }}", "39.90")
+    massager_html_body = massager_html_body.replace("{{ compare_usd | string }}", "59.90")
+    massager_html_body = massager_html_body.replace("{{ compare_usd | json }}", "59.90")
+    massager_html_body = massager_html_body.replace("{{ savings_usd | string }}", "20.00")
+    massager_html_body = massager_html_body.replace("{{ real_stock }}", "16")
+    massager_html_body = massager_html_body.replace("{{ current_variant.id | json }}", "null")
+
+    massager_preview = ROOT / "preview-massager.html"
+    massager_content = f"""<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1E293B">
+    <title>MASAJEADOR CAPILAR ANTIESTRÉS — Vista Previa Móvil</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body style="background-color: #E2E8F0; margin: 0; padding: 0;">
+    {massager_html_body}
+  </body>
+</html>"""
+    massager_preview.write_text(massager_content, encoding="utf-8")
+    print(f"[PREVIEW] Updated {massager_preview.name}")
+
 
 def validate_shopify_theme():
     theme_liquid = (THEME_DIR / "layout" / "theme.liquid").read_text(encoding="utf-8")
