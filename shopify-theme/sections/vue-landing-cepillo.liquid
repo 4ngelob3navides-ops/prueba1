@@ -35,6 +35,10 @@
   assign assets_base_clean = asset_sample | split: 'relief_standing_clean.jpg' | first
 -%}
 
+{%- if target_product.handle == 'mini-licuadora-conejito-portatil' or target_product.title contains 'CONEJITO' or target_product.title contains 'LICUADORA' -%}
+  {% render 'blender-landing' %}
+{%- else -%}
+
 <div id="cepillo-vue-section-{{ section.id }}">
   <!-- Punto de montaje Vue 3 -->
   <div id="cepillo-vue-root"></div>
@@ -101,6 +105,7 @@
     codImage: {% if section.settings.cod_image != blank %}{{ section.settings.cod_image | image_url: width: 960 | json }}{% else %}{{ 'cod_door_delivery.jpg' | asset_url | json }}{% endif %}
   };
 </script>
+{%- endif -%}
 
 {% schema %}
 {
