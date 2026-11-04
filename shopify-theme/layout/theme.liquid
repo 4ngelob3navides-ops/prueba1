@@ -7,10 +7,14 @@
     <meta name="theme-color" content="#FAF7F2">
 
     <title>
-      {{ page_title }}
-      {%- if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif -%}
-      {%- if current_page != 1 %} &ndash; Página {{ current_page }}{% endif -%}
-      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+      {%- if template.name == 'cart' -%}
+        Tu Carrito de Compra &bull; Envío Gratis Ecuador
+      {%- else -%}
+        {{ page_title }}
+        {%- if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif -%}
+        {%- if current_page != 1 %} &ndash; Página {{ current_page }}{% endif -%}
+        {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+      {%- endif -%}
     </title>
 
     {% if page_description %}
