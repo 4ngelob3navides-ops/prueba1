@@ -99,49 +99,69 @@
           id: 1,
           qty: 1,
           title: '1x Kit Cepillo 9 en 1 Pro',
-          sub: '9 cabezales + Brazo extensible + Envío Gratis',
+          sub: '9 cabezales + Brazo extensible + Envio Gratis',
           price: basePrice,
           compareAtPrice: baseCompareAt,
-          savingsText: 'Ahorras $25 hoy',
+          savingsText: `Ahorras ${money(baseCompareAt - basePrice)} hoy`,
           badge: 'Oferta Individual',
         },
         {
           id: 2,
           qty: 2,
-          title: '2x Kits (Pack Familiar / Mamá)',
-          sub: 'Uno para baño y otro para cocina ($34.95 c/u)',
-          price: 69.9,
-          compareAtPrice: 139.8,
-          savingsText: 'Ahorras $69.90 hoy',
-          badge: 'Pack Familiar (Ahorro Máximo)',
+          title: '2x Kits (Pack Familiar / Mama)',
+          sub: 'Uno para bano y otro para cocina ($39.90 c/u — Descuento -$10)',
+          price: Number(((basePrice * 2) - 10.00).toFixed(2)),
+          compareAtPrice: Number((basePrice * 2).toFixed(2)),
+          savingsText: 'Ahorras $10.00 hoy',
+          badge: 'Pack Familiar (Ahorro Maximo)',
         },
       ];
 
       const offerForQty = (qty) => {
         const q = Math.max(1, Math.min(maxQty, Number(qty) || 1));
-        let price = 0;
-        let compareAtPrice = 0;
+        const discount = q >= 2 ? 10.00 : 0;
+        const price = Number(((basePrice * q) - discount).toFixed(2));
+        const compareAtPrice = Number((baseCompareAt * q).toFixed(2));
+        const unitPrice = Number((price / q).toFixed(2));
         let title = '';
         let sub = '';
 
         if (q === 1) {
-          price = basePrice;
-          compareAtPrice = baseCompareAt;
           title = '1x Kit Cepillo 9 en 1 Pro';
-          sub = '9 cabezales + Brazo extensible + Envío Gratis';
+          sub = '9 cabezales + Brazo extensible + Envio Gratis';
         } else if (q === 2) {
-          price = 69.9;
-          compareAtPrice = 139.8;
-          title = '2x Kits (Pack Familiar / Mamá)';
-          sub: 'Uno para baño y otro para cocina ($34.95 c/u)';
+          title = '2x Kits (Pack Familiar / Mama)';
+          sub = `Uno para bano y otro para cocina ($${unitPrice.toFixed(2)} c/u — Descuento -$10)`;
         } else {
-          price = Number((34.95 * q).toFixed(2));
-          compareAtPrice = Number((baseCompareAt * q).toFixed(2));
           title = `${q}x Kits Cepillo 9 en 1 Pro`;
-          sub = `$34.95 cada kit + Envío Gratis a todo Ecuador`;
+          sub = `$${unitPrice.toFixed(2)} c/u (Descuento -$10 aplicado) + Envio Gratis`;
         }
 
         const totalSavings = Math.max(0, compareAtPrice - price);
+
+        return {
+          id: q,
+          qty: q,
+          title,
+          sub,
+          price,
+          compareAtPrice,
+          savingsText: `Ahorras ${money(totalSavings)} hoy`,
+          badge: q > 1 ? `${q} Kits (Ahorro -$10)` : 'Oferta Individual',
+        };
+      };
+
+        return {
+          id: q,
+          qty: q,
+          title,
+          sub,
+          price,
+          compareAtPrice,
+          savingsText: `Ahorras ${money(totalSavings)} hoy`,
+          badge: q > 1 ? `${q} Kits (Ahorro -$10)` : 'Oferta Individual',
+        };
+      };
 
         return {
           id: q,
@@ -387,8 +407,8 @@
         {
           id: 1,
           qty: 1,
-          title: '1x Mini Licuadora Conejito Portátil',
-          sub: 'Vaso Tritán 350ml + Tapa Orejitas + Cable USB-C + Envío Gratis',
+          title: '1x Mini Licuadora Conejito Portatil',
+          sub: 'Vaso Tritan 350ml + Tapa Orejitas + Cable USB-C + Envio Gratis',
           price: basePrice,
           compareAtPrice: baseCompareAt,
           savingsText: `Ahorras ${money(baseCompareAt - basePrice)} hoy`,
@@ -397,41 +417,48 @@
         {
           id: 2,
           qty: 2,
-          title: '2x Mini Licuadoras (Pack Dúo / Regalo)',
-          sub: 'Para ti y una amiga ($24.95 c/u — Ahorro Máximo)',
-          price: 49.90,
-          compareAtPrice: 59.80,
-          savingsText: 'Ahorras $9.90 hoy',
-          badge: 'Pack Dúo ⭐',
+          title: '2x Mini Licuadoras (Pack Duo / Regalo)',
+          sub: 'Para ti y una amiga ($24.90 c/u - Descuento -$10)',
+          price: Number(((basePrice * 2) - 10.00).toFixed(2)),
+          compareAtPrice: Number((basePrice * 2).toFixed(2)),
+          savingsText: 'Ahorras $10.00 hoy',
+          badge: 'Pack Duo (Ahorro -$10)',
         },
       ];
 
       const offerForQty = (qty) => {
         const q = Math.max(1, Math.min(maxQty, Number(qty) || 1));
-        let price = 0;
-        let compareAtPrice = 0;
+        const discount = q >= 2 ? 10.00 : 0;
+        const price = Number(((basePrice * q) - discount).toFixed(2));
+        const compareAtPrice = Number((baseCompareAt * q).toFixed(2));
+        const unitPrice = Number((price / q).toFixed(2));
         let title = '';
         let sub = '';
 
         if (q === 1) {
-          price = basePrice;
-          compareAtPrice = baseCompareAt;
-          title = '1x Mini Licuadora Conejito Portátil';
-          sub = 'Vaso Tritán 350ml + Tapa Orejitas + Cable USB-C + Envío Gratis';
+          title = '1x Mini Licuadora Conejito Portatil';
+          sub = 'Vaso Tritan 350ml + Tapa Orejitas + Cable USB-C + Envio Gratis';
         } else if (q === 2) {
-          price = 49.90;
-          compareAtPrice = 59.80;
-          title = '2x Mini Licuadoras (Pack Dúo / Regalo)';
-          sub = 'Una para ti y otra para regalar o para la oficina ($24.95 c/u)';
+          title = '2x Mini Licuadoras (Pack Duo / Regalo)';
+          sub = `Una para ti y otra para regalar ($${unitPrice.toFixed(2)} c/u — Descuento -$10)`;
         } else {
-          const unit = 24.95;
-          price = Number((unit * q).toFixed(2));
-          compareAtPrice = Number((baseCompareAt * q).toFixed(2));
-          title = `${q}x Mini Licuadoras Conejito Portátiles`;
-          sub = `${money(unit)} cada una + Envío Gratis a todo Ecuador`;
+          title = `${q}x Mini Licuadoras Conejito Portatiles`;
+          sub = `$${unitPrice.toFixed(2)} c/u (Descuento -$10 aplicado) + Envio Gratis`;
         }
 
         const totalSavings = Math.max(0, compareAtPrice - price);
+
+        return {
+          id: q,
+          qty: q,
+          title,
+          sub,
+          price,
+          compareAtPrice,
+          savingsText: `Ahorras ${money(totalSavings)} hoy`,
+          badge: q > 1 ? `${q} Licuadoras (Ahorro -$10)` : 'Oferta Individual',
+        };
+      };
 
         return {
           id: q,

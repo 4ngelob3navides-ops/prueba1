@@ -1043,12 +1043,12 @@
         <div class="s-bundle-left">
           <div class="s-radio-circle"></div>
           <div>
-            <span class="s-bundle-title">2x Masajeadores (Pack Pareja / Regalo Mamá)</span>
-            <span class="s-bundle-sub">Uno para ti y otro de regalo ($34.95 c/u — Ahorro Máximo)</span>
+            <span class="s-bundle-title">2x Masajeadores (Pack Pareja / Regalo)</span>
+            <span class="s-bundle-sub">Uno para ti y otro de regalo ($37.50 c/u — Descuento -$10)</span>
           </div>
         </div>
         <div class="s-bundle-price-col">
-          <span class="s-bundle-price-now" id="m2PriceNow">$69.90</span>
+          <span class="s-bundle-price-now" id="m2PriceNow">$75.00</span>
           <span class="s-bundle-price-old" id="m2PriceOld">$85.00</span>
         </div>
       </div>
@@ -1148,9 +1148,8 @@
     }
 
     function calculatePrice(q) {
-      if (q === 1) return basePrice;
-      if (q === 2) return 69.90;
-      return Number((34.95 * q).toFixed(2));
+      var discount = q >= 2 ? 10.00 : 0;
+      return Number(((basePrice * q) - discount).toFixed(2));
     }
 
     function calculateCompare(q) {
@@ -1171,8 +1170,8 @@
       document.getElementById('mSavePill').textContent = 'Ahorras ' + formatMoney(savings) + ' Hoy';
 
       document.getElementById('mStickyTotal').textContent = formatMoney(totalPrice);
-      document.getElementById('mTotalText').textContent = (currentQty === 1 ? '1x Masajeador por ' : currentQty + 'x Masajeadores (Pack Pareja) por ') + formatMoney(totalPrice) + ' USD';
-      document.getElementById('mQtyLabel').textContent = currentQty === 1 ? '1 unidad (Kit completo con Envío Gratis)' : currentQty + ' unidades seleccionadas';
+      var discountNote = currentQty >= 2 ? ' (Descuento -$10 aplicado)' : ''; document.getElementById('mTotalText').textContent = (currentQty === 1 ? '1x Masajeador por ' : currentQty + 'x Masajeadores' + discountNote + ' por ') + formatMoney(totalPrice) + ' USD';
+      document.getElementById('mQtyLabel').textContent = currentQty === 1 ? '1 unidad (Kit completo con Envío Gratis)' : currentQty + ' unidades seleccionadas (Descuento -$10 aplicado en Checkout)';
 
       var opt1 = document.getElementById('mBundleOption1');
       var opt2 = document.getElementById('mBundleOption2');
