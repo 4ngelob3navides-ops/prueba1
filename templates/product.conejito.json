@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "landing-licuadora-conejito",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

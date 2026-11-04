@@ -1,0 +1,245 @@
+{%- liquid
+  assign target_product = product
+  if target_product == blank and section.settings.featured_product != blank
+    assign target_product = section.settings.featured_product
+  endif
+  if target_product == blank
+    assign target_product = all_products['cepillo-electrico-9-en-1-pro']
+  endif
+  if target_product == blank and collections.all.products.size > 0
+    assign target_product = collections.all.products.first
+  endif
+
+  assign current_variant = target_product.selected_or_first_available_variant
+
+  assign final_price = section.settings.fallback_price | default: 44.90
+  if target_product != blank and section.settings.use_shopify_price
+    assign final_price = current_variant.price | divided_by: 100.0
+  endif
+
+  assign compare_price = 0
+  if target_product != blank and section.settings.use_shopify_price
+    if current_variant.compare_at_price > current_variant.price
+      assign compare_price = current_variant.compare_at_price | divided_by: 100.0
+    endif
+  else
+    assign compare_price = section.settings.fallback_compare_price | default: 69.90
+  endif
+
+  assign real_stock = section.settings.stock_left | default: 14
+  if current_variant != blank and current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0
+    assign real_stock = current_variant.inventory_quantity
+  endif
+
+  assign asset_sample = 'relief_standing_clean.jpg' | asset_url
+  assign assets_base_clean = asset_sample | split: 'relief_standing_clean.jpg' | first
+-%}
+
+{%- if target_product.handle == 'mini-licuadora-conejito-portatil' or target_product.title contains 'CONEJITO' or target_product.title contains 'LICUADORA' -%}
+  {% render 'blender-landing' %}
+{%- elsif target_product.handle == 'masajeador-capilar-antiestres' or target_product.title contains 'MASAJEADOR' or target_product.title contains 'CAPILAR' -%}
+  {% render 'massager-landing' %}
+{%- else -%}
+
+<div id="cepillo-vue-section-{{ section.id }}">
+  <!-- Punto de montaje Vue 3 -->
+  <div id="cepillo-vue-root"></div>
+
+  <!-- Formulario nativo sincronizado para compatibilidad con Apps COD / Dropi (Releasit, EasySell, Checkout) -->
+  {%- if target_product != blank -%}
+    <form
+      id="shopify-native-product-form"
+      action="{{ routes.cart_add_url }}"
+      method="post"
+      enctype="multipart/form-data"
+      style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);"
+      aria-hidden="true"
+    >
+      <input type="hidden" id="shopify-native-variant-id" name="id" value="{{ current_variant.id }}">
+      <input type="hidden" id="shopify-native-qty" name="quantity" value="1">
+      <button type="submit" name="add">Pedir</button>
+    </form>
+  {%- endif -%}
+</div>
+
+<script>
+  window.__SHOPIFY_DATA__ = {
+    title: {{ target_product.title | default: 'Cepillo Eléctrico 9 en 1 Pro' | json }},
+    handle: {{ target_product.handle | default: 'cepillo-electrico-9-en-1-pro' | json }},
+    sku: {{ current_variant.sku | default: '208333' | json }},
+    variantId: {{ current_variant.id | default: null | json }},
+    currency: {{ cart.currency.iso_code | default: 'USD' | json }},
+    price: {{ final_price | json }},
+    compareAtPrice: {{ compare_price | json }},
+    variants: [
+      {%- if target_product != blank -%}
+        {%- for v in target_product.variants -%}
+          {
+            id: {{ v.id | json }},
+            title: {{ v.title | json }},
+            sku: {{ v.sku | json }},
+            price: {% if section.settings.use_shopify_price %}{{ v.price | divided_by: 100.0 | json }}{% else %}{{ final_price | json }}{% endif %},
+            compareAtPrice: {% if section.settings.use_shopify_price and v.compare_at_price > v.price %}{{ v.compare_at_price | divided_by: 100.0 | json }}{% elsif section.settings.use_shopify_price == false %}{{ compare_price | json }}{% else %}0{% endif %},
+            available: {{ v.available | json }},
+            inventoryQuantity: {% if v.inventory_management == 'shopify' %}{{ v.inventory_quantity | json }}{% else %}99{% endif %}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      {%- endif -%}
+    ],
+    stockLeft: {{ real_stock | json }},
+    maxQty: {{ section.settings.max_qty | default: 10 | json }},
+    warehouseCity: {{ section.settings.warehouse_city | default: 'Guayaquil' | json }},
+    heroBadge: {{ section.settings.hero_badge | json }},
+    heroHeadline: {{ section.settings.hero_headline | json }},
+    heroSubline: {{ section.settings.hero_subline | json }},
+    ctaText: {{ section.settings.cta_text | json }},
+    assetsBase: {{ assets_base_clean | json }},
+    heroImage: {% if section.settings.hero_image != blank %}{{ section.settings.hero_image | image_url: width: 1080 | json }}{% else %}{{ 'relief_standing_clean.jpg' | asset_url | json }}{% endif %},
+    unboxingImage: {% if section.settings.unboxing_image != blank %}{{ section.settings.unboxing_image | image_url: width: 1080 | json }}{% else %}{{ 'unboxing_flatlay_9in1.jpg' | asset_url | json }}{% endif %},
+    fear3Image: {% if section.settings.hands_image != blank %}{{ section.settings.hands_image | image_url: width: 960 | json }}{% else %}{{ 'fear_disgust_germs.jpg' | asset_url | json }}{% endif %},
+    beforeImage: {% if section.settings.before_image != blank %}{{ section.settings.before_image | image_url: width: 960 | json }}{% else %}{{ 'before_dirty_tiles.jpg' | asset_url | json }}{% endif %},
+    afterImage: {% if section.settings.after_image != blank %}{{ section.settings.after_image | image_url: width: 960 | json }}{% else %}{{ 'after_clean_tiles.jpg' | asset_url | json }}{% endif %},
+    reliefImage: {% if section.settings.relief_image != blank %}{{ section.settings.relief_image | image_url: width: 960 | json }}{% else %}{{ 'relief_standing_clean.jpg' | asset_url | json }}{% endif %},
+    zoneCornersImage: {% if section.settings.zone_corners_image != blank %}{{ section.settings.zone_corners_image | image_url: width: 960 | json }}{% else %}{{ 'zone_cone_corner.jpg' | asset_url | json }}{% endif %},
+    zoneStoveImage: {% if section.settings.zone_stove_image != blank %}{{ section.settings.zone_stove_image | image_url: width: 960 | json }}{% else %}{{ 'zone_stove_grease.jpg' | asset_url | json }}{% endif %},
+    ugc1Image: {% if section.settings.ugc1_image != blank %}{{ section.settings.ugc1_image | image_url: width: 960 | json }}{% else %}{{ 'after_clean_tiles.jpg' | asset_url | json }}{% endif %},
+    ugc2Image: {% if section.settings.ugc2_image != blank %}{{ section.settings.ugc2_image | image_url: width: 960 | json }}{% else %}{{ 'unboxing_flatlay_9in1.jpg' | asset_url | json }}{% endif %},
+    codImage: {% if section.settings.cod_image != blank %}{{ section.settings.cod_image | image_url: width: 960 | json }}{% else %}{{ 'cod_door_delivery.jpg' | asset_url | json }}{% endif %}
+  };
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Landing Cepillo 9en1",
+  "tag": "section",
+  "class": "section-cepillo-vue",
+  "settings": [
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Producto especifico (opcional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_shopify_price",
+      "label": "Usar precio y variantes de Shopify",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "fallback_price",
+      "label": "Precio manual (solo si desactivas arriba)",
+      "default": 45
+    },
+    {
+      "type": "number",
+      "id": "fallback_compare_price",
+      "label": "Precio antes manual",
+      "default": 70
+    },
+    {
+      "type": "number",
+      "id": "stock_left",
+      "label": "Stock respaldo si no se rastrea",
+      "default": 14
+    },
+    {
+      "type": "number",
+      "id": "max_qty",
+      "label": "Cantidad maxima por pedido",
+      "default": 10
+    },
+    {
+      "type": "text",
+      "id": "warehouse_city",
+      "label": "Ciudad de bodega local",
+      "default": "Guayaquil"
+    },
+    {
+      "type": "text",
+      "id": "hero_badge",
+      "label": "Etiqueta clinica superior",
+      "default": "Cuidado articular y limpieza sin esfuerzo"
+    },
+    {
+      "type": "text",
+      "id": "hero_headline",
+      "label": "Titular principal",
+      "default": "Termina de limpiar el baño sin que te duela la cintura ni poner las rodillas en el piso frío."
+    },
+    {
+      "type": "text",
+      "id": "hero_subline",
+      "label": "Subtitulo descriptivo",
+      "default": "El cepillo eléctrico que gira a 300 RPM: la máquina hace la fuerza y tú limpias de pie en 10 minutos."
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Texto boton principal",
+      "default": "Pedir ahora y pagar al recibir"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Foto Hero (Uso de pie 1.2m)"
+    },
+    {
+      "type": "image_picker",
+      "id": "unboxing_image",
+      "label": "Foto Unboxing (Contenido caja)"
+    },
+    {
+      "type": "image_picker",
+      "id": "before_image",
+      "label": "Slider Antes (Junta con moho)"
+    },
+    {
+      "type": "image_picker",
+      "id": "after_image",
+      "label": "Slider Despues (Azulejo limpio)"
+    },
+    {
+      "type": "image_picker",
+      "id": "hands_image",
+      "label": "Foto Manos irritadas (Quimicos)"
+    },
+    {
+      "type": "image_picker",
+      "id": "relief_image",
+      "label": "Foto Uso erguido en ducha"
+    },
+    {
+      "type": "image_picker",
+      "id": "zone_corners_image",
+      "label": "Foto Cabezal conico en grifo"
+    },
+    {
+      "type": "image_picker",
+      "id": "zone_stove_image",
+      "label": "Foto Cerdas duras en estufa"
+    },
+    {
+      "type": "image_picker",
+      "id": "ugc1_image",
+      "label": "Foto Testimonio WhatsApp 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "ugc2_image",
+      "label": "Foto Testimonio WhatsApp 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "cod_image",
+      "label": "Foto Entrega en puerta COD"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Landing Cepillo 9en1"
+    }
+  ]
+}
+{% endschema %}

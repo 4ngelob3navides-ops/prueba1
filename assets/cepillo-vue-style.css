@@ -1,0 +1,1248 @@
+/* ==========================================================================
+   CEPILLO 9 EN 1 PRO — EDICIÓN EDITORIAL HOGAR & ALIVIO
+   Tipografías: Fraunces (Serif cálida) + Plus Jakarta Sans (Limpia)
+   Paleta: Lino, Arena, Carbón Espresso, Verde Bosque y Acento Terracota
+   ========================================================================== */
+
+:root {
+  --bg-linen: #FAF7F2;
+  --bg-sand: #F1EBE0;
+  --bg-card: #FFFFFF;
+  --text-espresso: #1C1917;
+  --text-muted: #57534E;
+  --accent-forest: #1F4B3C;
+  --accent-forest-hover: #16382C;
+  --accent-terracotta: #B85038;
+  --border-warm: #E4DDD0;
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --radius-card: 14px;
+  --radius-pill: 999px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #E7E0D5;
+  font-family: var(--font-sans);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: #E7E0D5;
+  color: var(--text-espresso);
+  font-family: var(--font-sans);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Contenedor Mobile-First Editorial */
+.editorial-shell {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: var(--bg-linen);
+  min-height: 100svh;
+  padding-bottom: 96px;
+  box-shadow: 0 0 50px rgba(28, 25, 23, 0.12);
+  position: relative;
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* 1. BARRA DE ANUNCIO SUPERIOR (ESTILO BOUTIQUE) */
+.announcement-bar {
+  background-color: var(--text-espresso);
+  color: var(--bg-linen);
+  text-align: center;
+  padding: 10px 16px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.announcement-bar__tag {
+  background-color: var(--accent-terracotta);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* CABECERA DE MARCA MINIMALISTA */
+.brand-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: var(--bg-linen);
+  border-bottom: 1px solid var(--border-warm);
+}
+
+.brand-logo {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-espresso);
+}
+
+.brand-location {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--border-warm);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+}
+
+/* 2. HERO EDITORIAL: ENFOQUE EN ALIVIO REAL */
+.hero-editorial {
+  padding: 0 0 28px;
+  border-bottom: 1px solid var(--border-warm);
+}
+
+.hero-media {
+  position: relative;
+  aspect-ratio: 4 / 4.3;
+  overflow: hidden;
+  background-color: var(--bg-sand);
+}
+
+.hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-floating-pill {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(250, 247, 242, 0.94);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--text-espresso);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.hero-content {
+  padding: 22px 20px 0;
+}
+
+.editorial-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent-terracotta);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.editorial-headline {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-espresso);
+  margin-bottom: 12px;
+}
+
+.editorial-headline em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent-forest);
+}
+
+.editorial-subline {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+/* Barra de Beneficios Limpia */
+.clean-specs-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--border-warm);
+  border-bottom: 1px solid var(--border-warm);
+  padding: 12px 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.clean-spec {
+  border-right: 1px solid var(--border-warm);
+  padding: 0 6px;
+}
+
+.clean-spec:last-child {
+  border-right: none;
+}
+
+.clean-spec strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-espresso);
+}
+
+.clean-spec span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Bloque de Precio y Botón Editorial */
+/* SELECTOR DE CANTIDAD EDITORIAL (− N +) */
+.qty-stepper {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-warm);
+  border-radius: var(--radius-pill);
+  padding: 3px 6px;
+  gap: 8px;
+  user-select: none;
+}
+
+.qty-stepper--compact {
+  padding: 2px 4px;
+  gap: 6px;
+}
+
+.qty-stepper__btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-sand);
+  color: var(--text-espresso);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.qty-stepper--compact .qty-stepper__btn {
+  width: 24px;
+  height: 24px;
+  font-size: 13px;
+}
+
+.qty-stepper__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.qty-stepper__btn:active:not(:disabled) {
+  transform: scale(0.9);
+  background: var(--accent-forest);
+  color: #fff;
+}
+
+.qty-stepper__val {
+  min-width: 20px;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-espresso);
+}
+
+.qty-stepper--compact .qty-stepper__val {
+  font-size: 14px;
+  min-width: 16px;
+}
+
+.qty-stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-card);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.qty-stepper-label strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-espresso);
+}
+
+.qty-stepper-label span {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.price-editorial-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.price-main-group {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.price-current {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-espresso);
+}
+
+.price-compare {
+  font-size: 15px;
+  color: #8C857B;
+  text-decoration: line-through;
+}
+
+.price-badge-save {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background-color: #F6E6E2;
+  color: var(--accent-terracotta);
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.btn-editorial-primary {
+  width: 100%;
+  background-color: var(--accent-forest);
+  color: #FFFFFF;
+  padding: 17px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 4px 14px rgba(31, 75, 60, 0.25);
+}
+
+.btn-editorial-primary:hover {
+  background-color: var(--accent-forest-hover);
+}
+
+.btn-editorial-primary:active {
+  transform: scale(0.985);
+  background-color: var(--accent-forest-hover);
+}
+
+.btn-editorial-primary small {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  opacity: 0.88;
+}
+
+/* 3. CINTA DE VALORES */
+.trust-strip {
+  background-color: var(--bg-sand);
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border-warm);
+  display: flex;
+  justify-content: space-around;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+/* ENCABEZADOS DE SECCIÓN */
+.section-block {
+  padding: 36px 20px;
+  border-bottom: 1px solid var(--border-warm);
+}
+
+.section-block--sand {
+  background-color: var(--bg-sand);
+}
+
+.section-block--white {
+  background-color: var(--bg-card);
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.18;
+  margin-bottom: 10px;
+  color: var(--text-espresso);
+}
+
+.section-lead {
+  font-size: 14.5px;
+  color: var(--text-muted);
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+
+/* 4. SLIDER VISUAL DE MUGRE REAL (ANTES / DESPUÉS) */
+.ba-wrapper {
+  position: relative;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  aspect-ratio: 1 / 1.02;
+  border: 1px solid var(--border-warm);
+  touch-action: pan-y;
+  user-select: none;
+  background: #ddd;
+}
+
+.ba-wrapper img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ba-after-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  clip-path: inset(0 50% 0 0);
+  will-change: clip-path;
+}
+
+.ba-tag {
+  position: absolute;
+  bottom: 14px;
+  z-index: 4;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+}
+
+.ba-tag--clean {
+  left: 14px;
+  background: var(--bg-linen);
+  color: var(--accent-forest);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.ba-tag--dirty {
+  right: 14px;
+  background: rgba(28, 25, 23, 0.85);
+  color: #fff;
+}
+
+.ba-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: var(--bg-linen);
+  z-index: 5;
+  transform: translateX(-50%);
+  pointer-events: none;
+  will-change: left;
+}
+
+.ba-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-linen);
+  color: var(--text-espresso);
+  border: 1px solid var(--border-warm);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ba-caption {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  text-align: center;
+  font-style: italic;
+}
+
+/* 5. LOS DOLORES COTIDIANOS */
+.pain-editorial-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pain-editorial-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.pain-editorial-card__img {
+  aspect-ratio: 16 / 10.5;
+  overflow: hidden;
+  background: #e5e0d5;
+}
+
+.pain-editorial-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pain-editorial-card__body {
+  padding: 18px;
+}
+
+.pain-number {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-terracotta);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.pain-editorial-card__title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  line-height: 1.25;
+  color: var(--text-espresso);
+}
+
+.pain-editorial-card__desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.relief-solution-bar {
+  background: var(--bg-linen);
+  border-left: 3px solid var(--accent-forest);
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-forest);
+  border-radius: 0 8px 8px 0;
+}
+
+/* 6. DEMOSTRACIÓN POR ZONAS */
+.zone-pills {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 14px;
+  scrollbar-width: none;
+}
+
+.zone-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.zone-pill-btn {
+  white-space: nowrap;
+  padding: 9px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 12.5px;
+  font-weight: 700;
+  border: 1px solid var(--border-warm);
+  background: var(--bg-linen);
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+}
+
+.zone-pill-btn.active {
+  background: var(--text-espresso);
+  color: var(--bg-linen);
+  border-color: var(--text-espresso);
+}
+
+.zone-showcase {
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--bg-linen);
+}
+
+.zone-showcase__img {
+  aspect-ratio: 4 / 3.4;
+  overflow: hidden;
+  background: #e7e0d5;
+}
+
+.zone-showcase__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.zone-showcase__info {
+  padding: 18px;
+}
+
+.zone-showcase__tool {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-forest);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.zone-showcase__title {
+  font-family: var(--font-serif);
+  font-size: 21px;
+  margin-bottom: 6px;
+  color: var(--text-espresso);
+  line-height: 1.25;
+}
+
+.zone-showcase__text {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* GRILLA MINIMALISTA DE LOS 9 CABEZALES */
+.kit-minimal-box {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border-warm);
+}
+
+.kit-minimal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.kit-cell {
+  background: var(--bg-linen);
+  border: 1px solid var(--border-warm);
+  border-radius: 10px;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.kit-cell strong {
+  display: block;
+  font-size: 12px;
+  color: var(--text-espresso);
+  margin-bottom: 2px;
+}
+
+.kit-cell span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* 7. RESEÑAS EDITORIALES */
+.editorial-quotes {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.editorial-quotes::-webkit-scrollbar {
+  display: none;
+}
+
+.quote-card {
+  flex: 0 0 85%;
+  scroll-snap-align: start;
+  background: var(--bg-card);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-card);
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.quote-stars {
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--accent-terracotta);
+  margin-bottom: 12px;
+}
+
+.quote-text {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.4;
+  color: var(--text-espresso);
+  margin-bottom: 16px;
+}
+
+.quote-meta {
+  border-top: 1px solid var(--border-warm);
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* 8. BUNDLES ESTILO "ESSENTIALS KIT" + PAGO AL RECIBIR */
+.bundle-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.bundle-option {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-warm);
+  border-radius: var(--radius-card);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bundle-option.selected {
+  border-color: var(--accent-forest);
+  background: #F4F8F6;
+}
+
+.bundle-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.radio-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bundle-option.selected .radio-dot {
+  border-color: var(--accent-forest);
+}
+
+.radio-dot::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.bundle-option.selected .radio-dot::after {
+  background: var(--accent-forest);
+}
+
+.bundle-title {
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--text-espresso);
+  display: block;
+}
+
+.bundle-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.bundle-price-col {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.bundle-price-now {
+  font-family: var(--font-serif);
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--text-espresso);
+  display: block;
+}
+
+.bundle-price-old {
+  font-size: 12px;
+  color: #8C857B;
+  text-decoration: line-through;
+}
+
+.cod-editorial-card {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 14px;
+  background: var(--bg-sand);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  align-items: center;
+  margin-top: 22px;
+}
+
+.cod-editorial-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 115px;
+}
+
+.cod-editorial-card__text {
+  padding: 12px 14px 12px 0;
+}
+
+.cod-editorial-card__text strong {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-espresso);
+}
+
+.cod-editorial-card__text p {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* BARRA INFERIOR FIJA MINIMALISTA */
+.sticky-editorial-bar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: rgba(250, 247, 242, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border-warm);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  z-index: 45;
+  box-shadow: 0 -4px 20px rgba(28, 25, 23, 0.08);
+}
+
+.sticky-price-info {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.sticky-price-info span {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  line-height: 1.1;
+}
+
+.sticky-price-info strong {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  color: var(--text-espresso);
+  line-height: 1.1;
+}
+
+.sticky-btn {
+  flex: 1;
+  background: var(--accent-forest);
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 3px 10px rgba(31, 75, 60, 0.25);
+  white-space: nowrap;
+}
+
+.sticky-btn:active {
+  transform: scale(0.98);
+  background-color: var(--accent-forest-hover);
+}
+
+/* MODAL CONTRAENTREGA EDITORIAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 25, 23, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-sheet {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-linen);
+  border-radius: 22px 22px 0 0;
+  padding: 24px 20px 30px;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-overlay.open .modal-sheet {
+  transform: translateY(0);
+}
+
+.modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border-warm);
+  font-size: 15px;
+  color: var(--text-espresso);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 5px;
+  color: var(--text-muted);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-warm);
+  background: #fff;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text-espresso);
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: var(--accent-forest);
+  box-shadow: 0 0 0 3px rgba(31, 75, 60, 0.12);
+}
+
+/* Toast de confirmación */
+.editorial-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-espresso);
+  color: var(--bg-linen);
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 100;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 90%;
+  text-align: center;
+}
+
+/* 9. SELLOS DE CONFIANZA INMEDIATA (AUDITORÍA CRO) */
+.hero-trust-badges {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: #fdfbf7;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed var(--border-warm);
+}
+
+.hero-trust-badges--cod {
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+.hero-trust-badge-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.hero-trust-badge-icon {
+  color: var(--accent-forest);
+  font-weight: 800;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.hero-trust-badge-text strong {
+  color: var(--text-espresso);
+  display: inline;
+}
+
+/* 10. TABLA DE CONTRASTE (PAS / BAB) */
+.section-contrast {
+  background-color: var(--bg-sand);
+}
+
+.contrast-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 600px) {
+  .contrast-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.contrast-card {
+  background: #fff;
+  border-radius: var(--radius-card);
+  padding: 20px;
+  border: 1px solid var(--border-warm);
+}
+
+.contrast-card--bad {
+  border-left: 4px solid #ef4444;
+  background: #fffafa;
+}
+
+.contrast-card--bad .contrast-card__header h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #b91c1c;
+  margin-bottom: 12px;
+}
+
+.contrast-card--good {
+  border-left: 4px solid var(--accent-forest);
+  background: #f7faf8;
+  position: relative;
+  box-shadow: 0 4px 14px rgba(31, 75, 60, 0.08);
+}
+
+.contrast-good-badge {
+  display: inline-block;
+  background: var(--accent-forest);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 8px;
+}
+
+.contrast-card--good .contrast-card__header h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent-forest);
+  margin-bottom: 12px;
+}
+
+.contrast-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contrast-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--text-espresso);
+}
+
+.contrast-icon-cross {
+  color: #dc2626;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.contrast-icon-check {
+  color: var(--accent-forest);
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* 11. PLAN EN 3 PASOS STORYBRAND */
+.section-plan {
+  background-color: #fff;
+}
+
+.plan-steps-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 600px) {
+  .plan-steps-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.plan-step-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--bg-card);
+  padding: 18px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-warm);
+}
+
+.plan-step-num {
+  width: 38px;
+  height: 38px;
+  background: var(--text-espresso);
+  color: var(--bg-linen);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.plan-step-title {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--text-espresso);
+  margin-bottom: 4px;
+}
+
+.plan-step-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}

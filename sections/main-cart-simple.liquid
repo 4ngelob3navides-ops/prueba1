@@ -1,0 +1,684 @@
+{%- liquid
+  assign free_shipping_threshold = 0
+-%}
+
+<style>
+  :root {
+    --cart-bg: #FAF7F2;
+    --cart-card-bg: #FFFFFF;
+    --cart-text-main: #1C1917;
+    --cart-text-muted: #64748B;
+    --cart-green: #27AE60;
+    --cart-green-soft: #E8F8F0;
+    --cart-orange-cta: #FF6B00;
+    --cart-orange-hover: #E55F00;
+    --cart-border: #E8ECEF;
+    --cart-font-serif: 'Fraunces', Georgia, serif;
+    --cart-font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  }
+
+  body {
+    background-color: var(--cart-bg);
+    color: var(--cart-text-main);
+    font-family: var(--cart-font-sans);
+    margin: 0;
+    padding: 0;
+  }
+
+  .cart-page-shell {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    min-height: 100svh;
+    background: #FFFFFF;
+    box-shadow: 0 0 30px rgba(0,0,0,0.06);
+    position: relative;
+    padding-bottom: 60px;
+  }
+
+  /* 1. TOP BAR */
+  .cart-top-bar {
+    background: #1C1917;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .cart-top-tag {
+    background: var(--cart-green);
+    color: #FFFFFF;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 9.5px;
+    font-weight: 800;
+  }
+
+  /* 2. HEADER */
+  .cart-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--cart-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFFFFF;
+  }
+
+  .cart-header h1 {
+    font-family: var(--cart-font-serif);
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--cart-text-main);
+  }
+
+  .cart-timer-badge {
+    background: #FEF3C7;
+    color: #92400E;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .cart-content {
+    padding: 20px 18px;
+  }
+
+  /* LISTADO DE PRODUCTOS */
+  .cart-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .cart-item-card {
+    display: flex;
+    gap: 14px;
+    padding: 14px;
+    background: #FAFAFA;
+    border: 1px solid var(--cart-border);
+    border-radius: 14px;
+    align-items: center;
+  }
+
+  .cart-item-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #FFFFFF;
+    border: 1px solid var(--cart-border);
+    flex-shrink: 0;
+  }
+
+  .cart-item-details {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cart-item-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cart-text-main);
+    margin-bottom: 3px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .cart-item-variant {
+    font-size: 11.5px;
+    color: var(--cart-text-muted);
+    margin-bottom: 8px;
+  }
+
+  .cart-item-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cart-stepper {
+    display: inline-flex;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    border-radius: 999px;
+    padding: 2px 4px;
+    gap: 8px;
+  }
+
+  .cart-stepper button {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: #F1F5F9;
+    color: #1C1917;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cart-stepper span {
+    font-size: 13.5px;
+    font-weight: 700;
+    min-width: 16px;
+    text-align: center;
+  }
+
+  .cart-item-price {
+    font-family: var(--cart-font-serif);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--cart-text-main);
+  }
+
+  .cart-item-remove {
+    background: none;
+    border: none;
+    color: #94A3B8;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px;
+    margin-left: 6px;
+  }
+
+  .cart-item-remove:hover {
+    color: #EF4444;
+  }
+
+  /* CAJA DE RESUMEN */
+  .cart-summary-box {
+    background: #F8FAFC;
+    border: 1.5px solid var(--cart-border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .cart-summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13.5px;
+    color: var(--cart-text-muted);
+    margin-bottom: 10px;
+  }
+
+  .cart-summary-row--green {
+    color: var(--cart-green);
+    font-weight: 700;
+  }
+
+  .cart-summary-divider {
+    height: 1px;
+    background: var(--cart-border);
+    margin: 12px 0;
+  }
+
+  .cart-summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .cart-summary-total strong {
+    font-size: 16px;
+    color: var(--cart-text-main);
+  }
+
+  .cart-total-price {
+    font-family: var(--cart-font-serif);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--cart-text-main);
+  }
+
+  /* BOTÓN CTA NARANJA VON RESTORFF */
+  .cart-btn-checkout {
+    width: 100%;
+    background: var(--cart-orange-cta);
+    color: #FFFFFF;
+    border: none;
+    padding: 18px 20px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(255, 107, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    transition: transform 0.1s ease, background 0.15s ease;
+  }
+
+  .cart-btn-checkout:active {
+    transform: scale(0.98);
+    background: var(--cart-orange-hover);
+  }
+
+  .cart-btn-checkout small {
+    font-size: 11.5px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    opacity: 0.95;
+  }
+
+  /* SELLOS DE CONFIANZA CRO */
+  .cart-trust-badges {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: #F8FAFC;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px dashed rgba(39, 174, 96, 0.3);
+  }
+
+  .c-trust-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--cart-text-muted);
+    line-height: 1.35;
+  }
+
+  .c-trust-icon {
+    color: var(--cart-green);
+    font-weight: 800;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .c-trust-item strong {
+    color: var(--cart-text-main);
+    display: inline;
+  }
+
+  /* EL PLAN EN 3 PASOS STORYBRAND */
+  .cart-plan-section {
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid var(--cart-border);
+  }
+
+  .cart-plan-title {
+    font-size: 13.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--cart-text-main);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cart-plan-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cart-plan-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #F8FAFC;
+    border: 1px solid var(--cart-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+
+  .cart-plan-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #1C1917;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .cart-plan-card p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--cart-text-muted);
+    line-height: 1.4;
+  }
+
+  .cart-plan-card strong {
+    color: var(--cart-text-main);
+  }
+
+  /* ESTADO VACÍO */
+  .cart-empty-state {
+    text-align: center;
+    padding: 40px 16px;
+  }
+
+  .cart-empty-icon {
+    font-size: 54px;
+    margin-bottom: 14px;
+  }
+
+  .cart-empty-title {
+    font-family: var(--cart-font-serif);
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .cart-empty-sub {
+    font-size: 14px;
+    color: var(--cart-text-muted);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .cart-catalog-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+    margin-top: 20px;
+  }
+
+  .cart-catalog-card {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: #FAFAFA;
+    border: 1px solid var(--cart-border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    align-items: center;
+    transition: transform 0.15s ease;
+  }
+
+  .cart-catalog-card:active {
+    transform: scale(0.98);
+  }
+
+  .cart-catalog-card img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .cart-catalog-info strong {
+    display: block;
+    font-size: 13.5px;
+    color: var(--cart-text-main);
+  }
+
+  .cart-catalog-info span {
+    font-size: 12px;
+    color: var(--cart-green);
+    font-weight: 700;
+  }
+</style>
+
+<div class="cart-page-shell">
+  <!-- 1. BARRA SUPERIOR -->
+  <div class="cart-top-bar">
+    <span>🚚 ENVÍO GRATIS A TODO ECUADOR</span>
+    <span class="cart-top-tag">PAGO CONTRA ENTREGA</span>
+  </div>
+
+  <!-- 2. CABECERA -->
+  <div class="cart-header">
+    <h1>Tu Pedido</h1>
+    {%- if cart.item_count > 0 -%}
+      <div class="cart-timer-badge">
+        <span>⏱️</span>
+        <span id="cartTimer">15:00</span>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="cart-content">
+    {%- if cart.item_count > 0 -%}
+      <!-- LISTADO DE ARTÍCULOS -->
+      <div class="cart-items-list">
+        {%- for item in cart.items -%}
+          <div class="cart-item-card" data-line="{{ forloop.index }}">
+            <img
+              src="{{ item.image | image_url: width: 180 }}"
+              alt="{{ item.title | escape }}"
+              class="cart-item-img"
+              loading="lazy"
+            >
+            <div class="cart-item-details">
+              <div class="cart-item-title">{{ item.product.title }}</div>
+              {%- unless item.product.has_only_default_variant -%}
+                <div class="cart-item-variant">{{ item.variant.title }}</div>
+              {%- endunless -%}
+
+              <div class="cart-item-bottom">
+                <div class="cart-stepper">
+                  <button type="button" onclick="updateCartItem({{ forloop.index }}, {{ item.quantity | minus: 1 }})">−</button>
+                  <span>{{ item.quantity }}</span>
+                  <button type="button" onclick="updateCartItem({{ forloop.index }}, {{ item.quantity | plus: 1 }})">+</button>
+                </div>
+                <div style="display: flex; align-items: center;">
+                  <span class="cart-item-price">{{ item.final_line_price | money }}</span>
+                  <button
+                    type="button"
+                    class="cart-item-remove"
+                    onclick="updateCartItem({{ forloop.index }}, 0)"
+                    title="Eliminar producto"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <!-- RESUMEN DE PAGO -->
+      <div class="cart-summary-box">
+        <div class="cart-summary-row">
+          <span>Subtotal artículos:</span>
+          <span>{{ cart.total_price | money }}</span>
+        </div>
+        <div class="cart-summary-row cart-summary-row--green">
+          <span>Envío a domicilio (Ecuador):</span>
+          <span>GRATIS ($0.00)</span>
+        </div>
+        <div class="cart-summary-row">
+          <span>Método de pago:</span>
+          <span style="font-weight: 600; color: #1C1917;">Efectivo Contra Entrega</span>
+        </div>
+
+        <div class="cart-summary-divider"></div>
+
+        <div class="cart-summary-total">
+          <strong>Total a abonar al recibir:</strong>
+          <span class="cart-total-price">{{ cart.total_price | money }}</span>
+        </div>
+      </div>
+
+      <!-- BOTÓN PRINCIPAL DE PAGO CONTRA ENTREGA -->
+      <form action="{{ routes.cart_url }}" method="post" id="cartForm">
+        <button
+          type="button"
+          class="cart-btn-checkout"
+          onclick="triggerCartCheckout()"
+        >
+          <span>Completar Pedido Contra Entrega</span>
+          <small>🚚 Pagas en efectivo únicamente cuando el repartidor llegue a tu casa</small>
+        </button>
+      </form>
+
+      <!-- SELLOS DE CONFIANZA CRO -->
+      <div class="cart-trust-badges">
+        <div class="c-trust-item">
+          <span class="c-trust-icon">✓</span>
+          <div><strong>Pago Contra Entrega:</strong> Cero riesgo de adelantos</div>
+        </div>
+        <div class="c-trust-item">
+          <span class="c-trust-icon">✓</span>
+          <div><strong>Envío Gratis:</strong> Servientrega o Urbano asegurado</div>
+        </div>
+        <div class="c-trust-item">
+          <span class="c-trust-icon">✓</span>
+          <div><strong>Despacho en 24h:</strong> Desde bodega física Guayaquil</div>
+        </div>
+        <div class="c-trust-item">
+          <span class="c-trust-icon">✓</span>
+          <div><strong>Garantía 30 Días:</strong> Cambio directo de fábrica</div>
+        </div>
+      </div>
+
+      <!-- EL PLAN EN 3 PASOS STORYBRAND -->
+      <div class="cart-plan-section">
+        <div class="cart-plan-title">
+          <span>📦</span> ¿Cómo recibirás tu pedido?
+        </div>
+        <div class="cart-plan-grid">
+          <div class="cart-plan-card">
+            <div class="cart-plan-num">01</div>
+            <p><strong>Llenas tus datos de entrega</strong> en el siguiente paso (Nombre, Ciudad, Dirección y Celular). Sin tarjetas.</p>
+          </div>
+          <div class="cart-plan-card">
+            <div class="cart-plan-num">02</div>
+            <p><strong>Coordinamos por WhatsApp</strong> desde nuestra bodega en Guayaquil para darte tu número de guía de seguimiento.</p>
+          </div>
+          <div class="cart-plan-card">
+            <div class="cart-plan-num">03</div>
+            <p><strong>Pagas en efectivo al recibir</strong> tu paquete sellado en la puerta de tu casa.</p>
+          </div>
+        </div>
+      </div>
+
+    {%- else -%}
+      <!-- ESTADO DE CARRITO VACÍO -->
+      <div class="cart-empty-state">
+        <div class="cart-empty-icon">🛒</div>
+        <h2 class="cart-empty-title">Tu carrito está vacío</h2>
+        <p class="cart-empty-sub">
+          Aún no has seleccionado ninguna de nuestras soluciones. Elige una a continuación para ver su oferta de hoy con Envío Gratis:
+        </p>
+
+        <div class="cart-catalog-grid">
+          <a href="/products/cepillo-electrico-9-en-1-pro" class="cart-catalog-card">
+            <img src="{{ 'relief_standing_clean.jpg' | asset_url }}" alt="Cepillo 9 en 1 Pro">
+            <div class="cart-catalog-info">
+              <strong>Cepillo Eléctrico 9 en 1 Pro</strong>
+              <span>$44.90 USD · Envío Gratis</span>
+            </div>
+          </a>
+
+          <a href="/products/mini-licuadora-conejito-portatil" class="cart-catalog-card">
+            <img src="{{ 'blender_bunny_hero.jpg' | asset_url }}" alt="Mini Licuadora Conejito">
+            <div class="cart-catalog-info">
+              <strong>Mini Licuadora Conejito Portátil</strong>
+              <span>$29.90 USD · Envío Gratis</span>
+            </div>
+          </a>
+
+          <a href="/products/masajeador-capilar-antiestres" class="cart-catalog-card">
+            <img src="{{ 'massager_scalp_hero.jpg' | asset_url }}" alt="Masajeador Capilar Antiestrés">
+            <div class="cart-catalog-info">
+              <strong>Masajeador Capilar Antiestrés</strong>
+              <span>$42.50 USD · Envío Gratis</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+  // Temporizador de retención de inventario (15 minutos)
+  (function() {
+    var timerEl = document.getElementById('cartTimer');
+    if (!timerEl) return;
+    var duration = 15 * 60;
+    var interval = setInterval(function() {
+      var minutes = Math.floor(duration / 60);
+      var seconds = duration % 60;
+      timerEl.textContent = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+      if (--duration < 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
+  })();
+
+  // Modificador de cantidad Ajax sin recargas manuales
+  function updateCartItem(line, quantity) {
+    fetch('/cart/change.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        line: line,
+        quantity: quantity
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function() {
+      window.location.reload();
+    })
+    .catch(function(err) {
+      console.error('Error al actualizar carrito:', err);
+      window.location.reload();
+    });
+  }
+
+  // Redirección inteligente al checkout COD
+  function triggerCartCheckout() {
+    // 1. Si existe app COD instalada (Releasit / EasySell)
+    var externalCodBtn = document.querySelector('.rsi-cod-form-button, [data-rsi-cod-btn], .es-popup-button, #rsi-cod-form-open');
+    if (externalCodBtn) {
+      externalCodBtn.click();
+      return;
+    }
+
+    // 2. Checkout estándar nativo de Shopify
+    window.location.href = '/checkout';
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Carrito de Compra",
+  "settings": []
+}
+{% endschema %}

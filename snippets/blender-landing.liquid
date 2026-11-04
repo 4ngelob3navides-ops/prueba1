@@ -1,0 +1,1190 @@
+{%- liquid
+  assign target_product = product
+  if target_product == blank and section.settings.featured_product != blank
+    assign target_product = section.settings.featured_product
+  endif
+  if target_product == blank
+    assign target_product = all_products['mini-licuadora-conejito-portatil']
+  endif
+  if target_product == blank and collections.all.products.size > 0
+    assign target_product = collections.all.products.first
+  endif
+
+  assign current_variant = target_product.selected_or_first_available_variant
+
+  assign price_cents = current_variant.price | default: 2990
+  assign price_usd = price_cents | divided_by: 100.0
+
+  assign compare_cents = current_variant.compare_at_price | default: 4990
+  if compare_cents <= price_cents
+    assign compare_cents = price_cents | times: 1.6
+  endif
+  assign compare_usd = compare_cents | divided_by: 100.0
+  assign savings_usd = compare_usd | minus: price_usd
+
+  assign real_stock = current_variant.inventory_quantity | default: 18
+  if real_stock <= 0
+    assign real_stock = 18
+  endif
+-%}
+
+<style>
+  :root {
+    --blender-bg-white: #FFFFFF;
+    --blender-bg-soft: #FFF7F8;
+    --blender-bg-mint: #F0FDF4;
+    --blender-text-main: #1A202C;
+    --blender-text-muted: #5A6A80;
+    --blender-green-health: #27AE60;
+    --blender-green-dark: #1E8449;
+    --blender-green-soft: #E8F8F0;
+    --blender-orange-cta: #FF6B00;
+    --blender-orange-hover: #E55F00;
+    --blender-border-light: #E8ECEF;
+    --blender-font-serif: 'Fraunces', Georgia, serif;
+    --blender-font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  }
+
+  .blender-shell {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    background-color: var(--blender-bg-white);
+    min-height: 100svh;
+    padding-bottom: 90px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.08);
+    position: relative;
+    overflow-x: hidden;
+    font-family: var(--blender-font-sans);
+    color: var(--blender-text-main);
+  }
+
+  .blender-top-bar {
+    background: #1A202C;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 9px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+
+  .blender-top-tag {
+    background: var(--blender-green-health);
+    color: #FFFFFF;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 9.5px;
+  }
+
+  .blender-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--blender-border-light);
+    background: #FFFFFF;
+  }
+
+  .blender-brand {
+    font-family: var(--blender-font-serif);
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--blender-text-main);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .blender-stock-badge {
+    background: var(--blender-green-soft);
+    color: var(--blender-green-dark);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(39, 174, 96, 0.2);
+  }
+
+  .blender-hero {
+    position: relative;
+    background: var(--blender-bg-soft);
+  }
+
+  .blender-hero-media {
+    position: relative;
+    aspect-ratio: 1 / 1.05;
+    overflow: hidden;
+    background: #fcecef;
+  }
+
+  .blender-hero-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .blender-hero-pill {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--blender-green-dark);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .blender-hero-content {
+    padding: 22px 18px 24px;
+    background: #FFFFFF;
+  }
+
+  .blender-kicker {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blender-green-dark);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .blender-headline {
+    font-family: var(--blender-font-serif);
+    font-size: 26px;
+    line-height: 1.2;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--blender-text-main);
+  }
+
+  .blender-subline {
+    font-size: 14.5px;
+    color: var(--blender-text-muted);
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+
+  .blender-quick-specs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: var(--blender-bg-mint);
+    border: 1px solid rgba(39, 174, 96, 0.2);
+    border-radius: 12px;
+    padding: 12px 6px;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+
+  .blender-spec-item {
+    border-right: 1px solid rgba(39, 174, 96, 0.15);
+    padding: 0 4px;
+  }
+
+  .blender-spec-item:last-child {
+    border-right: none;
+  }
+
+  .blender-spec-item strong {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--blender-green-dark);
+  }
+
+  .blender-spec-item span {
+    font-size: 10.5px;
+    color: var(--blender-text-muted);
+  }
+
+  .blender-price-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+
+  .blender-price-now {
+    font-family: var(--blender-font-serif);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--blender-text-main);
+  }
+
+  .blender-price-old {
+    font-size: 15px;
+    color: #94A3B8;
+    text-decoration: line-through;
+    margin-left: 8px;
+  }
+
+  .blender-save-pill {
+    background: var(--blender-green-soft);
+    color: var(--blender-green-dark);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 999px;
+  }
+
+  .blender-qty-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #F8FAFC;
+    border: 1.5px solid var(--blender-border-light);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+
+  .blender-stepper {
+    display: inline-flex;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid var(--blender-border-light);
+    border-radius: 999px;
+    padding: 2px 4px;
+    gap: 6px;
+  }
+
+  .blender-stepper button {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #F1F5F9;
+    color: #1A202C;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .blender-stepper span {
+    min-width: 20px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  .blender-btn-cta {
+    width: 100%;
+    background: var(--blender-orange-cta);
+    color: #FFFFFF;
+    border: none;
+    padding: 16px 20px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(255, 107, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    transition: transform 0.1s ease, background 0.15s ease;
+  }
+
+  .blender-btn-cta:active {
+    transform: scale(0.98);
+    background: var(--blender-orange-hover);
+  }
+
+  .blender-btn-cta small {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    opacity: 0.92;
+  }
+
+  .blender-section {
+    padding: 32px 18px;
+    border-top: 1px solid var(--blender-border-light);
+  }
+
+  .blender-section--soft {
+    background: var(--blender-bg-soft);
+  }
+
+  .blender-section-title {
+    font-family: var(--blender-font-serif);
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+
+  .blender-section-sub {
+    font-size: 14px;
+    color: var(--blender-text-muted);
+    margin-bottom: 20px;
+    line-height: 1.45;
+  }
+
+  .vs-table {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .vs-card {
+    border-radius: 14px;
+    padding: 16px;
+    border: 1.5px solid var(--blender-border-light);
+  }
+
+  .vs-card--bad {
+    background: #FFF5F5;
+    border-color: #FED7D7;
+  }
+
+  .vs-card--good {
+    background: #F0FDF4;
+    border-color: #BBF7D0;
+  }
+
+  .vs-card__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .vs-card--bad .vs-card__header { color: #C53030; }
+  .vs-card--good .vs-card__header { color: var(--blender-green-dark); }
+
+  .vs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+
+  .vs-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .blender-photo-card {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--blender-border-light);
+    background: #fff;
+    margin-bottom: 14px;
+  }
+
+  .blender-photo-card img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    display: block;
+  }
+
+  .blender-photo-card__body {
+    padding: 14px 16px;
+  }
+
+  .blender-photo-card__body strong {
+    font-size: 15px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .blender-photo-card__body p {
+    font-size: 13px;
+    color: var(--blender-text-muted);
+  }
+
+  .autoclean-banner {
+    background: linear-gradient(135deg, #E6FFFA 0%, #EBF8FF 100%);
+    border: 1px solid #B2F5EA;
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-top: 14px;
+  }
+
+  .autoclean-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+  }
+
+  .autoclean-text strong {
+    font-size: 15px;
+    color: #234E52;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .autoclean-text p {
+    font-size: 12.5px;
+    color: #285E61;
+    line-height: 1.4;
+  }
+
+  .blender-reviews-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+  .blender-reviews-scroll::-webkit-scrollbar { display: none; }
+
+  .b-review-card {
+    flex: 0 0 82%;
+    background: #FFFFFF;
+    border: 1px solid var(--blender-border-light);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .b-review-stars {
+    color: #F59E0B;
+    font-size: 13px;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+
+  .b-review-text {
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--blender-text-main);
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+
+  .b-review-meta {
+    font-size: 11.5px;
+    color: var(--blender-text-muted);
+    border-top: 1px solid #F1F5F9;
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .blender-sticky-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--blender-border-light);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    z-index: 50;
+    box-shadow: 0 -4px 18px rgba(0,0,0,0.06);
+  }
+
+  .blender-sticky-info {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .blender-sticky-info span {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--blender-text-muted);
+  }
+
+  .blender-sticky-info strong {
+    font-family: var(--blender-font-serif);
+    font-size: 19px;
+    color: var(--blender-text-main);
+  }
+
+  .blender-sticky-btn {
+    flex: 1;
+    background: var(--blender-orange-cta);
+    color: #FFFFFF;
+    border: none;
+    padding: 13px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(255, 107, 0, 0.3);
+  }
+
+  /* SELLOS DE CONFIANZA CRO */
+  .blender-trust-badges {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: #F8FAFC;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px dashed rgba(39, 174, 96, 0.3);
+  }
+
+  .b-trust-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--blender-text-muted);
+    line-height: 1.35;
+  }
+
+  .b-trust-icon {
+    color: var(--blender-green-dark);
+    font-weight: 800;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .b-trust-item strong {
+    color: var(--blender-text-main);
+    display: inline;
+  }
+
+  /* SELECTOR DE PAQUETES AOV */
+  .blender-bundle-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .blender-bundle-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border: 2px solid var(--blender-border-light);
+    border-radius: 14px;
+    background: #FFFFFF;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .blender-bundle-card.selected {
+    border-color: var(--blender-green-health);
+    background: #F0FDF4;
+    box-shadow: 0 4px 14px rgba(39, 174, 96, 0.12);
+  }
+
+  .b-bundle-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .b-radio-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #CBD5E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .blender-bundle-card.selected .b-radio-circle {
+    border-color: var(--blender-green-health);
+  }
+
+  .b-radio-circle::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  .blender-bundle-card.selected .b-radio-circle::after {
+    background: var(--blender-green-health);
+  }
+
+  .b-bundle-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--blender-text-main);
+    display: block;
+  }
+
+  .b-bundle-sub {
+    font-size: 11.5px;
+    color: var(--blender-text-muted);
+  }
+
+  .b-bundle-price-col {
+    text-align: right;
+  }
+
+  .b-bundle-price-now {
+    font-family: var(--blender-font-serif);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--blender-text-main);
+    display: block;
+  }
+
+  .b-bundle-price-old {
+    font-size: 11px;
+    color: #94A3B8;
+    text-decoration: line-through;
+  }
+
+  /* EL PLAN EN 3 PASOS STORYBRAND */
+  .blender-plan-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .blender-plan-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #FFFFFF;
+    border: 1px solid var(--blender-border-light);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .blender-plan-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--blender-text-main);
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .blender-plan-text strong {
+    display: block;
+    font-size: 14.5px;
+    color: var(--blender-text-main);
+    margin-bottom: 3px;
+  }
+
+  .blender-plan-text p {
+    font-size: 12.5px;
+    color: var(--blender-text-muted);
+    line-height: 1.4;
+    margin: 0;
+  }
+</style>
+
+<div class="blender-shell" id="blenderRoot">
+
+  <!-- 1. BARRA SUPERIOR -->
+  <div class="blender-top-bar">
+    <span>🚚 ENVÍO GRATIS A TODO ECUADOR</span>
+    <span class="blender-top-tag">BODEGA GUAYAQUIL</span>
+  </div>
+
+  <!-- CABECERA -->
+  <header class="blender-header">
+    <div class="blender-brand">
+      <span>🐰</span> NATURA BLEND™
+    </div>
+    <div class="blender-stock-badge">
+      ⚡ Quedan {{ real_stock }} uds
+    </div>
+  </header>
+
+  <!-- 2. HERO SECTION ENFOCADA EN EL DOLOR MATUTINO -->
+  <section class="blender-hero">
+    <div class="blender-hero-media">
+      <img
+        src="{{ 'blender_bunny_hero.jpg' | asset_url }}"
+        alt="Mini Licuadora Conejito Portátil con Smoothie Fresco"
+        fetchpriority="high"
+        onerror="this.src='https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=800&q=80'"
+      >
+      <span class="blender-hero-pill">
+        🍓 100% Saludable & Portátil
+      </span>
+    </div>
+
+    <div class="blender-hero-content">
+      <span class="blender-kicker">¿Sales corriendo de casa sin desayunar?</span>
+      <h1 class="blender-headline">
+        Prepara tus jugos y batidos frescos donde sea que estés.
+      </h1>
+      <p class="blender-subline">
+        La mini licuadora recargable con diseño compacto que muele fruta fresca en la oficina, el gimnasio o la universidad sin ensuciar tu cocina.
+      </p>
+
+      <!-- 3 BENEFICIOS RÁPIDOS -->
+      <div class="blender-quick-specs">
+        <div class="blender-spec-item">
+          <strong>🍓 Fruta Fresca</strong>
+          <span>Al instante sin grumos</span>
+        </div>
+        <div class="blender-spec-item">
+          <strong>🔋 Carga USB</strong>
+          <span>Hasta 15 batidos</span>
+        </div>
+        <div class="blender-spec-item">
+          <strong>🧼 Auto-Lavado</strong>
+          <span>5 seg con agua</span>
+        </div>
+      </div>
+
+      <!-- PRECIO DINÁMICO DESDE SHOPIFY -->
+      <div class="blender-price-box">
+        <div>
+          <span class="blender-price-now" id="bPriceNow">${{ price_usd | string }}</span>
+          <span class="blender-price-old" id="bPriceOld">${{ compare_usd | string }} USD</span>
+        </div>
+        <span class="blender-save-pill" id="bSavePill">Ahorras ${{ savings_usd | string }} Hoy</span>
+      </div>
+
+      <!-- SELECTOR DE CANTIDAD -->
+      <div class="blender-qty-row">
+        <div>
+          <strong style="font-size: 13.5px; display: block;">Cantidad a pedir:</strong>
+          <span id="bQtyLabel" style="font-size: 11.5px; color: var(--blender-text-muted);">1 unidad para envío inmediato</span>
+        </div>
+        <div class="blender-stepper">
+          <button type="button" onclick="changeBlenderQty(-1)">−</button>
+          <span id="bQtyVal">1</span>
+          <button type="button" onclick="changeBlenderQty(1)">+</button>
+        </div>
+      </div>
+
+      <!-- BOTÓN PRINCIPAL NARANJA VIBRANTE (VON RESTORFF) -->
+      <button
+        type="button"
+        class="blender-btn-cta"
+        onclick="checkoutBlender()"
+      >
+        <span>Pedir Ahora — Pagar al Recibir</span>
+        <small>🚚 Despacho garantizado en 24-48h · Pagas en efectivo</small>
+      </button>
+
+      <!-- SELLOS DE CONFIANZA INMEDIATA (AUDITORÍA CRO) -->
+      <div class="blender-trust-badges">
+        <div class="b-trust-item">
+          <span class="b-trust-icon">✓</span>
+          <div><strong>Pago Contra Entrega:</strong> Pagas en efectivo al recibir</div>
+        </div>
+        <div class="b-trust-item">
+          <span class="b-trust-icon">✓</span>
+          <div><strong>Envío Gratis:</strong> Despacho asegurado a todo Ecuador</div>
+        </div>
+        <div class="b-trust-item">
+          <span class="b-trust-icon">✓</span>
+          <div><strong>Despacho 24h:</strong> Desde bodega física Guayaquil</div>
+        </div>
+        <div class="b-trust-item">
+          <span class="b-trust-icon">✓</span>
+          <div><strong>Garantía 30 Días:</strong> Cambio directo de fábrica</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. MÓDULO DE CONTRASTE: PROBLEMA VS SOLUCIÓN -->
+  <section class="blender-section blender-section--soft">
+    <span class="blender-kicker">Aversión a la frustración</span>
+    <h2 class="blender-section-title">Por qué esta mini licuadora cambiará tus mañanas:</h2>
+    <p class="blender-section-sub">
+      Alimentarte sano no debería costarte 20 minutos fregando aparatos pesados cada día.
+    </p>
+
+    <div class="vs-table">
+      <div class="vs-card vs-card--bad">
+        <div class="vs-card__header">
+          <span>❌</span> Licuadora Tradicional de Cocina
+        </div>
+        <ul class="vs-list">
+          <li><span>⚠️</span> Ensucias un vaso gigante y aspas peligrosas para un solo jugo.</li>
+          <li><span>⚠️</span> Pesada, ruidosa y te encadena obligatoriamente a la cocina.</li>
+          <li><span>⚠️</span> Compras bebidas caras y azucaradas en la calle por falta de tiempo.</li>
+        </ul>
+      </div>
+
+      <div class="vs-card vs-card--good">
+        <div class="vs-card__header">
+          <span>✅</span> Con tu Mini Licuadora Conejito
+        </div>
+        <ul class="vs-list">
+          <li><span>✨</span> <strong>Mueles y tomas del mismo vaso portátil en 30 segundos.</strong></li>
+          <li><span>✨</span> <strong>Compacta, silenciosa y recargable por USB en cualquier lugar.</strong></li>
+          <li><span>✨</span> <strong>Ahorras dinero preparando tus frutas frescas en la oficina.</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="blender-photo-card">
+      <img
+        src="{{ 'blender_heavy_pain.jpg' | asset_url }}"
+        alt="Fastidio de lavar la licuadora gigante tradicional"
+        loading="lazy"
+        onerror="this.src='https://images.unsplash.com/photo-1584622781564-1d987f7333c1?auto=format&fit=crop&w=800&q=80'"
+      >
+      <div class="blender-photo-card__body">
+        <strong>Adiós a los vasos de vidrio pesados</strong>
+        <p>No vuelvas a desarmar roscas filosas ni a lidiar con cables enredados antes de salir al trabajo.</p>
+      </div>
+    </div>
+
+    <div class="autoclean-banner">
+      <div class="autoclean-icon">🧼</div>
+      <div class="autoclean-text">
+        <strong>Auto-limpieza en 5 segundos</strong>
+        <p>Solo agregas un poco de agua, una gota de jabón, enciendes ¡y lista para guardar sin tocar las aspas!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. EN MOVIMIENTO: OFICINA, GYM Y SALIDAS -->
+  <section class="blender-section">
+    <span class="blender-kicker">Diseñada para tu ritmo de vida</span>
+    <h2 class="blender-section-title">Llévala contigo a donde vayas.</h2>
+    <p class="blender-section-sub">
+      Tapa hermética anti-derrame con detalles tiernos de silicona y vaso de tritán libre de BPA.
+    </p>
+
+    <div class="blender-photo-card">
+      <img
+        src="{{ 'blender_on_the_go.jpg' | asset_url }}"
+        alt="Tomando smoothie fresco directamente del vaso en la oficina"
+        loading="lazy"
+      >
+      <div class="blender-photo-card__body">
+        <strong>Tomas directamente de la botella</strong>
+        <p>Sin ensuciar termos adicionales. Su batería dura hasta 15 batidos completos por carga USB.</p>
+      </div>
+    </div>
+
+    <div class="blender-photo-card">
+      <img
+        src="{{ 'blender_unboxing_features.jpg' | asset_url }}"
+        alt="Despiece de la mini licuadora conejito con cuchillas inox"
+        loading="lazy"
+      >
+      <div class="blender-photo-card__body">
+        <strong>Qué incluye tu paquete:</strong>
+        <p>Vaso tritán 350ml + Tapa hermética orejitas + Cuchillas acero inoxidable + Cable USB de carga rápida.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. OPINIONES DE COMPRADORAS EN ECUADOR -->
+  <section class="blender-section blender-section--soft">
+    <span class="blender-kicker">Hogares en Ecuador</span>
+    <h2 class="blender-section-title">Lo que dicen quienes ya la usan a diario:</h2>
+
+    <div class="blender-reviews-scroll">
+      <div class="b-review-card">
+        <div>
+          <div class="b-review-stars">★★★★★</div>
+          <p class="b-review-text">
+            "Me daba demasiada pereza ensuciar la licuadora grande para hacerme un batido de proteína en la mañana. Ahora meto la fruta, licúo en 30s y salgo manejando con el conejito. Pagué en efectivo al repartidor."
+          </p>
+        </div>
+        <div class="b-review-meta">
+          <strong>Camila S. — Guayaquil</strong>
+          <span>Entrega verificada</span>
+        </div>
+      </div>
+
+      <div class="b-review-card">
+        <div>
+          <div class="b-review-stars">★★★★★</div>
+          <p class="b-review-text">
+            "Las orejitas son hermosas pero lo mejor es la fuerza que tiene: tritura frutillas congeladas y hielo sin atascarse. Me llegó en 24 horas a Quito."
+          </p>
+        </div>
+        <div class="b-review-meta">
+          <strong>Andrea V. — Quito</strong>
+          <span>Entrega verificada</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5.1 EL PLAN EN 3 PASOS STORYBRAND -->
+  <section class="blender-section blender-section--soft">
+    <span class="blender-kicker">Proceso 100% Seguro</span>
+    <h2 class="blender-section-title">¿Cómo pedir tu Mini Licuadora en 3 pasos?</h2>
+    <p class="blender-section-sub">
+      Cero riesgos y cero pagos por adelantado. La forma más tranquila y segura de comprar en Ecuador.
+    </p>
+
+    <div class="blender-plan-grid">
+      <div class="blender-plan-card">
+        <div class="blender-plan-num">01</div>
+        <div class="blender-plan-text">
+          <strong>Pides en 30 segundos</strong>
+          <p>Solo dejas tus datos de entrega (nombre, celular, ciudad y dirección). Sin ingresar tarjetas.</p>
+        </div>
+      </div>
+
+      <div class="blender-plan-card">
+        <div class="blender-plan-num">02</div>
+        <div class="blender-plan-text">
+          <strong>Coordinamos por WhatsApp</strong>
+          <p>Nuestro equipo de Guayaquil confirma tu pedido y te comparte tu guía de Servientrega o Urbano.</p>
+        </div>
+      </div>
+
+      <div class="blender-plan-card">
+        <div class="blender-plan-num">03</div>
+        <div class="blender-plan-text">
+          <strong>Pagas al recibir en casa</strong>
+          <p>El repartidor llega a tu puerta, recibes tu caja sellada y abonas en efectivo en ese instante.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. OFERTA FINAL Y CONFIRMACIÓN CONTRAENTREGA -->
+  <section class="blender-section" id="pedir-conejito">
+    <span class="blender-kicker">Despacho desde Guayaquil</span>
+    <h2 class="blender-section-title">Pídela hoy con Envío Gratis y Pago en Casa.</h2>
+    <p class="blender-section-sub">
+      No pagas nada por adelantado. Recibes en tu puerta en 24 a 48 horas y pagas al repartidor.
+    </p>
+
+    <!-- SELECTOR DE PAQUETES AOV -->
+    <div class="blender-bundle-picker">
+      <div
+        id="bundleOption1"
+        class="blender-bundle-card selected"
+        onclick="selectBlenderBundle(1)"
+      >
+        <div class="b-bundle-left">
+          <div class="b-radio-circle"></div>
+          <div>
+            <span class="b-bundle-title">1x Mini Licuadora Conejito</span>
+            <span class="b-bundle-sub">Vaso 350ml + Tapa Orejitas + Envío Gratis</span>
+          </div>
+        </div>
+        <div class="b-bundle-price-col">
+          <span class="b-bundle-price-now" id="b1PriceNow">${{ price_usd | string }}</span>
+          <span class="b-bundle-price-old" id="b1PriceOld">${{ compare_usd | string }}</span>
+        </div>
+      </div>
+
+      <div
+        id="bundleOption2"
+        class="blender-bundle-card"
+        onclick="selectBlenderBundle(2)"
+      >
+        <div class="b-bundle-left">
+          <div class="b-radio-circle"></div>
+          <div>
+            <span class="b-bundle-title">2x Mini Licuadoras (Pack Dúo / Regalo)</span>
+            <span class="b-bundle-sub">Para ti y tu amiga ($24.90 c/u — Descuento -$10)</span>
+          </div>
+        </div>
+        <div class="b-bundle-price-col">
+          <span class="b-bundle-price-now" id="b2PriceNow">$49.80</span>
+          <span class="b-bundle-price-old" id="b2PriceOld">$59.80</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="blender-qty-row" style="margin-bottom: 16px;">
+      <div>
+        <strong style="font-size: 14px; display: block;">Total a pagar:</strong>
+        <span id="bTotalText" style="font-size: 12px; color: var(--blender-green-dark); font-weight: 700;">
+          1x Licuadora por ${{ price_usd | string }} USD
+        </span>
+      </div>
+      <div class="blender-stepper">
+        <button type="button" onclick="changeBlenderQty(-1)">−</button>
+        <span id="bQtyValFinal">1</span>
+        <button type="button" onclick="changeBlenderQty(1)">+</button>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="blender-btn-cta"
+      onclick="checkoutBlender()"
+    >
+      <span>Confirmar Pedido Contraentrega</span>
+      <small>🚚 Pagas solo cuando te entreguen la caja en tu puerta</small>
+    </button>
+
+    <!-- SELLOS DE CONFIANZA INMEDIATA -->
+    <div class="blender-trust-badges">
+      <div class="b-trust-item">
+        <span class="b-trust-icon">✓</span>
+        <div><strong>Pago Contra Entrega:</strong> Pagas en efectivo al recibir</div>
+      </div>
+      <div class="b-trust-item">
+        <span class="b-trust-icon">✓</span>
+        <div><strong>Envío Gratis:</strong> Despacho asegurado a todo Ecuador</div>
+      </div>
+      <div class="b-trust-item">
+        <span class="b-trust-icon">✓</span>
+        <div><strong>Despacho 24h:</strong> Desde bodega física Guayaquil</div>
+      </div>
+      <div class="b-trust-item">
+        <span class="b-trust-icon">✓</span>
+        <div><strong>Garantía 30 Días:</strong> Cambio directo de fábrica</div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; align-items: center; background: #F8FAFC; border: 1px solid var(--blender-border-light); border-radius: 12px; padding: 12px; margin-top: 16px;">
+      <img
+        src="{{ 'cod_door_delivery.jpg' | asset_url }}"
+        alt="Entrega en puerta"
+        style="width: 75px; height: 75px; object-fit: cover; border-radius: 8px;"
+        loading="lazy"
+      >
+      <div style="font-size: 12px; color: var(--blender-text-muted);">
+        <strong style="font-size: 13.5px; color: var(--blender-text-main); display: block; margin-bottom: 2px;">Compra 100% segura</strong>
+        Despachamos desde Guayaquil a todas las ciudades de Ecuador. Garantía de 30 días contra cualquier defecto.
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- BARRA FIJA INFERIOR -->
+<div class="blender-sticky-bar">
+  <div class="blender-stepper">
+    <button type="button" onclick="changeBlenderQty(-1)">−</button>
+    <span id="bStickyQty">1</span>
+    <button type="button" onclick="changeBlenderQty(1)">+</button>
+  </div>
+
+  <div class="blender-sticky-info">
+    <span>Total al recibir</span>
+    <strong id="bStickyTotal">${{ price_usd | string }}</strong>
+  </div>
+
+  <button
+    type="button"
+    class="blender-sticky-btn"
+    onclick="checkoutBlender()"
+  >
+    Pedir
+  </button>
+</div>
+
+<script>
+  (function() {
+    var basePrice = {{ price_usd | json }};
+    var baseCompare = {{ compare_usd | json }};
+    var variantId = {{ current_variant.id | json }};
+    var currentQty = 1;
+    var maxQty = 10;
+
+    function formatMoney(num) {
+      return '$' + Number(num).toFixed(2);
+    }
+
+    function calculatePrice(q) {
+      var discount = q >= 2 ? 10.00 : 0;
+      return Number(((basePrice * q) - discount).toFixed(2));
+    }
+
+    function calculateCompare(q) {
+      return Number((baseCompare * q).toFixed(2));
+    }
+
+    function updateUi() {
+      var totalPrice = calculatePrice(currentQty);
+      var totalCompare = calculateCompare(currentQty);
+      var savings = totalCompare - totalPrice;
+
+      document.getElementById('bQtyVal').textContent = currentQty;
+      document.getElementById('bQtyValFinal').textContent = currentQty;
+      document.getElementById('bStickyQty').textContent = currentQty;
+
+      document.getElementById('bPriceNow').textContent = formatMoney(totalPrice);
+      document.getElementById('bPriceOld').textContent = formatMoney(totalCompare) + ' USD';
+      document.getElementById('bSavePill').textContent = 'Ahorras ' + formatMoney(savings) + ' Hoy';
+
+      document.getElementById('bStickyTotal').textContent = formatMoney(totalPrice);
+      var discountNote = currentQty >= 2 ? ' (Descuento -$10 aplicado)' : ''; document.getElementById('bTotalText').textContent = (currentQty === 1 ? '1x Licuadora por ' : currentQty + 'x Licuadoras' + discountNote + ' por ') + formatMoney(totalPrice) + ' USD';
+      document.getElementById('bQtyLabel').textContent = currentQty === 1 ? '1 unidad (Kit completo con Envío Gratis)' : currentQty + ' unidades seleccionadas (Descuento -$10 aplicado en Checkout)';
+
+      var opt1 = document.getElementById('bundleOption1');
+      var opt2 = document.getElementById('bundleOption2');
+      if (opt1) opt1.classList.toggle('selected', currentQty === 1);
+      if (opt2) opt2.classList.toggle('selected', currentQty === 2);
+    }
+
+    window.selectBlenderBundle = function(qty) {
+      currentQty = qty;
+      updateUi();
+    };
+
+    window.changeBlenderQty = function(delta) {
+      var next = currentQty + delta;
+      if (next >= 1 && next <= maxQty) {
+        currentQty = next;
+        updateUi();
+      }
+    };
+
+    window.checkoutBlender = function() {
+      var externalCodBtn = document.querySelector('.rsi-cod-form-button, [data-rsi-cod-btn], .es-popup-button, #rsi-cod-form-open');
+      if (externalCodBtn) {
+        externalCodBtn.click();
+        return;
+      }
+
+      if (variantId) {
+        window.location.href = '/cart/' + variantId + ':' + currentQty;
+      } else {
+        alert('Preparando pedido para ' + currentQty + ' unidad(es).');
+      }
+    };
+  })();
+</script>
+

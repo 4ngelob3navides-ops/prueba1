@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "vue-landing-cepillo",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

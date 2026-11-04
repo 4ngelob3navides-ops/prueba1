@@ -1,0 +1,21 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Cepillo 9en1 Clean Home",
+    "theme_version": "2.0.0",
+    "theme_author": "Hogar y Alivio",
+    "theme_documentation_url": "https://help.shopify.com/",
+    "theme_support_url": "https://help.shopify.com/"
+  },
+  {
+    "name": "Configuracion General",
+    "settings": [
+      {
+        "type": "color",
+        "id": "cta_primary_color",
+        "label": "Color principal boton pedido",
+        "default": "#1e6b55"
+      }
+    ]
+  }
+]
