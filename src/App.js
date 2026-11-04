@@ -5,6 +5,8 @@ import { EmotionalHeroMobile } from './components/EmotionalHeroMobile.js';
 import { ThumbCleanInteractive } from './components/ThumbCleanInteractive.js';
 import { VisualZoneTapper } from './components/VisualZoneTapper.js';
 import { PhysicalReliefSection } from './components/PhysicalReliefSection.js';
+import { ContrastTableSection } from './components/ContrastTableSection.js';
+import { StoryBrandPlanSection } from './components/StoryBrandPlanSection.js';
 import { RealFeelingsUgc } from './components/RealFeelingsUgc.js';
 import { ZeroFearCodSection } from './components/ZeroFearCodSection.js';
 import { StickyThumbBar } from './components/StickyThumbBar.js';
@@ -16,8 +18,10 @@ export const App = {
     EmotionalHeroMobile,
     ThumbCleanInteractive,
     PhysicalReliefSection,
+    ContrastTableSection,
     VisualZoneTapper,
     RealFeelingsUgc,
+    StoryBrandPlanSection,
     ZeroFearCodSection,
     StickyThumbBar,
   },
@@ -110,11 +114,17 @@ export const App = {
       <!-- 5. Dolores Reales y Tangibles -->
       <PhysicalReliefSection :pains="config.pains" />
 
+      <!-- 5.1 Tabla de Contraste PAS / BAB (Método Tradicional vs Cepillo 9 en 1) -->
+      <ContrastTableSection v-if="config.contrast" :contrast="config.contrast" />
+
       <!-- 6. Demostración por Zonas y los 9 Cabezales -->
       <VisualZoneTapper :zones="config.zones" />
 
       <!-- 7. Reseñas Editoriales (Quote Cards) -->
       <RealFeelingsUgc :reviews="config.reviews" />
+
+      <!-- 7.1 El Plan en 3 Pasos StoryBrand (Compra Segura sin Tarjetas) -->
+      <StoryBrandPlanSection v-if="config.simplePlan" :plan="config.simplePlan" />
 
       <!-- 8. Oferta de Packs y Pago Contraentrega con selector de cantidad -->
       <ZeroFearCodSection

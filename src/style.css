@@ -1057,3 +1057,192 @@ button {
   max-width: 90%;
   text-align: center;
 }
+
+/* 9. SELLOS DE CONFIANZA INMEDIATA (AUDITORÍA CRO) */
+.hero-trust-badges {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: #fdfbf7;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed var(--border-warm);
+}
+
+.hero-trust-badges--cod {
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+.hero-trust-badge-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.hero-trust-badge-icon {
+  color: var(--accent-forest);
+  font-weight: 800;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.hero-trust-badge-text strong {
+  color: var(--text-espresso);
+  display: inline;
+}
+
+/* 10. TABLA DE CONTRASTE (PAS / BAB) */
+.section-contrast {
+  background-color: var(--bg-sand);
+}
+
+.contrast-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 600px) {
+  .contrast-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.contrast-card {
+  background: #fff;
+  border-radius: var(--radius-card);
+  padding: 20px;
+  border: 1px solid var(--border-warm);
+}
+
+.contrast-card--bad {
+  border-left: 4px solid #ef4444;
+  background: #fffafa;
+}
+
+.contrast-card--bad .contrast-card__header h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #b91c1c;
+  margin-bottom: 12px;
+}
+
+.contrast-card--good {
+  border-left: 4px solid var(--accent-forest);
+  background: #f7faf8;
+  position: relative;
+  box-shadow: 0 4px 14px rgba(31, 75, 60, 0.08);
+}
+
+.contrast-good-badge {
+  display: inline-block;
+  background: var(--accent-forest);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 8px;
+}
+
+.contrast-card--good .contrast-card__header h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent-forest);
+  margin-bottom: 12px;
+}
+
+.contrast-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contrast-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--text-espresso);
+}
+
+.contrast-icon-cross {
+  color: #dc2626;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.contrast-icon-check {
+  color: var(--accent-forest);
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* 11. PLAN EN 3 PASOS STORYBRAND */
+.section-plan {
+  background-color: #fff;
+}
+
+.plan-steps-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 600px) {
+  .plan-steps-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.plan-step-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--bg-card);
+  padding: 18px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-warm);
+}
+
+.plan-step-num {
+  width: 38px;
+  height: 38px;
+  background: var(--text-espresso);
+  color: var(--bg-linen);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.plan-step-title {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--text-espresso);
+  margin-bottom: 4px;
+}
+
+.plan-step-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}

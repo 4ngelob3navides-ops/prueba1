@@ -87,9 +87,9 @@
         return `${assetsBase}${filename}`;
       };
 
-      const basePrice = Number(shopify.price || 35.0);
+      const basePrice = Number(shopify.price || 44.9);
       const baseCompareAt =
-        Number(shopify.compareAtPrice) > basePrice ? Number(shopify.compareAtPrice) : 55.0;
+        Number(shopify.compareAtPrice) > basePrice ? Number(shopify.compareAtPrice) : 69.9;
 
       const maxQty = Math.max(1, Math.min(20, Number(shopify.maxQty || 10)));
       const money = (n) => `$${Number(n).toFixed(2)}`;
@@ -99,21 +99,21 @@
           id: 1,
           qty: 1,
           title: '1x Kit Cepillo 9 en 1 Pro',
-          sub: '9 cabezales + Vara extensible + Envío Gratis',
+          sub: '9 cabezales + Brazo extensible + Envío Gratis',
           price: basePrice,
           compareAtPrice: baseCompareAt,
-          savingsText: 'Ahorras $20 hoy',
-          badge: 'Oferta de hoy',
+          savingsText: 'Ahorras $25 hoy',
+          badge: 'Oferta Individual',
         },
         {
           id: 2,
           qty: 2,
           title: '2x Kits (Pack Familiar / Mamá)',
-          sub: 'Uno para baño y otro para cocina ($29.50 c/u)',
-          price: 59.0,
-          compareAtPrice: 110.0,
-          savingsText: 'Ahorras $51 hoy',
-          badge: 'Pack Familiar',
+          sub: 'Uno para baño y otro para cocina ($34.95 c/u)',
+          price: 69.9,
+          compareAtPrice: 139.8,
+          savingsText: 'Ahorras $69.90 hoy',
+          badge: 'Pack Familiar (Ahorro Máximo)',
         },
       ];
 
@@ -128,17 +128,17 @@
           price = basePrice;
           compareAtPrice = baseCompareAt;
           title = '1x Kit Cepillo 9 en 1 Pro';
-          sub = '9 cabezales + Vara extensible + Envío Gratis';
+          sub = '9 cabezales + Brazo extensible + Envío Gratis';
         } else if (q === 2) {
-          price = 59.0;
-          compareAtPrice = 110.0;
+          price = 69.9;
+          compareAtPrice = 139.8;
           title = '2x Kits (Pack Familiar / Mamá)';
-          sub = 'Uno para baño y otro para cocina ($29.50 c/u)';
+          sub: 'Uno para baño y otro para cocina ($34.95 c/u)';
         } else {
-          price = Number((29.5 * q).toFixed(2));
+          price = Number((34.95 * q).toFixed(2));
           compareAtPrice = Number((baseCompareAt * q).toFixed(2));
           title = `${q}x Kits Cepillo 9 en 1 Pro`;
-          sub = `$29.50 cada kit + Envío Gratis a todo Ecuador`;
+          sub = `$34.95 cada kit + Envío Gratis a todo Ecuador`;
         }
 
         const totalSavings = Math.max(0, compareAtPrice - price);
@@ -151,7 +151,7 @@
           price,
           compareAtPrice,
           savingsText: `Ahorras ${money(totalSavings)} hoy`,
-          badge: q > 1 ? `${q} Kits` : 'Oferta de hoy',
+          badge: q > 1 ? `${q} Kits (Ahorro)` : 'Oferta Individual',
         };
       };
 
@@ -296,6 +296,60 @@
             tag: 'Compra verificada',
           },
         ],
+
+        trustBadges: [
+          { icon: 'shield', title: 'Pago Contra Entrega', text: 'Pagas en efectivo en tu puerta al recibir' },
+          { icon: 'truck', title: 'Envío Gratis', text: 'Despacho asegurado a todo Ecuador' },
+          { icon: 'bolt', title: 'Despacho 24h', text: 'Stock físico desde bodega Guayaquil' },
+          { icon: 'check', title: 'Garantía 30 Días', text: 'Cambio inmediato por defectos de fábrica' },
+        ],
+
+        contrast: {
+          kicker: 'Comparativa de Esfuerzo',
+          title: 'Método Tradicional vs. Cepillo 9 en 1 Pro',
+          lead: 'Deja de castigar tu cuerpo en tareas que la tecnología resuelve en minutos.',
+          bad: {
+            title: '❌ Limpieza Tradicional',
+            points: [
+              '2 horas arrodillada o en cuclillas con fuerte dolor lumbar y en las rodillas.',
+              'Manos agrietadas y uñas rotas expuestas a químicos corrosivos y bacterias.',
+              'Frotar con fuerza usando cepillos viejos sin lograr sacar el moho incrustado.',
+              'Terminas el fin de semana agotada y sin tiempo para disfrutar.',
+            ],
+          },
+          good: {
+            title: '✅ Con tu Cepillo 9 en 1 Pro',
+            points: [
+              '10 minutos de pie con columna totalmente recta gracias al brazo de 1.20 m.',
+              'Manos limpias y secas a más de un metro de la suciedad y el cloro.',
+              'Motor de 400 RPM que arranca moho y grasa quemada sin hacer esfuerzo físico.',
+              'Más tiempo libre y cero dolores musculares al terminar la jornada.',
+            ],
+          },
+        },
+
+        simplePlan: {
+          kicker: 'Proceso 100% Seguro',
+          title: '¿Cómo funciona la compra en 3 pasos?',
+          lead: 'Cero riesgos y cero pagos por anticipado. La forma más tranquila de comprar por internet.',
+          steps: [
+            {
+              num: '01',
+              title: 'Pides en 30 segundos',
+              desc: 'Solo completas tus datos de entrega (nombre, celular, ciudad y dirección). Sin ingresar tarjetas.',
+            },
+            {
+              num: '02',
+              title: 'Coordinamos por WhatsApp',
+              desc: 'Nuestro equipo de despacho te escribe para confirmar tu pedido y compartir tu número de guía.',
+            },
+            {
+              num: '03',
+              title: 'Pagas al recibir en casa',
+              desc: 'El repartidor de Servientrega o Urbano llega a tu puerta, recibes la caja y abonas en efectivo.',
+            },
+          ],
+        },
 
         codCard: {
           image: resolveImg(shopify.cod_image, 'cod_door_delivery.jpg'),
@@ -650,6 +704,20 @@
                 <span>{{ config.hero.ctaMain }}</span>
                 <small>{{ config.hero.ctaSub }}</small>
               </button>
+
+              <!-- Micro-copys de seguridad y confianza inmediata (Auditoría CRO) -->
+              <div class="hero-trust-badges" v-if="config.trustBadges">
+                <div
+                  v-for="(badge, bIdx) in config.trustBadges"
+                  :key="bIdx"
+                  class="hero-trust-badge-item"
+                >
+                  <span class="hero-trust-badge-icon">✓</span>
+                  <div class="hero-trust-badge-text">
+                    <strong>{{ badge.title }}:</strong> {{ badge.text }}
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -958,6 +1026,20 @@
             <small>Pagas únicamente cuando el repartidor te entregue la caja</small>
           </button>
 
+          <!-- Sellos de confianza y cero riesgo (Auditoría CRO) -->
+          <div class="hero-trust-badges hero-trust-badges--cod" v-if="config.trustBadges">
+            <div
+              v-for="(badge, bIdx) in config.trustBadges"
+              :key="bIdx"
+              class="hero-trust-badge-item"
+            >
+              <span class="hero-trust-badge-icon">✓</span>
+              <div class="hero-trust-badge-text">
+                <strong>{{ badge.title }}:</strong> {{ badge.text }}
+              </div>
+            </div>
+          </div>
+
           <div class="cod-editorial-card">
             <img
               :src="config.codCard.image"
@@ -1015,8 +1097,10 @@
         EmotionalHeroMobile,
         ThumbCleanInteractive,
         PhysicalReliefSection,
+        ContrastTableSection,
         VisualZoneTapper,
         RealFeelingsUgc,
+        StoryBrandPlanSection,
         ZeroFearCodSection,
         StickyThumbBar,
       },
@@ -1109,11 +1193,17 @@
           <!-- 5. Dolores Reales y Tangibles -->
           <PhysicalReliefSection :pains="config.pains" />
 
+          <!-- 5.1 Tabla de Contraste PAS / BAB (Método Tradicional vs Cepillo 9 en 1) -->
+          <ContrastTableSection v-if="config.contrast" :contrast="config.contrast" />
+
           <!-- 6. Demostración por Zonas y los 9 Cabezales -->
           <VisualZoneTapper :zones="config.zones" />
 
           <!-- 7. Reseñas Editoriales (Quote Cards) -->
           <RealFeelingsUgc :reviews="config.reviews" />
+
+          <!-- 7.1 El Plan en 3 Pasos StoryBrand (Compra Segura sin Tarjetas) -->
+          <StoryBrandPlanSection v-if="config.simplePlan" :plan="config.simplePlan" />
 
           <!-- 8. Oferta de Packs y Pago Contraentrega con selector de cantidad -->
           <ZeroFearCodSection

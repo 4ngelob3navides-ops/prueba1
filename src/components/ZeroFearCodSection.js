@@ -58,6 +58,20 @@ export const ZeroFearCodSection = {
         <small>Pagas únicamente cuando el repartidor te entregue la caja</small>
       </button>
 
+      <!-- Sellos de confianza y cero riesgo (Auditoría CRO) -->
+      <div class="hero-trust-badges hero-trust-badges--cod" v-if="config.trustBadges">
+        <div
+          v-for="(badge, bIdx) in config.trustBadges"
+          :key="bIdx"
+          class="hero-trust-badge-item"
+        >
+          <span class="hero-trust-badge-icon">✓</span>
+          <div class="hero-trust-badge-text">
+            <strong>{{ badge.title }}:</strong> {{ badge.text }}
+          </div>
+        </div>
+      </div>
+
       <div class="cod-editorial-card">
         <img
           :src="config.codCard.image"

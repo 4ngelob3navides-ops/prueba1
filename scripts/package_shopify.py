@@ -149,8 +149,8 @@ def generate_local_preview():
     <script>
       window.__SHOPIFY_DATA__ = {
         assetsBase: './shopify-theme/assets/',
-        price: 35.00,
-        compareAtPrice: 55.00,
+        price: 44.90,
+        compareAtPrice: 69.90,
         stockLeft: 14,
         warehouseCity: 'Guayaquil'
       };

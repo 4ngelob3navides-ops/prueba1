@@ -12,7 +12,7 @@
 
   assign current_variant = target_product.selected_or_first_available_variant
 
-  assign final_price = section.settings.fallback_price | default: 35.00
+  assign final_price = section.settings.fallback_price | default: 44.90
   if target_product != blank and section.settings.use_shopify_price
     assign final_price = current_variant.price | divided_by: 100.0
   endif
@@ -23,7 +23,7 @@
       assign compare_price = current_variant.compare_at_price | divided_by: 100.0
     endif
   else
-    assign compare_price = section.settings.fallback_compare_price | default: 55.00
+    assign compare_price = section.settings.fallback_compare_price | default: 69.90
   endif
 
   assign real_stock = section.settings.stock_left | default: 14
@@ -130,13 +130,13 @@
       "type": "number",
       "id": "fallback_price",
       "label": "Precio manual (solo si desactivas arriba)",
-      "default": 35
+      "default": 45
     },
     {
       "type": "number",
       "id": "fallback_compare_price",
       "label": "Precio antes manual",
-      "default": 55
+      "default": 70
     },
     {
       "type": "number",

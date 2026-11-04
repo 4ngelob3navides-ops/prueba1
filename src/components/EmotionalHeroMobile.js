@@ -70,6 +70,20 @@ export const EmotionalHeroMobile = {
             <span>{{ config.hero.ctaMain }}</span>
             <small>{{ config.hero.ctaSub }}</small>
           </button>
+
+          <!-- Micro-copys de seguridad y confianza inmediata (Auditoría CRO) -->
+          <div class="hero-trust-badges" v-if="config.trustBadges">
+            <div
+              v-for="(badge, bIdx) in config.trustBadges"
+              :key="bIdx"
+              class="hero-trust-badge-item"
+            >
+              <span class="hero-trust-badge-icon">✓</span>
+              <div class="hero-trust-badge-text">
+                <strong>{{ badge.title }}:</strong> {{ badge.text }}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
