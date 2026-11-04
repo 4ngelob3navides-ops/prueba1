@@ -37,6 +37,8 @@
 
 {%- if target_product.handle == 'mini-licuadora-conejito-portatil' or target_product.title contains 'CONEJITO' or target_product.title contains 'LICUADORA' -%}
   {% render 'blender-landing' %}
+{%- elsif target_product.handle == 'masajeador-capilar-antiestres' or target_product.title contains 'MASAJEADOR' or target_product.title contains 'CAPILAR' -%}
+  {% render 'massager-landing' %}
 {%- else -%}
 
 <div id="cepillo-vue-section-{{ section.id }}">

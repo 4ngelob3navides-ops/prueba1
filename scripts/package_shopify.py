@@ -25,6 +25,10 @@ GENERATED_IMAGES_SOURCE = {
     "blender_heavy_pain.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\blender_heavy_pain_png_1793734134845.jpg",
     "blender_on_the_go.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\blender_on_the_go_png_1793734152347.jpg",
     "blender_unboxing_features.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\blender_unboxing_features_png_1793734170977.jpg",
+    "massager_scalp_hero.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\massager_scalp_hero_jpg_1793806875277.jpg",
+    "massager_shower_wet.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\massager_shower_wet_jpg_1793806896303.jpg",
+    "massager_neck_stress_pain.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\massager_neck_stress_pain_jpg_1793806923148.jpg",
+    "massager_unboxing_nodes.jpg": r"C:\Users\angel\.gemini\antigravity\brain\8847dfa2-3cc2-401f-81b6-37b2e68eb18f\massager_unboxing_nodes_jpg_1793806964627.jpg",
 }
 
 OBSOLETE_IMAGES = [

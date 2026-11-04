@@ -1,16 +1,11 @@
 {
   "sections": {
     "main": {
-      "type": "vue-landing-cepillo",
-      "settings": {
-        "fallback_price": 34.90,
-        "fallback_compare_price": 55.00,
-        "stock_left": 100
-      }
+      "type": "landing-masajeador-capilar",
+      "settings": {}
     }
   },
   "order": [
     "main"
   ]
 }
-

@@ -118,11 +118,12 @@
 
       <!-- Producto 3: Masajeador Capilar Antiestrés -->
       <article class="pain-editorial-card" style="box-shadow: 0 4px 16px rgba(28,25,23,0.06);">
-        <div class="pain-editorial-card__img" style="aspect-ratio: 16/10; background: #e7e0d5; display: flex; align-items: center; justify-content: center;">
+        <div class="pain-editorial-card__img" style="aspect-ratio: 16/10;">
           <img
-            src="{{ 'cod_door_delivery.jpg' | asset_url }}"
+            src="{{ 'massager_scalp_hero.jpg' | asset_url }}"
             alt="Masajeador Capilar Antiestrés"
             loading="lazy"
+            onerror="this.src='https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80'"
           >
         </div>
         <div class="pain-editorial-card__body">
@@ -132,7 +133,7 @@
               {% if all_products['masajeador-capilar-antiestres'] != blank %}
                 {{ all_products['masajeador-capilar-antiestres'].price | money }}
               {% else %}
-                $34.90 USD
+                $39.90 USD
               {% endif %}
             </span>
           </div>
@@ -140,7 +141,7 @@
             Masajeador Capilar Antiestrés
           </h3>
           <p class="pain-editorial-card__desc">
-            Alivio instantáneo de migrañas, estrés y rigidez cervical. Nodos de silicona 3D con rotación profunda y uso resistente al agua en la ducha.
+            Alivio instantáneo de migrañas, estrés y rigidez cervical en 5 minutos. Nodos 3D de silicona suave y resistente al agua en la ducha.
           </p>
           <a
             href="/products/masajeador-capilar-antiestres"
