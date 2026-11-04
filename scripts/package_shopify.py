@@ -49,6 +49,8 @@ MODULE_ORDER = [
     SRC_DIR / "components" / "ThumbCleanInteractive.js",
     SRC_DIR / "components" / "VisualZoneTapper.js",
     SRC_DIR / "components" / "PhysicalReliefSection.js",
+    SRC_DIR / "components" / "ContrastTableSection.js",
+    SRC_DIR / "components" / "StoryBrandPlanSection.js",
     SRC_DIR / "components" / "RealFeelingsUgc.js",
     SRC_DIR / "components" / "ZeroFearCodSection.js",
     SRC_DIR / "components" / "StickyThumbBar.js",
